@@ -8,6 +8,7 @@
     <title></title>
     <link href="/Extjs42/resources/css/ext-all-neptune.css" rel="stylesheet" type="text/css" />
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
+    <script src="/js/jquery-1.8.2.min.js"></script>
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />
     <script src="/js/pan.js" type="text/javascript"></script>
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
@@ -16,12 +17,16 @@
             init_search();
             gridbind();
 
-            Ext.create('Ext.form.Panel', {
+            var panel= Ext.create('Ext.form.Panel', {
                 title: '客商管理',
-                renderTo: 'appConId',
+                region: 'center',
+                layout: 'border',
                 items: [Ext.getCmp('formpanel_search'), Ext.getCmp('gridpanel')]
             });
-
+            var viewport = Ext.create('Ext.container.Viewport', {
+                layout: 'border',
+                items: [panel]
+            })
         });
 
         function init_search() {
@@ -61,6 +66,7 @@
 
             var formpanel_search = Ext.create('Ext.form.Panel', {
                 id: 'formpanel_search',
+                region: 'north',
                 border: 0,
                 bbar: toolbar,
                 fieldDefaults: {
@@ -69,7 +75,7 @@
                     labelWidth: 70
                 },
                 items: [
-                { layout: 'column', border: 0, items: [txtCODE, txtCNNAME, txtHSCODE, txtCIQCODE] },
+                { layout: 'column', border: 0, items: [txtCODE, txtCNNAME, txtHSCODE, txtCIQCODE, txtENGLISHNAME, combo_ENABLED_S] },
                 { layout: 'column', border: 0, items: [txtENGLISHNAME, combo_ENABLED_S] }
                 ]
             });
@@ -106,6 +112,7 @@
             var gridpanel = Ext.create('Ext.grid.Panel', {
                 id: 'gridpanel',
                 height: 560,
+                region: 'center',
                 store: store_customer,
                 selModel: { selType: 'checkboxmodel' },
                 bbar: pgbar,
@@ -437,19 +444,16 @@
         }
 
         function exportdata() {
-            var path = '/CustomerManage.aspx?action=export';
+            var path = 'CustomerManage.aspx?action=export';
             $('#exportform').attr("action", path).submit();
         }
     </script>
 </head>
 <body>
-    <div id="renderto">
-        <div>
-            <form id="exportform" name="form" enctype="multipart/form-data" method="post" style="display:inline-block">
+    <div>
+        <form id="exportform" name="form" enctype="multipart/form-data" method="post"> <%--style="display:inline-block"--%>
                    
-            </form>
-        </div>
-        <div id="appConId" ></div>
+        </form>
     </div>
 </body>
 </html>
