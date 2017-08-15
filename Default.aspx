@@ -7,11 +7,15 @@
     <link href="/Extjs42/resources/css/ext-all-neptune.css" rel="stylesheet" type="text/css" />
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
     <script src="/js/jquery-1.8.2.min.js" type="text/javascript"></script>
-    <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/iconfont/iconfont.css" rel="stylesheet" />
+   <%-- <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />--%>
     <style type="text/css">
         a {
             cursor: pointer;
             text-decoration: none;
+        }
+        .no-icon {
+            display: none;
         }
     </style>
     <script type="text/javascript">
@@ -33,13 +37,13 @@
             });
             var treepanel = Ext.create('Ext.tree.Panel', {
                 title: '功能菜单',
-                useArrows: true,
+                useArrows: false,
                 region: 'west',
                 collapsible: true,
                 hideHeaders: true,
                 animate: true,
                 rootVisible: false,
-                width: 200,
+                width: 220,
                 store: store,
                 columns: [
                 { text: 'id', dataIndex: 'id', width: 100, hidden: true },

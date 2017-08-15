@@ -41,7 +41,7 @@ namespace Web_After
 
             if (!string.IsNullOrEmpty(id))
             {
-                sql = @"select ModuleID,Name,IsLeaf,Url from sysmodule 
+                sql = @"select ModuleID,Name,IsLeaf,Url,icon from sysmodule 
                         where parentid ='{0}' 
                             and ModuleID in (select distinct moduleid from sys_moduleuser_back where userid in (select id from sys_user where name = '{1}')) order by SortIndex";
 
@@ -60,13 +60,18 @@ namespace Web_After
                 string result = "[";
                 foreach (DataRow smEnt in ents.Rows)
                 {
+                    string icon = string.Empty;
+                    if (!string.IsNullOrEmpty(smEnt["ICON"] + ""))
+                    {
+                        icon = "<span style='font-size:14px;'><i class=\"icon iconfont\">&#x" + smEnt["ICON"] + ";</i></span>&nbsp;";
+                    }
+
+                    //result += "{id:'" + smEnt["ModuleID"] + "',name:'" + smEnt["Name"] + "',leaf:'" + smEnt["IsLeaf"] + "',url:'" + smEnt["Url"] + "',iconCls:'no-icon'}";
+                    result += "{id:'" + smEnt["ModuleID"] + "',name:'" + smEnt["Name"] + "',leaf:'" + smEnt["IsLeaf"] + "',url:'" + smEnt["Url"] + "',icon:'images/shared/accept.gif'}";
+
                     if (i != ents.Rows.Count - 1)
                     {
-                        result += "{id:'" + smEnt["ModuleID"] + "',name:'" + smEnt["Name"] + "',leaf:'" + smEnt["IsLeaf"] + "',url:'" + smEnt["Url"] + "'},";
-                    }
-                    else
-                    {
-                        result += "{id:'" + smEnt["ModuleID"] + "',name:'" + smEnt["Name"] + "',leaf:'" + smEnt["IsLeaf"] + "',url:'" + smEnt["Url"] + "'}";
+                        result += ",";
                     }
                     i++;
                 }
