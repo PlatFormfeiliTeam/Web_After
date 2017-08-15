@@ -1,2 +1,7 @@
 obj
 bin
+Web.config
+Web.Debug.config
+Web.Release.config
+Web_After.csproj
+Web_After.csproj.user
