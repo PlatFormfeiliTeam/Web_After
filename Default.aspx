@@ -20,7 +20,7 @@
     </style>
     <script type="text/javascript">
         Ext.onReady(function () {
-            Ext.regModel("Model", { fields: ['id', 'name', 'leaf', 'url'] });
+            Ext.regModel("Model", { fields: ['id', 'name', 'leaf', 'url', 'iconmy'] });
             var store = new Ext.data.TreeStore({
                 model: 'Model',
                 nodeParam: 'id',
@@ -48,7 +48,7 @@
                 columns: [
                 { text: 'id', dataIndex: 'id', width: 100, hidden: true },
                 { text: 'leaf', dataIndex: 'leaf', width: 100, hidden: true },
-                { xtype: 'treecolumn', text: '名称', dataIndex: 'name', width: 170 }
+                { xtype: 'treecolumn', text: '名称', dataIndex: 'name', width: 170, renderer: gridrender }
                 ],
                 hrefTarget: 'mainContent',
                 listeners: {
@@ -62,7 +62,7 @@
                 items: [{
                     height: 80,
                     region: 'north',
-                    html: '<table border="1" cellspacing="0"  style="width:100%; height:78px; background-image:url(images/head/lantp.png);border:none; position:absolute" ><tr ><td style="border:none;width:187px; height:78px "></td><td style=" margin-right:200px;line-height:78px;height:78px;vertical-align:middle; border:none;font-size:35px; text-align:center; color:rgb(255,255,255);font-weight:bold">江苏飞力达关务系统</td><td style="line-height:78px;height:78px;vertical-align:middle; border:none;font-size:20px; text-align:right; color:rgb(255,255,255);font-weight:bold"><%=userName%></td><td style="border:none;width:187px; height:78px"><a style="text-decoration:underline; font-size:17px;" id="logout"><img src="images/head/zx3.png"/></a></td></tr></table>'
+                    html: '<table border="1" cellspacing="0"  style="width:100%; height:78px; background-image:url(images/head/lantp.png);border:none; position:absolute" ><tr ><td style="border:none;width:187px; height:78px "></td><td style=" margin-right:200px;line-height:78px;height:78px;vertical-align:middle; border:none;font-size:35px; text-align:center; color:rgb(255,255,255);font-weight:bold">关务云项目后台管理系统</td><td style="line-height:78px;height:78px;vertical-align:middle; border:none;font-size:20px; text-align:right; color:rgb(255,255,255);font-weight:bold"><%=userName%></td><td style="border:none;width:187px; height:78px"><a style="text-decoration:underline; font-size:17px;" id="logout"><img src="images/head/zx3.png"/></a></td></tr></table>'
                 }, treepanel,
                 {
                     region: 'center',
@@ -79,6 +79,21 @@
                     window.location.href = "Login.aspx";
                 });
             });
+
+            function gridrender(value, cellmeta, record, rowIndex, columnIndex, stroe) {
+                var dataindex = cellmeta.column.dataIndex;
+                var str = "";
+                switch (dataindex) {
+                    case "name":
+                        if (record.get("iconmy")) {
+                            str = "<span style='font-size:12px; color:#7CBA64'><i class=\"icon iconfont\">&#x" + record.get("iconmy") + ";</i></span>&nbsp;" + value;
+                        } else {
+                            str = value;
+                        }                       
+                        break;
+                }
+                return str;
+            }
         });
 
     </script>
