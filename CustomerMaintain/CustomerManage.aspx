@@ -9,8 +9,7 @@
     <link href="/Extjs42/resources/css/ext-all-neptune.css" rel="stylesheet" type="text/css" />
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
     <script src="/js/jquery-1.8.2.min.js"></script>
-    <link href="/css/iconfont/iconfont.css" rel="stylesheet" />
-    <script src="/js/pan.js" type="text/javascript"></script>
+    <link href="/css/iconfont/iconfont.css" rel="stylesheet" />    
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
     <script type="text/javascript" >
         Ext.onReady(function () {
