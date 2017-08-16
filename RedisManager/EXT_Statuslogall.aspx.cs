@@ -12,13 +12,12 @@ using Web_After.Common;
 
 namespace Web_After.RedisManager
 {
-    public partial class EXT_Declareall : System.Web.UI.Page
+    public partial class EXT_Statuslogall : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
             string action = Request["action"];
-            string cusno = Request["CUSNO"] + "";
-            string declarationcode = Request["DECLARATIONCODE"] + "";
+            string cusno = Request["CUSNO"];
             string fenkey = Request["FENKEY"];
             // fenkey = "declareall";
             int totalProperty = 0;
@@ -27,7 +26,7 @@ namespace Web_After.RedisManager
             DataTable dt;
             string json = string.Empty;
             string json_fenkey = string.Empty;
-            string sql = "select * from redis_declareall where 1=1";
+            string sql = "select * from redis_statuslogall where 1=1";
             IsoDateTimeConverter iso = new IsoDateTimeConverter();//序列化JSON对象时,日期的处理格式
             iso.DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
             switch (action)
@@ -37,10 +36,6 @@ namespace Web_After.RedisManager
                     if (!string.IsNullOrEmpty(cusno))
                     {
                         where += " and CUSNO like '%" + cusno + "%'";
-                    }
-                    if (!string.IsNullOrEmpty(declarationcode))
-                    {
-                        where += " and DECLARATIONCODE like '%" + declarationcode + "%'";
                     }
                     if (!string.IsNullOrEmpty(fenkey))
                     {
@@ -63,7 +58,7 @@ namespace Web_After.RedisManager
                         long start = Convert.ToInt64(Request["start"]);
                         long end = Convert.ToInt64(Request["start"]) + Convert.ToInt64(Request["limit"]);
 
-                        if (cusno == string.Empty && declarationcode == string.Empty)
+                        if (cusno == string.Empty)
                         {
                             RedisValue[] jsonlist = db.ListRange(fenkey, start, end - 1);
                             totalProperty_fenkey = db.ListLength(fenkey);
@@ -88,7 +83,7 @@ namespace Web_After.RedisManager
                                 RedisValue[] StatusList = db.ListRange(fenkey, i, i + (tempi - 1));
                                 StatusList.Where<RedisValue>(st =>
                                 {
-                                    if (st.ToString().Contains(cusno) && st.ToString().Contains(declarationcode))
+                                    if (st.ToString().Contains(cusno))
                                     {
                                         jsonlist_t.Add(st.ToString());
                                         return true;
@@ -121,28 +116,6 @@ namespace Web_After.RedisManager
                     Response.Write("{rows:" + json_fenkey + ",total:" + totalProperty_fenkey + "}");
                     Response.End();
                     break;
-
-                //IDatabase db = SeRedis.redis.GetDatabase();
-                //if (fenkey != string.Empty && db.KeyExists(fenkey)) 
-                //{ 
-                //long start = Convert.ToInt64(Request["start"]); 
-                //long end = Convert.ToInt64(Request["start"]) + Convert.ToInt64(Request["limit"]);
-                //RedisValue[] jsonlist = db.ListRange(fenkey, start, end-1);
-                //totalProperty_fenkey = db.ListLength(fenkey);
-                //for (long i = 0; i < jsonlist.Length; i++) 
-                //{
-                //    json_fenkey += jsonlist[i];
-                //    if (i < jsonlist.Length - 1) { json_fenkey += ","; } 
-                //}
-                //json_fenkey = "[" + json_fenkey + "]"; 
-                //} 
-                //else 
-                //{
-                //    json_fenkey = "[]"; 
-                //}
-                //Response.Write("{rows:" + json_fenkey + ",total:" + totalProperty_fenkey + "}"); 
-                //Response.End(); 
-                //break;
 
             }
 

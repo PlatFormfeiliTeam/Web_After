@@ -10,6 +10,6 @@
 namespace Web_After.RedisManager {
     
     
-    public partial class EXT_Declareall {
+    public partial class EXT_Statuslogall {
     }
 }
