@@ -7,7 +7,7 @@
 // </自动生成>
 //------------------------------------------------------------------------------
 
-namespace Web_After.BasicManager {
+namespace Web_After.SysManager {
     
     
     public partial class UserList {

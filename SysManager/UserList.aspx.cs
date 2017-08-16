@@ -10,7 +10,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Web_After.Common;
 
-namespace Web_After.BasicManager
+namespace Web_After.SysManager
 {
     public partial class UserList : System.Web.UI.Page
     {
