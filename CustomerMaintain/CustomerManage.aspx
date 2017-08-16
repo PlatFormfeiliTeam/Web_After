@@ -420,17 +420,21 @@
                 Ext.MessageBox.alert('提示', '请选择要删除的记录！');
                 return;
             }
-            Ext.Ajax.request({
-                url: 'CustomerManage.aspx',
-                params: { action: 'delete', ID: recs[0].get("ID") },
-                type: 'Post',
-                success: function (response, option) {
-                    var data = Ext.decode(response.responseText);
-                    var msg = "";
-                    if (data.success) { msg = "删除成功"; }
-                    else { msg = "删除失败"; }
-                    Ext.MessageBox.alert('提示', msg, function () {
-                        Ext.getCmp("pgbar").moveFirst();
+            Ext.MessageBox.confirm("提示", "确定要删除所选择的记录吗？", function (btn) {
+                if (btn == 'yes') {
+                    Ext.Ajax.request({
+                        url: 'CustomerManage.aspx',
+                        params: { action: 'delete', ID: recs[0].get("ID") },
+                        type: 'Post',
+                        success: function (response, option) {
+                            var data = Ext.decode(response.responseText);
+                            var msg = "";
+                            if (data.success) { msg = "删除成功"; }
+                            else { msg = "删除失败"; }
+                            Ext.MessageBox.alert('提示', msg, function () {
+                                Ext.getCmp("pgbar").moveFirst();
+                            });
+                        }
                     });
                 }
             });
