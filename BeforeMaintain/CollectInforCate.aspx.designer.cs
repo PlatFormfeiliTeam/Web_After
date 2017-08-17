@@ -10,6 +10,6 @@
 namespace Web_After.BeforeMaintain {
     
     
-    public partial class CarouselAdList {
+    public partial class CollectInforCate {
     }
 }

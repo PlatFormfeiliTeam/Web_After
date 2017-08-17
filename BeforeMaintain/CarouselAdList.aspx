@@ -10,6 +10,11 @@
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
     <script src="/js/jquery-1.8.2.min.js"></script>
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />   
+     <style type="text/css">
+        .tdValign {
+            vertical-align: middle;
+        }
+    </style>
     <script type="text/javascript" >
          Ext.onReady(function () {
              gridbind();
@@ -61,13 +66,14 @@
                  tbar:toolbar,
                  region: 'center',
                  store: store_CarouselAd,
+                 columnLines: true,
                  selModel: { selType: 'checkboxmodel' },
                  bbar: pgbar,
                  columns: [
                     { xtype: 'rownumberer', width: 35, tdCls: 'tdValign' },
                     { header: 'ID', dataIndex: 'ID', width: 200, sortable: true, hidden: true },
-                    { header: '图片名称', dataIndex: 'FILENAME', flex: 1, sortable: true, tdCls: 'tdValign' },
-                    { header: '描述', dataIndex: 'DESCRIPTION', width: 200, sortable: true, tdCls: 'tdValign' },
+                    { header: '图片名称', dataIndex: 'FILENAME', width: 600, sortable: true, tdCls: 'tdValign' },
+                    { header: '描述', dataIndex: 'DESCRIPTION', flex: 1, sortable: true, tdCls: 'tdValign' },
                     {
                         header: '缩略图', dataIndex: 'IMGURL', width: 100, renderer: function (value) {
                             return "<img style='width:80px;height:40px' src='" + value + "'/>";
@@ -212,10 +218,6 @@
 
 </head>
 <body>
-    <form id="form1" runat="server">
-    <div>
     
-    </div>
-    </form>
 </body>
 </html>

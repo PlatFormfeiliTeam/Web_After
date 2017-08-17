@@ -57,7 +57,7 @@ namespace Web_After.BeforeMaintain
             string STATUS = json.Value<string>("STATUS");
             string SORTINDEX = json.Value<string>("SORTINDEX");
 
-            if (!string.IsNullOrEmpty(json.Value<string>("ID")))
+            if (string.IsNullOrEmpty(json.Value<string>("ID")))
             {
                 HttpPostedFile postedFile = Request.Files["IMGURL"];//获取上传信息对象  
                 string fileName = Path.GetFileName(postedFile.FileName);
