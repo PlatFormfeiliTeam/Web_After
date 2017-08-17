@@ -20,7 +20,7 @@
              var panel = Ext.create('Ext.panel.Panel', {
                  title: '<font size=2>模块管理</font>',
                  region: 'center',
-                 layout: 'column',
+                 layout: 'border',
                  items: [Ext.getCmp("treepanel")]
              });
              var viewport = Ext.create('Ext.container.Viewport', {
@@ -56,7 +56,7 @@
                  }
              });
              var treepanel = Ext.create('Ext.tree.Panel', {
-                 id: 'treepanel', columnWidth: 1,
+                 id: 'treepanel', region: 'center',
                  useArrows: true,
                  animate: true,
                  tbar: toolbar,
@@ -67,7 +67,7 @@
                  { dataIndex: 'MODULEID', width: 120, hidden: true },
                  { dataIndex: 'leaf', width: 100, hidden: true },
                  { header: '模块名称', xtype: 'treecolumn', dataIndex: 'NAME', width: 300 },
-                 { header: '链接地址', dataIndex: 'URL', flex: 1 },
+                 { header: '链接地址', dataIndex: 'URL', width: 500 },
                  { header: '显示顺序', dataIndex: 'SORTINDEX', width: 100 },
                  { header: '图标', dataIndex: 'ICON', width: 100 },
                  { dataIndex: 'PARENTID', hidden: true }

@@ -24,7 +24,7 @@
 
             var panel = Ext.create('Ext.panel.Panel', {
                 title: '<font size=2>主账号BY模块</font>', tbar: toolbar,
-                layout: 'column',
+                layout: 'border',
                 region: 'center',
                 minHeight: 100,
                 items: [gridUser, treeModel]
@@ -53,7 +53,7 @@
             })
 
             gridUser = Ext.create('Ext.grid.Panel', {
-                columnWidth: .35, height: 600,
+                region: 'west', width: '50%',
                 store: store_user,
                 columns: [
                     { xtype: 'rownumberer', width: 35 },
@@ -107,8 +107,7 @@
                 animate: true,
                 rootVisible: false,
                 store: treeModelstore,
-                height: 600,
-                columnWidth: .65,
+                region: 'center',
                 columns: [
                 { text: 'id', dataIndex: 'id', width: 500, hidden: true },
                 { text: 'leaf', dataIndex: 'leaf', width: 100, hidden: true },

@@ -25,7 +25,7 @@
                 title: "<font size=2>角色权限管理</font>",
                 tbar: toolbar,
                 region: 'center',
-                layout: 'column',
+                layout: 'border',
                 items: [Ext.getCmp("gridpanel_role"), treeModel]
             });
 
@@ -43,9 +43,9 @@
 
             var gridpanel_role = Ext.create('Ext.grid.Panel', {
                 id: 'gridpanel_role',
-                border: 1, columnWidth: .35,
+                border: 1, region: 'west',
                 store: store_role,
-                minHeight: 150,
+                width: 250,
                 enableColumnHide: false,
                 columns: [
                 { xtype: 'rownumberer', width: 35 },
@@ -99,13 +99,13 @@
             treeModel = Ext.create('Ext.tree.Panel', {
                 useArrows: true,
                 animate: true,
-                rootVisible: false, columnWidth: .65,
+                rootVisible: false, region: 'center',
                 store: treeModelstore,
                 height: 500,
                 columns: [
                 { text: 'id', dataIndex: 'id', width: 500, hidden: true },
                 { text: 'leaf', dataIndex: 'leaf', width: 100, hidden: true },
-                { header: '模块名称', xtype: 'treecolumn', text: 'name', dataIndex: 'name', flex: 1 },
+                { header: '模块名称', xtype: 'treecolumn', text: 'name', dataIndex: 'name', width: 500 },
                 { text: 'ParentID', dataIndex: 'ParentID', width: 100, hidden: true }
                 ],
                 listeners: {

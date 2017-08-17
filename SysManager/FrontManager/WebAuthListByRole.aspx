@@ -25,7 +25,7 @@
             var panel = Ext.create('Ext.panel.Panel', {
                 title: '<font size=2>主账号BY角色</font>',
                 tbar: toolbar,
-                layout: 'column',
+                layout: 'border',
                 region: 'center',
                 minHeight: 100,
                 items: [Ext.getCmp("gridUser"), treeModel]
@@ -55,14 +55,14 @@
             var gridUser = Ext.create('Ext.grid.Panel', {
                 id: 'gridUser',
                 border: 1,
-                columnWidth: .65,
-                height: 600,
+                region: 'west',
+                width:'70%',
                 store: store_user,
                 columns: [
                     { xtype: 'rownumberer', width: 35 },
                     { header: 'ID', dataIndex: 'ID', hidden: true },
-                    { header: '账号', dataIndex: 'NAME', width: 150 },
-                    { header: '姓名', dataIndex: 'REALNAME', width: 250 },
+                    { header: '账号', dataIndex: 'NAME', width: 120 },
+                    { header: '姓名', dataIndex: 'REALNAME', width: 200 },
                     { header: '所属客户', dataIndex: 'CUSTOMERNAME', width: 300 },
                     { header: '客户', dataIndex: 'ISCUSTOMER', width: 60, renderer: render },
                     { header: '供应商', dataIndex: 'ISSHIPPER', width: 65, renderer: render },
@@ -113,7 +113,7 @@
             treeModel = Ext.create('Ext.tree.Panel', {
                 useArrows: true,
                 animate: true,
-                rootVisible: false, columnWidth: .35,
+                rootVisible: false, region: 'center',
                 store: treeModelstore,
                 height: 600,
                 columns: [
