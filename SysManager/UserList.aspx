@@ -123,8 +123,8 @@
                 columns: [
                     { xtype: 'rownumberer', width: 35 },
                     { header: 'ID', dataIndex: 'ID', hidden: true },
-                    { header: '登录账户', dataIndex: 'NAME', width: 100, locked: true },
-                    { header: '名称', dataIndex: 'REALNAME', width: 250, locked: true },
+                    { header: '登录账户', dataIndex: 'NAME', width: 100 },
+                    { header: '名称', dataIndex: 'REALNAME', width: 250 },
                     { header: '邮箱', dataIndex: 'EMAIL', width: 160 },
                     { header: '电话', dataIndex: 'TELEPHONE', width: 110 },
                     { header: '管理权限', dataIndex: 'POSITIONID', renderer: gridrender, width: 100 },

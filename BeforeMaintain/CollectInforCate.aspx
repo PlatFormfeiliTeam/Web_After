@@ -67,7 +67,7 @@
                     { xtype: 'rownumberer', width: 35, tdCls: 'tdValign' },
                     { header: 'ID', dataIndex: 'ID', width: 200, sortable: true, hidden: true },
                     { header: '常用类别', dataIndex: 'NAME', width: 200, sortable: true, tdCls: 'tdValign' },
-                    { header: '描述', dataIndex: 'DESCRIPTION', flex: 1, sortable: true, tdCls: 'tdValign' },
+                    { header: '描述', dataIndex: 'DESCRIPTION', width: 600, sortable: true, tdCls: 'tdValign' },
                     {
                         header: '图标', dataIndex: 'ICON', width: 100, renderer: function (value) {
                             return "<i class=\"icon iconfont\" style=\"font-size: 23px;\">&#x" + value + ";</i>";
