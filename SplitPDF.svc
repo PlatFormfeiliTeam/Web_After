@@ -1,1 +1,1 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="Web_Admin.SplitPDF" CodeBehind="SplitPDF.svc.cs" %>
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="Web_After.SplitPDF" CodeBehind="SplitPDF.svc.cs" %>
