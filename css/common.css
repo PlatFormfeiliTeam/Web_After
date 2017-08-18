@@ -1,0 +1,10 @@
+﻿
+/*权限管理模块*/
+.fl {float:left;}
+.fr { 
+float: right; 
+}
+
+/*上传文件的选中的线框*/
+.x-item-selected {border:1px solid;}
+.thumb-wrap {color:#57638b;}
