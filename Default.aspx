@@ -8,7 +8,6 @@
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
     <script src="/js/jquery-1.8.2.min.js" type="text/javascript"></script>
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />
-   <%-- <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />--%>
     <style type="text/css">
         a {
             cursor: pointer;
@@ -62,7 +61,14 @@
                 items: [{
                     height: 80,
                     region: 'north',
-                    html: '<table border="1" cellspacing="0"  style="width:100%; height:78px; background-image:url(images/head/lantp.png);border:none; position:absolute" ><tr ><td style="border:none;width:187px; height:78px "></td><td style=" margin-right:200px;line-height:78px;height:78px;vertical-align:middle; border:none;font-size:35px; text-align:center; color:rgb(255,255,255);font-weight:bold">关务云项目后台管理系统</td><td style="line-height:78px;height:78px;vertical-align:middle; border:none;font-size:20px; text-align:right; color:rgb(255,255,255);font-weight:bold"><%=userName%></td><td style="border:none;width:187px; height:78px"><a style="text-decoration:underline; font-size:17px;" id="logout"><img src="images/head/zx3.png"/></a></td></tr></table>'
+                    html: '<table border="1" cellspacing="0"  style="width:100%; height:78px; background-image:url(images/head/lantp.png);border:none; position:absolute" >'
+                            + '<tr >'
+                                + '<td style="border:none;width:187px; height:78px "></td>'
+                                + '<td style="margin-right:200px;line-height:78px;height:78px;vertical-align:middle; border:none;font-size:35px; text-align:center; color:rgb(255,255,255);font-weight:bold">关务云项目后台管理系统</td>'
+                                + '<td style="line-height:78px;height:78px;vertical-align:middle; border:none;font-size:20px; text-align:right; color:rgb(255,255,255);font-weight:bold"><%=userName%></td>'
+                                + '<td style="border:none;width:187px; height:78px"><a style="text-decoration:underline; font-size:17px;" id="logout"><img src="images/head/zx3.png"/></a></td>'
+                            + '</tr>'
+                        + '</table>'
                 }, treepanel,
                 {
                     region: 'center',
@@ -74,6 +80,7 @@
                 }]
             })
             treepanel.expandAll();
+
             $("#logout").click(function () {
                 $.post("Default.aspx?action=logout", {}, function (rtn) {
                     window.location.href = "Login.aspx";

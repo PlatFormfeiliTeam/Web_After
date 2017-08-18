@@ -12,16 +12,9 @@ namespace Web_After
     public partial class SysFrame : System.Web.UI.Page
     {
         public string userName = "";
-        string selectPower = "";
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            //UserInfo userInfo = Session["WebManageUserInfo"] as UserInfo;
-            //if (userInfo == null)
-            //{
-            //    FormsAuthentication.SignOut();
-            //    Response.Redirect("Login.aspx");
-            //}
             FormsIdentity identity = User.Identity as FormsIdentity;
             if (identity == null)
             {

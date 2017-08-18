@@ -37,19 +37,6 @@ namespace Web_After.Common
             return (JObject)JsonConvert.DeserializeObject(jsonstr);
         }
 
-        public static bool IsValidUserST(string userName, out string password)
-        {
-            string sql = "select password from SYS_USER where name = '" + userName + "'";
-            DataTable ents = DBMgr.GetDataTable(sql);
-            password = "";
-            if (ents.Rows.Count > 0)
-            {
-                password = ents.Rows[0][0].ToString();
-                return true;
-            }
-            return false;
-        }
-
         public static string GetPageSql(string tempsql, string order, string asc, ref int totalProperty, int start, int limit)
         {
             //int start = Convert.ToInt32(Request["start"]);

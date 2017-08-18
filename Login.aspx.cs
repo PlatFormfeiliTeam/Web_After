@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Web;
 using System.Web.Security;
 using System.Web.UI.WebControls;
@@ -9,35 +10,44 @@ namespace Web_After
 {
     public partial class SignIn : System.Web.UI.Page
     {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
         private enum LoginResult
         {
             Success,
             UserNotExist,
-            PasswordWrong
+            PasswordWrong,
+            Enabeld,
+            SupperPwd
         }
 
         // 用户登录
         private LoginResult Login(string userName, string password)
         {
-            string validPassword;  // 包含正确的密码
+            DataTable dtuser = new DataTable();
+            string sql = "select * from SYS_USER where name = '" + userName + "'";
+            dtuser = DBMgr.GetDataTable(sql);
 
-            // 判断用户名是否正确
-            if (Extension.IsValidUserST(userName, out validPassword))
+            DataTable dt_superpwd = new DataTable();
+            dt_superpwd = DBMgr.GetDataTable("select * from sys_superpwd where PWD='" + password + "'");
+
+            //判断
+            if (dtuser == null) { return LoginResult.UserNotExist; } // 用户名不存在
+            if (dtuser.Rows.Count <= 0) { return LoginResult.UserNotExist; } // 用户名不存在
+            if (dtuser.Rows[0]["ENABLED"] + "" != "1") { return LoginResult.Enabeld; }//账号停用
+
+            if (dt_superpwd.Rows.Count > 0) { return LoginResult.Success; }//超管密码 通过   
+            if (password.ToSHA1().Equals(dtuser.Rows[0]["PASSWORD"].ToString()))
             {
-                // 判断密码是否正确
-                if (password.ToSHA1().Equals(validPassword))
-                    return LoginResult.Success;
-                else
-                    return LoginResult.PasswordWrong;
+                return LoginResult.Success;
             }
-
-            // 用户名不存在
-            return LoginResult.UserNotExist;
-        }
-
-        protected void Page_Load(object sender, EventArgs e)
-        {
-
+            else
+            {
+                return LoginResult.PasswordWrong;
+            }
         }
 
         protected void btnLogin_Click(object sender, EventArgs e)
@@ -50,35 +60,20 @@ namespace Web_After
             string userName = txtUserName.Text;
             string password = txtPassword.Text;
 
-            if (string.IsNullOrEmpty(userName))
-            {
-                lbMessage.Text = "账号不能为空！";
-                return;
-            }
-            if (string.IsNullOrEmpty(password))
-            {
-                lbMessage.Text = "密码不能为空！";
-                return;
-            }
+            if (string.IsNullOrEmpty(userName)) { lbMessage.Text = "账号不能为空！"; return; }
+            if (string.IsNullOrEmpty(password)) { lbMessage.Text = "密码不能为空！"; return; }
 
             LoginResult result = Login(userName, password);
 
-            string userData = "登录时间" + DateTime.Now.ToString();
-
+            if (result == LoginResult.UserNotExist) { lbMessage.Text = "用户名不存在！"; return; }
+            if (result == LoginResult.Enabeld) { lbMessage.Text = "账号已被停用！"; return; }
+            if (result == LoginResult.PasswordWrong) { lbMessage.Text = "密码错误！"; return; }
             if (result == LoginResult.Success)
             {
                 UserEn user = new UserEn();
                 user.NAME = userName;
-                Session["WebManageUserInfo"] = user;
+                string userData = "登录时间" + DateTime.Now.ToString();
                 SetUserDataAndRedirect(userName, userData);
-            }
-            else if (result == LoginResult.UserNotExist)
-            {
-                lbMessage.Text = "用户名不存在！";
-            }
-            else
-            {
-                lbMessage.Text = "密码有误！";
             }
 
         }
