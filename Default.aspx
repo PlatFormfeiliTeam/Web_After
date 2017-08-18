@@ -96,7 +96,11 @@
                             str = "<span style='font-size:12px; color:#7CBA64'><i class=\"icon iconfont\">&#x" + record.get("iconmy") + ";</i></span>&nbsp;" + value;
                         } else {
                             str = value;
-                        }                       
+                        }
+
+                        if (record.get("url")=="") {
+                            str = "<b>" + str + "</b>";
+                        }
                         break;
                 }
                 return str;
