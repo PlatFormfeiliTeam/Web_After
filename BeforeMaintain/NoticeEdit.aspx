@@ -20,7 +20,7 @@
     
     <script src="/js/pan.js" type="text/javascript"></script>
 
-    <%--<link href="css/common.css" rel="stylesheet" />--%>
+    <link href="/css/common.css" rel="stylesheet" />
 
     <script src="/js/My97DatePicker/WdatePicker.js"></script>
 

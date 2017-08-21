@@ -8,3 +8,13 @@ float: right;
 /*上传文件的选中的线框*/
 .x-item-selected {border:1px solid;}
 .thumb-wrap {color:#57638b;}
+
+
+.input {
+    text-align: left;
+    background-color: #e5f1f4;
+    border-top-style: none;
+    border-right-style: none;
+    border-left-style: none;
+    border-bottom: green 1px solid;
+}

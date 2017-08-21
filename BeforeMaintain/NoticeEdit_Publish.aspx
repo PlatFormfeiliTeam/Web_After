@@ -18,7 +18,7 @@
 
      <link href="/Extjs42/resources/css/ext-all-gray.css" rel="stylesheet" type="text/css" />
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
-    <link href="css/common.css" rel="stylesheet" />
+    <link href="/css/common.css" rel="stylesheet" />
 
     <script src="/js/My97DatePicker/WdatePicker.js"></script>
 
