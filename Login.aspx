@@ -14,7 +14,11 @@
             margin-top: 100px;
         }
     </style>
-
+    <script type="text/javascript">
+        if (top != window){
+            top.location.href = "/Login.aspx";
+        }
+    </script>
 </head>
 <body class="loginbody">
     <form id="form1" runat="server">
