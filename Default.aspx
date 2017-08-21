@@ -52,7 +52,9 @@
                 hrefTarget: 'mainContent',
                 listeners: {
                     itemclick: function (view, rec, item, index, e) {
-                        Ext.getDom("contentIframe").src = rec.get("url");
+                        if (rec.get("url")!="") {
+                            Ext.getDom("contentIframe").src = rec.get("url");
+                        }                        
                     }
                 }
             });
