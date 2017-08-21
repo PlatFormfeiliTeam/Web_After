@@ -81,6 +81,9 @@
                         proxys.extraParams.ISCUSTOMER = record.get("ISCUSTOMER"); proxys.extraParams.ISSHIPPER = record.get("ISSHIPPER"); proxys.extraParams.ISCOMPANY = record.get("ISCOMPANY");
                         treeModelstore.load();
                     }
+                },
+                viewConfig: {
+                    enableTextSelection: true
                 }
             });
 

@@ -140,8 +140,12 @@ namespace Web_After.SysManager
             string sql = "";
             if (string.IsNullOrEmpty(json.Value<string>("ID")))
             {
-                sql = @"insert into sys_user(id,name,realname,telephone,mobilephone,email,customerid,companyids,positionid,enabled,remark,createtime,type,password) 
-                                        values(sys_user_id.nextval,'{0}','{1}','{2}', '{3}','{4}',{5},{6},'{7}','{8}','{9}',sysdate,1,'{10}')";
+                sql = @"insert into sys_user(id
+                            ,name,realname,telephone,mobilephone,email,customerid
+                            ,positionid,enabled,remark,password,createtime,type) 
+                        values(sys_user_id.nextval
+                            ,'{0}','{1}','{2}', '{3}','{4}',{5}
+                            ,{6},'{7}','{8}','{9}',sysdate,1)";
                 sql = string.Format(sql,
                     json.Value<string>("NAME"),
                     json.Value<string>("REALNAME"),
@@ -149,7 +153,6 @@ namespace Web_After.SysManager
                     json.Value<string>("MOBILEPHONE"),
                     json.Value<string>("EMAIL"),
                     json.Value<string>("CUSTOMERID"),
-                    "(select NAME from cusdoc.sys_customer where code='" + json.Value<string>("CUSTOMERID") + "')",
                     json.Value<string>("POSITIONID"),
                     json.Value<string>("ENABLED"),
                     json.Value<string>("REMARK"),
@@ -157,8 +160,8 @@ namespace Web_After.SysManager
             }
             else
             {
-                sql = @"update sys_user set name='{0}',realname='{1}',telephone='{2}',mobilephone='{3}',email='{4}',customerid={5},companyids='{6}',
-                                positionid='{7}',enabled='{8}',remark='{9}' where id={10}";
+                sql = @"update sys_user set name='{0}',realname='{1}',telephone='{2}',mobilephone='{3}',email='{4}',customerid={5}
+                                ,positionid='{6}',enabled='{7}',remark='{8}' where id={9}";
                 sql = string.Format(sql,
                     json.Value<string>("NAME"),
                     json.Value<string>("REALNAME"),
@@ -166,7 +169,6 @@ namespace Web_After.SysManager
                     json.Value<string>("MOBILEPHONE"),
                     json.Value<string>("EMAIL"),
                     json.Value<string>("CUSTOMERID"),
-                    "(select id from cusdoc.sys_customer where code='" + json.Value<string>("CUSTOMERID") + "')",
                    json.Value<string>("POSITIONID"),
                     json.Value<string>("ENABLED"),
                     json.Value<string>("REMARK"),
