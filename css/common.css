@@ -8,7 +8,9 @@ float: right;
 /*上传文件的选中的线框*/
 .x-item-selected {border:1px solid;}
 .thumb-wrap {color:#57638b;}
-
+.x-body {
+    font-size: 14px;
+}
 
 .input {
     text-align: left;
