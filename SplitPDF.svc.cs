@@ -512,15 +512,14 @@ namespace Web_After
             string tradeway = dt_order.Rows[0]["TRADEWAYCODES"].ToString();
 
 
-            string where = @" where (busiunitcode is null or busiunitcode='{0}')
-                               and (customercode is null or customercode='{1}')
-                               and (repunitcode is null or repunitcode='{2}')
-                               and (busitype is null or busitype='{3}')
-                               and (tradeway is null or tradeway='{4}')";
+            string where = @" where (b.busiunitcode is null or b.busiunitcode='{0}')
+                               and (b.customercode is null or b.customercode='{1}')
+                               and (b.repunitcode is null or b.repunitcode='{2}')
+                               and (b.busitype is null or b.busitype='{3}')
+                               and (b.tradeway is null or b.tradeway='{4}')";
 
-
-            string sql_result = @"select filetypeid,filetypename,PROMPT from sys_filetype where filetypeid in 
-                                 (select filetype from config_filesplit " + where + "  group by filetype)";
+            string sql_result = @"select filetypeid,filetypename,PROMPT from sys_filetype a inner join config_filesplit b on
+                                  a.filetypeid=b.filetype  "+where;
             sql_result = string.Format(sql_result, busiunitcode, customercode, repunitcode, busitype,tradeway);
             DataTable dt_result = DBMgr.GetDataTable(sql_result);
             if (dt_result.Rows.Count != 0)
