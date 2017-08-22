@@ -509,17 +509,19 @@ namespace Web_After
             string customercode = dt_order.Rows[0]["customercode"].ToString();
             string repunitcode = dt_order.Rows[0]["repunitcode"].ToString();
             string busitype = dt_order.Rows[0]["busitype"].ToString();
+            string tradeway = dt_order.Rows[0]["TRADEWAYCODES"].ToString();
 
 
             string where = @" where (busiunitcode is null or busiunitcode='{0}')
                                and (customercode is null or customercode='{1}')
                                and (repunitcode is null or repunitcode='{2}')
-                               and (busitype is null or busitype='{3}')";
+                               and (busitype is null or busitype='{3}')
+                               and (tradeway is null or tradeway='{4}')";
 
 
-            string sql_result = @"select filetypeid,filetypename from sys_filetype where filetypeid in 
+            string sql_result = @"select filetypeid,filetypename,PROMPT from sys_filetype where filetypeid in 
                                  (select filetype from config_filesplit " + where + "  group by filetype)";
-            sql_result = string.Format(sql_result, busiunitcode, customercode, repunitcode, busitype);
+            sql_result = string.Format(sql_result, busiunitcode, customercode, repunitcode, busitype,tradeway);
             DataTable dt_result = DBMgr.GetDataTable(sql_result);
             if (dt_result.Rows.Count != 0)
             {
@@ -527,10 +529,9 @@ namespace Web_After
                 {
                     foreach (JObject jo in jsonarray)
                     {
-                        string err_msg = "不可以拆分";
+                        string err_msg = dt_result.Rows[i]["PROMPT"].ToString();
                         if (jo.Value<string>("c-" + dt_result.Rows[i]["FILETYPEID"] + "@" + dt_result.Rows[i]["FILETYPENAME"]) == "√")
                         {
-                            err_msg += dt_result.Rows[i]["FILETYPENAME"];
                             return "error:" + err_msg;
                         }
                     }
