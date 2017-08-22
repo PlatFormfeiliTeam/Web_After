@@ -1,4 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="Web_After.SignIn" %>
+<%@ Import Namespace="System.Configuration" %>
 
 <!DOCTYPE html>
 
@@ -6,7 +7,6 @@
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title></title>
-    <link href="css/skin/default/style.css" rel="stylesheet" />
     <style type="text/css">
         .juzhong {
             margin: 0 auto;
@@ -18,7 +18,10 @@
         if (top != window){
             top.location.href = "/Login.aspx";
         }
+
     </script>
+
+    <link href="/css/skin/default/style.css?t=<%=ConfigurationManager.AppSettings["Version"]%>" rel="stylesheet" />
 </head>
 <body class="loginbody">
     <form id="form1" runat="server">
