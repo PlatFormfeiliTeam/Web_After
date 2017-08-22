@@ -5,3 +5,4 @@ Web.Debug.config
 Web.Release.config
 Web_After.csproj.user
 Web_After.csproj
+.svn
