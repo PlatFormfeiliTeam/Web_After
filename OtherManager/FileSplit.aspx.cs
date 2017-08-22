@@ -55,8 +55,13 @@ namespace Web_After.OtherManager
             sql = "SELECT to_char(FILETYPEID) CODE,FILETYPENAME NAME FROM sys_filetype where parentfiletypeid=44  order by sortindex asc";
             json_wjlx = JsonConvert.SerializeObject(DBMgr.GetDataTable(sql));
 
-            Response.Write("{jydw:" + json_jydw + ",wtdw:" + json_wtdw + ",wjlx:" + json_wjlx + "}");
+            string json_myfs = "[]";//贸易方式
+            sql = @"select ID,CODE,NAME||'('||CODE||')' NAME from cusdoc.BASE_DECLTRADEWAY WHERE enabled=1";
+            json_myfs = JsonConvert.SerializeObject(DBMgr.GetDataTable(sql));
+
+            Response.Write("{jydw:" + json_jydw + ",wtdw:" + json_wtdw + ",wjlx:" + json_wjlx + ",myfs:" + json_myfs + "}");
             Response.End();
+
         }
 
         private void loadData()
@@ -79,6 +84,10 @@ namespace Web_After.OtherManager
             {
                 strWhere = " and BUSITYPE='" + Request["BUSITYPE_S"] + "'";
             }
+            if (!string.IsNullOrEmpty(Request["TRADEWAY_S"]))
+            {
+                strWhere = " and TRADEWAY='" + Request["TRADEWAY_S"] + "'";
+            }
             if (!string.IsNullOrEmpty(Request["FILETYPE_S"]))
             {
                 strWhere = " and FILETYPE='" + Request["FILETYPE_S"] + "'";
@@ -99,25 +108,38 @@ namespace Web_After.OtherManager
             string sql = "";
             if (string.IsNullOrEmpty(json.Value<string>("ID")))
             {
-                sql = @"insert into config_filesplit(id,
-                                    busiunitcode,customercode,repunitcode,busitype,filetype,createuserid, 
-                                    createusername,createtime
+                sql = @"insert into config_filesplit(id
+                                    ,busiunitcode,customercode,repunitcode,busitype,filetype,createuserid 
+                                    ,createusername,tradeway,prompt
+                                    ,createtime
+                                    ,busiunitname
+                                    ,customername
+                                    ,repunitname                                     
                                 ) values(config_filesplit_id.nextval
                                     ,'{0}','{1}','{2}', '{3}','{4}','{5}'
-                                    ,'{6}',sysdate)";
+                                    ,'{6}','{7}','{8}'
+                                    ,sysdate
+                                    ,(select name from cusdoc.BASE_COMPANY where enabled=1 and code='{0}')
+                                    ,(select name from cusdoc.sys_customer where enabled=1 and code='{1}')
+                                    ,(select name from cusdoc.BASE_COMPANY where enabled=1 and code='{2}')
+                                )";
                 sql = string.Format(sql
                         , json.Value<string>("BUSIUNITCODE"), json.Value<string>("CUSTOMERCODE"), json.Value<string>("REPUNITCODE"), json.Value<string>("BUSITYPE"), json.Value<string>("FILETYPE"), json_user.Value<string>("ID")
-                        , json_user.Value<string>("REALNAME")
+                        , json_user.Value<string>("REALNAME"), json.Value<string>("TRADEWAY"), json.Value<string>("PROMPT")
                     );
             }
             else
             {
                 sql = @"update config_filesplit set busiunitcode='{0}',customercode='{1}',repunitcode='{2}',busitype='{3}',filetype='{4}',createuserid='{5}'
-                                    ,createusername='{6}',createtime=sysdate
-                                where id={7}";
+                                    ,createusername='{6}',tradeway='{7}',prompt='{8}'
+                                    ,createtime=sysdate
+                                    ,busiunitname=(select name from cusdoc.BASE_COMPANY where enabled=1 and code='{0}')
+                                    ,customername=(select name from cusdoc.sys_customer where enabled=1 and code='{1}')
+                                    ,repunitname=(select name from cusdoc.BASE_COMPANY where enabled=1 and code='{2}')
+                                where id={9}";
                 sql = string.Format(sql
                         , json.Value<string>("BUSIUNITCODE"), json.Value<string>("CUSTOMERCODE"), json.Value<string>("REPUNITCODE"), json.Value<string>("BUSITYPE"), json.Value<string>("FILETYPE"), json_user.Value<string>("ID")
-                        , json_user.Value<string>("REALNAME"), json.Value<string>("ID")
+                        , json_user.Value<string>("REALNAME"), json.Value<string>("TRADEWAY"), json.Value<string>("PROMPT"), json.Value<string>("ID")
                    );
             }
 
@@ -130,9 +152,9 @@ namespace Web_After.OtherManager
 
         private void deleteData()
         {
-            string id = Request["ID"];
-            string sql = "delete from config_filesplit where id='{0}'";
-            string str = DBMgr.ExecuteNonQuery(string.Format(sql, id)) > 0 ? "true" : "false";
+            string ids = Request["ids"];
+            string sql = "delete from config_filesplit where id in({0})";
+            string str = DBMgr.ExecuteNonQuery(string.Format(sql, ids)) > 0 ? "true" : "false";
             Response.Write("{\"success\":" + str + "}");
             Response.End();
         }

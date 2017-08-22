@@ -12,8 +12,8 @@
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />  
     <script src="/js/commondata.js"></script>
     <script type="text/javascript" >
-        var common_data_jydw = [], common_data_wtdw = [], common_data_wjlx = [];
-        var store_wjlx, store_busitype;
+        var common_data_jydw = [], common_data_wtdw = [], common_data_wjlx = [], common_data_myfs = [];
+        var store_wjlx, store_busitype, store_tradeway;
 
         Ext.onReady(function () {
             Ext.Ajax.request({
@@ -25,9 +25,11 @@
                     common_data_jydw = commondata.jydw;//经营单位、申报单位
                     common_data_wtdw = commondata.wtdw;//委托单位
                     common_data_wjlx = commondata.wjlx;//文件类型
+                    common_data_myfs = commondata.myfs;//贸易方式
 
                     store_wjlx = Ext.create('Ext.data.JsonStore', { fields: ['CODE', 'NAME'], data: common_data_wjlx });
                     store_busitype = Ext.create('Ext.data.JsonStore', { fields: ['CODE', 'NAME'], data: common_data_busitype });
+                    store_tradeway = Ext.create('Ext.data.JsonStore', { fields: ['CODE', 'NAME'], data: common_data_myfs });
 
                     init_search();
                     gridbind();
@@ -119,6 +121,23 @@
                 valueField: 'CODE'
             });
 
+            //贸易方式
+            var store_TRADEWAY_S = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_myfs
+            });
+            var combo_TRADEWAY_S = Ext.create('Ext.form.field.ComboBox', {
+                id: 'combo_TRADEWAY_S',
+                name: 'TRADEWAY_S',
+                store: store_TRADEWAY_S,
+                queryMode: 'local',
+                anyMatch: true,
+                hideTrigger: true,
+                fieldLabel: '贸易方式',
+                displayField: 'NAME',
+                valueField: 'CODE'
+            });
+
             //文件类型
             var store_FILETYPE_S = Ext.create('Ext.data.JsonStore', {
                 fields: ['CODE', 'NAME'],
@@ -153,18 +172,20 @@
                 bbar: toolbar,
                 fieldDefaults: {
                     margin: '5',
-                    columnWidth: 0.2,
+                    columnWidth: 0.25,
                     labelWidth: 70
                 },
                 items: [
-                { layout: 'column', border: 0, items: [combo_BUSIUNITCODE_S, combo_CUSTOMERCODE_S, combo_REPUNITCODE_S, combo_BUSITYPE_S, combo_FILETYPE_S] }
+                { layout: 'column', border: 0, items: [combo_BUSIUNITCODE_S, combo_CUSTOMERCODE_S, combo_REPUNITCODE_S, combo_BUSITYPE_S] },
+                { layout: 'column', border: 0, items: [combo_TRADEWAY_S, combo_FILETYPE_S] }
                 ]
             });
         }
 
         function gridbind() {
             var store_filesplit = Ext.create('Ext.data.JsonStore', {
-                fields: ['ID', 'BUSIUNITCODE', 'CUSTOMERCODE', 'REPUNITCODE', 'BUSITYPE', 'FILETYPE', 'CREATEUSERID', 'CREATEUSERNAME', 'CREATETIME'],
+                fields: ['ID', 'BUSIUNITCODE', 'CUSTOMERCODE', 'REPUNITCODE', 'BUSITYPE', 'FILETYPE', 'CREATEUSERID'
+                    , 'CREATEUSERNAME', 'CREATETIME', 'TRADEWAY', 'BUSIUNITNAME', 'CUSTOMERNAME', 'REPUNITNAME', 'PROMPT'],
                 pageSize: 20,
                 proxy: {
                     type: 'ajax',
@@ -182,6 +203,7 @@
                     }
                 }
             })
+            Ext.tip.QuickTipManager.init();
             var pgbar = Ext.create('Ext.toolbar.Paging', {
                 id: 'pgbar',
                 displayMsg: '显示 {0} - {1} 条,共计 {2} 条',
@@ -197,13 +219,18 @@
                 bbar: pgbar,
                 columns: [
                     { xtype: 'rownumberer', width: 35 },
-                    { header: '经营单位', dataIndex: 'BUSIUNITCODE', width: 180 },
-                    { header: '委托单位', dataIndex: 'CUSTOMERCODE', width: 180 },
-                    { header: '申报单位', dataIndex: 'REPUNITCODE', width: 180 },
+                    { header: '经营单位', dataIndex: 'BUSIUNITCODE', width: 90 },
+                    { header: '经营单位', dataIndex: 'BUSIUNITNAME', width: 180 },
+                    { header: '委托单位', dataIndex: 'CUSTOMERCODE', width: 120 },
+                    { header: '委托单位', dataIndex: 'CUSTOMERNAME', width: 180 },
+                    { header: '申报单位', dataIndex: 'REPUNITCODE', width: 90 },
+                    { header: '申报单位', dataIndex: 'REPUNITNAME', width: 180 },
+                    { header: '贸易方式', dataIndex: 'TRADEWAY', renderer: gridrender, width: 120 },
                     { header: '业务类型', dataIndex: 'BUSITYPE', renderer: gridrender, width: 100 },
-                    { header: '文件类型', dataIndex: 'FILETYPE', renderer: gridrender, width: 120 },
-                    { header: '创建人', dataIndex: 'CREATEUSERNAME', width: 150 },
-                    { header: '创建时间', dataIndex: 'CREATETIME', width: 180 },
+                    { header: '文件类型', dataIndex: 'FILETYPE', renderer: gridrender, width: 80 },
+                    { header: '提示内容', dataIndex: 'PROMPT', renderer: gridrender, width: 120 },
+                    { header: '创建人', dataIndex: 'CREATEUSERNAME', width: 120 },
+                    { header: '创建时间', dataIndex: 'CREATETIME', width: 140 },
                     { header: 'ID', dataIndex: 'ID', hidden: true }
                 ],
                 listeners:
@@ -232,6 +259,17 @@
                 if (rec) {
                     rtn = rec.get("NAME");
                 }
+            }
+
+            if (dataindex == "TRADEWAY" && value) {
+                var rec = store_tradeway.findRecord('CODE', value);
+                if (rec) {
+                    rtn = rec.get("NAME");
+                }
+            }
+            if (dataindex == "PROMPT" && value) {
+                cellmeta.tdAttr = 'data-qtip="' + value + '"';
+                rtn = value;
             }
 
             return rtn;
@@ -312,6 +350,28 @@
                 }
             });
 
+            //贸易方式
+            var store_TRADEWAY = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_myfs
+            });
+            var combo_TRADEWAY = Ext.create('Ext.form.field.ComboBox', {
+                id: 'combo_TRADEWAY',
+                name: 'TRADEWAY',
+                store: store_TRADEWAY,
+                queryMode: 'local',
+                anyMatch: true,
+                hideTrigger: true,
+                fieldLabel: '贸易方式',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
             //业务类型
             var store_BUSITYPE = Ext.create('Ext.data.JsonStore', {
                 fields: ['CODE', 'NAME'],
@@ -335,7 +395,7 @@
             });
             var combo_FILETYPE = Ext.create('Ext.form.field.ComboBox', {
                 id: 'combo_FILETYPE',
-                name: 'FILETYPE', flex: .5,
+                name: 'FILETYPE', 
                 store: store_FILETYPE,
                 queryMode: 'local',
                 anyMatch: true,
@@ -350,7 +410,15 @@
                 xtype: 'fieldcontainer',
                 layout: 'hbox', margin: 0,
                 items: [combo_BUSITYPE, combo_FILETYPE]
-            }
+            };
+
+            var field_PROMPT = Ext.create('Ext.form.field.Text', {
+                id: 'PROMPT',
+                name: 'PROMPT',
+                fieldLabel: '提示内容',
+                allowBlank: false,
+                blankText: '提示内容不可为空!'
+            });
 
             var formpanel_Win = Ext.create('Ext.form.Panel', {
                 id: 'formpanel_Win',
@@ -369,7 +437,9 @@
                         { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [combo_BUSIUNITCODE] },
                         { layout: 'column', height: 42, border: 0, items: [combo_CUSTOMERCODE] },
                         { layout: 'column', height: 42, border: 0, items: [combo_REPUNITCODE] },
+                        { layout: 'column', height: 42, border: 0, items: [combo_TRADEWAY] },
                         { layout: 'column', height: 42, border: 0, items: [con_CON] },
+                        { layout: 'column', height: 42, border: 0, items: [field_PROMPT] },
                         field_ID
                 ],
                 buttons: [{
@@ -415,7 +485,7 @@
                 id: "win_d",
                 title: '不可拆分配置维护',
                 width: 500,
-                height: 250,
+                height: 350,
                 modal: true,
                 items: [Ext.getCmp('formpanel_Win')]
             });
@@ -446,11 +516,17 @@
                 return;
             }
 
+            var ids = ""; 
+            Ext.each(recs, function (rec) {
+                ids += rec.get("ID") + ",";
+            });            
+            ids = ids.substr(0, ids.length - 1);
+
             Ext.MessageBox.confirm("提示", "确定要删除所选择的记录吗？", function (btn) {
                 if (btn == 'yes') {
                     Ext.Ajax.request({
                         url: 'FileSplit.aspx',
-                        params: { action: 'delete', ID: recs[0].get("ID") },
+                        params: { action: 'delete', ids: ids },
                         type: 'Post',
                         success: function (response, option) {
                             var data = Ext.decode(response.responseText);
