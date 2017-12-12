@@ -12,22 +12,23 @@ namespace Web_After.SysManager.FrontManager
 {
     public partial class WebAuthListByRole : System.Web.UI.Page
     {
-        string action = string.Empty; string userid = string.Empty; string ISCUSTOMER = string.Empty; string ISSHIPPER = string.Empty; string ISCOMPANY = string.Empty;
+        string action = string.Empty; string userid = string.Empty; string ISRECEIVER = string.Empty; string ISCUSTOMER = string.Empty; string ISSHIPPER = string.Empty; string ISCOMPANY = string.Empty;
         string sql = string.Empty; string sql_table = string.Empty; DataTable ents;
         protected void Page_Load(object sender, EventArgs e)
         {
-            action = Request["action"]; userid = Request["userid"]; ISCUSTOMER = Request["ISCUSTOMER"]; ISSHIPPER = Request["ISSHIPPER"]; ISCOMPANY = Request["ISCOMPANY"];
+            action = Request["action"]; userid = Request["userid"]; ISRECEIVER = Request["ISRECEIVER"]; ISCUSTOMER = Request["ISCUSTOMER"]; ISSHIPPER = Request["ISSHIPPER"]; ISCOMPANY = Request["ISCOMPANY"];
             string result = "";
 
             sql_table = "";
-            if (ISCUSTOMER == "1") { sql_table = " ISCUSTOMER=1"; }
+            if (ISCUSTOMER == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISRECEIVER=1"; }
+            if (ISCUSTOMER == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISCUSTOMER=1"; }
             if (ISSHIPPER == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISSHIPPER=1"; }
             if (ISCOMPANY == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISCOMPANY=1"; }
 
             switch (action)
             {
                 case "loaduser":
-                    sql = @"SELECT su.*, sc.name AS CUSTOMERNAME,sc.iscustomer,sc.isshipper,sc.iscompany 
+                    sql = @"SELECT su.*, sc.name AS CUSTOMERNAME,sc.iscustomer,sc.isshipper,sc.iscompany,sc.isreceiver  
                             FROM sys_user su 
                                 LEFT JOIN cusdoc.sys_customer sc ON su.customerid = sc.id 
                             WHERE su.customerid > 0 AND PARENTID IS NULL";

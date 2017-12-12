@@ -157,17 +157,17 @@ namespace Web_After.CustomerMaintain
                                     ,code,name,chineseabbreviation,chineseaddress,hscode,ciqcode
                                     ,englishname,englishaddress,iscustomer,isshipper,iscompany
                                     ,logicauditflag,docservicecompany,enabled,remark,SOCIALCREDITNO
-                                    ,TOOLVERSION
+                                    ,TOOLVERSION,isreceiver
                                 ) values(cusdoc.sys_customer_id.nextval
                                     ,'{0}','{1}','{2}', '{3}','{4}','{5}'
                                     ,'{6}','{7}','{8}','{9}','{10}'
                                     ,'{11}','{12}','{13}','{14}','{15}'
-                                    ,'{16}')";
+                                    ,'{16}','{17}')";
                 sql = string.Format(sql
                         , json.Value<string>("CODE"), json.Value<string>("NAME"), json.Value<string>("CHINESEABBREVIATION"), json.Value<string>("CHINESEADDRESS"), json.Value<string>("HSCODE"), json.Value<string>("CIQCODE")
                         , json.Value<string>("ENGLISHNAME"), json.Value<string>("ENGLISHADDRESS"), GetChk(json.Value<string>("ISCUSTOMER")), GetChk(json.Value<string>("ISSHIPPER")), GetChk(json.Value<string>("ISCOMPANY"))
                         , GetChk(json.Value<string>("LOGICAUDITFLAG")), GetChk(json.Value<string>("DOCSERVICECOMPANY")), json.Value<string>("ENABLED"), json.Value<string>("REMARK"), json.Value<string>("SOCIALCREDITNO")
-                        , json.Value<string>("TOOLVERSION")
+                        , json.Value<string>("TOOLVERSION"),GetChk(json.Value<string>("ISRECEIVER"))
                     );
             }
             else
@@ -175,13 +175,13 @@ namespace Web_After.CustomerMaintain
                 sql = @"update cusdoc.sys_customer set code='{0}',name='{1}',chineseabbreviation='{2}',chineseaddress='{3}',hscode='{4}',ciqcode='{5}'
                                     ,englishname='{6}',englishaddress='{7}',iscustomer='{8}',isshipper='{9}',iscompany='{10}'
                                     ,logicauditflag='{11}',docservicecompany='{12}',enabled='{13}',remark='{14}',SOCIALCREDITNO='{15}' 
-                                    ,TOOLVERSION='{16}' 
-                                where id={17}";
+                                    ,TOOLVERSION='{16}',isreceiver='{17}' 
+                                where id={18}";
                 sql = string.Format(sql
                         , json.Value<string>("CODE"), json.Value<string>("NAME"), json.Value<string>("CHINESEABBREVIATION"), json.Value<string>("CHINESEADDRESS"), json.Value<string>("HSCODE"), json.Value<string>("CIQCODE")
                         , json.Value<string>("ENGLISHNAME"), json.Value<string>("ENGLISHADDRESS"), GetChk(json.Value<string>("ISCUSTOMER")), GetChk(json.Value<string>("ISSHIPPER")), GetChk(json.Value<string>("ISCOMPANY"))
                         , GetChk(json.Value<string>("LOGICAUDITFLAG")), GetChk(json.Value<string>("DOCSERVICECOMPANY")), json.Value<int>("ENABLED"), json.Value<string>("REMARK"), json.Value<string>("SOCIALCREDITNO")
-                        , json.Value<string>("TOOLVERSION"), json.Value<string>("ID")
+                        , json.Value<string>("TOOLVERSION"),GetChk(json.Value<string>("ISRECEIVER")), json.Value<string>("ID")
                    );
             }
 

@@ -35,7 +35,7 @@ function render(value, cellmeta, record, rowIndex, columnIndex, store) {
         case "ISINVALID": 
             rtn = value == "0" ? '<span class="icon iconfont" style="font-size:12px;color:blue;">&#xe628;</span>' : '<span class="icon iconfont" style="font-size:12px;color:red;">&#xe634;</span>';
             break;
-        case "ISCUSTOMER": case "ISSHIPPER": case "ISCOMPANY":
+        case "ISRECEIVER": case "ISCUSTOMER": case "ISSHIPPER": case "ISCOMPANY":
             rtn = value == "1" ? '<span class="icon iconfont" style="font-size:12px;color:blue;">&#xe628;</span>' : '<span class="icon iconfont" style="font-size:12px;color:red;">&#xe634;</span>';
             break;
     }

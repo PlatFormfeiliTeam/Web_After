@@ -82,7 +82,7 @@
 
         function gridbind() {
             var store_customer = Ext.create('Ext.data.JsonStore', {
-                fields: ['CODE', 'HSCODE', 'CIQCODE', 'NAME', 'CHINESEABBREVIATION', 'CHINESEADDRESS', 'ISCUSTOMER'
+                fields: ['CODE', 'HSCODE', 'CIQCODE', 'NAME', 'CHINESEABBREVIATION', 'CHINESEADDRESS','ISRECEIVER', 'ISCUSTOMER'
                     , 'ISSHIPPER', 'ISCOMPANY', 'DOCSERVICECOMPANY', 'ENABLED', 'LOGICAUDITFLAG', 'SOCIALCREDITNO', 'TOOLVERSION'
                     , 'ENGLISHNAME', 'ENGLISHADDRESS', 'ID'],
                 pageSize: 20,
@@ -123,7 +123,8 @@
                     { header: '中文简称', dataIndex: 'CHINESEABBREVIATION', locked: true, width: 180 },
                     { header: '中文名称', dataIndex: 'NAME', width: 250, tdCls: 'tdValign' },
                     { header: '中文地址', dataIndex: 'CHINESEADDRESS', width: 250 },
-                    { header: '客户', dataIndex: 'ISCUSTOMER', renderer: gridrender, width: 60 },
+                    { header: '接单单位', dataIndex: 'ISRECEIVER', renderer: gridrender, width: 70 },
+                    { header: '委托单位', dataIndex: 'ISCUSTOMER', renderer: gridrender, width: 70 },
                     { header: '供应商', dataIndex: 'ISSHIPPER', renderer: gridrender, width: 60 },
                     { header: '生产型企业', dataIndex: 'ISCOMPANY', renderer: gridrender, width: 80 },
                     { header: '单证服务单位', dataIndex: 'DOCSERVICECOMPANY', renderer: gridrender, width: 100 },
@@ -151,13 +152,14 @@
             var dataindex = cellmeta.column.dataIndex;
             var str = "";
             switch (dataindex) {
+                case "ISRECEIVER":
                 case "ISCUSTOMER":
                 case "ISSHIPPER":
                 case "ISCOMPANY":
                 case "DOCSERVICECOMPANY":
                 case "ENABLED":
                 case "LOGICAUDITFLAG":
-                    str = value == "0" ? "否" : "是";
+                    str = value == "1" ? '<span class="icon iconfont" style="font-size:12px;color:blue;">&#xe628;</span>' : '<span class="icon iconfont" style="font-size:12px;color:red;">&#xe634;</span>';
                     break;
                 case "SOCIALCREDITNO":
                     str = value == "N" ? "未开通" : "已开通";
@@ -293,38 +295,44 @@
                 ]
             });
 
+            var chk_ISRECEIVER = Ext.create("Ext.form.field.Checkbox", {
+                id: 'ISRECEIVER',
+                name: 'ISRECEIVER',
+                fieldLabel: '接收单位', flex: .13
+            });
+
             var chk_ISCUSTOMER = Ext.create("Ext.form.field.Checkbox", {
                 id: 'ISCUSTOMER',
                 name: 'ISCUSTOMER',
-                fieldLabel: '客户', flex: .2
+                fieldLabel: '委托单位', flex: .13
             });
             var chk_ISSHIPPER = Ext.create("Ext.form.field.Checkbox", {
                 id: 'ISSHIPPER',
                 name: 'ISSHIPPER',
-                fieldLabel: '供应商', flex: .2
+                fieldLabel: '供应商', flex: .13
             });
 
             var chk_ISCOMPANY = Ext.create("Ext.form.field.Checkbox", {
                 id: 'ISCOMPANY',
                 name: 'ISCOMPANY',
-                fieldLabel: '生产型企业', flex: .2
+                fieldLabel: '生产型企业', flex: .13
             });
             var chk_DOCSERVICECOMPANY = Ext.create("Ext.form.field.Checkbox", {
                 id: 'DOCSERVICECOMPANY',
                 name: 'DOCSERVICECOMPANY',
-                fieldLabel: '单证服务单位', labelWidth: 80, flex: .2
+                fieldLabel: '单证服务单位', labelWidth: 80, flex: .13
             });
             var chk_LOGICAUDITFLAG = Ext.create("Ext.form.field.Checkbox", {
                 id: 'LOGICAUDITFLAG',
                 name: 'LOGICAUDITFLAG',
-                fieldLabel: '逻辑审核强制通过', labelWidth: 110, flex: .2
+                fieldLabel: '逻辑审核强制通过', labelWidth: 110, flex: .13
             });
 
             var con_CHK = {
                 columnWidth: 1,
                 xtype: 'fieldcontainer',
                 layout: 'hbox', margin: 0,
-                items: [chk_ISCUSTOMER, chk_ISSHIPPER, chk_ISCOMPANY, chk_DOCSERVICECOMPANY, chk_LOGICAUDITFLAG]
+                items: [chk_ISRECEIVER, chk_ISCUSTOMER, chk_ISSHIPPER, chk_ISCOMPANY, chk_DOCSERVICECOMPANY, chk_LOGICAUDITFLAG]
             }
             var field_REMARK = Ext.create('Ext.form.field.Text', {
                 id: 'REMARK',

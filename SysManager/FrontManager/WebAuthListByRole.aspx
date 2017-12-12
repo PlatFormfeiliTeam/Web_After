@@ -9,7 +9,7 @@
     <link href="/Extjs42/resources/css/ext-all-neptune.css" rel="stylesheet" type="text/css" />
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
     <script src="/js/jquery-1.8.2.min.js"></script>
-    <link href="/css/iconfont/iconfont.css" rel="stylesheet" />   
+    <link href="/css/iconfont/iconfont.css?t=<%=System.Configuration.ConfigurationManager.AppSettings["Version"].ToString() %>" rel="stylesheet" />   
     
     <script src="/js/pan.js" type="text/javascript"></script>
     <script>
@@ -38,7 +38,7 @@
         });
 
         function grid_tree_panel() {
-            Ext.regModel('User', { fields: ['ID', 'CUSTOMERNAME', 'REALNAME', 'NAME', 'ISCUSTOMER', 'ISSHIPPER', 'ISCOMPANY'] })
+            Ext.regModel('User', { fields: ['ID', 'CUSTOMERNAME', 'REALNAME', 'NAME', 'ISCUSTOMER', 'ISSHIPPER', 'ISCOMPANY','ISRECEIVER'] })
             store_user = Ext.create('Ext.data.JsonStore', {
                 model: 'User',
                 proxy: {
@@ -64,7 +64,8 @@
                     { header: '账号', dataIndex: 'NAME', width: 120 },
                     { header: '姓名', dataIndex: 'REALNAME', width: 200 },
                     { header: '所属客户', dataIndex: 'CUSTOMERNAME', width: 300 },
-                    { header: '客户', dataIndex: 'ISCUSTOMER', width: 60, renderer: render },
+                    { header: '接单单位', dataIndex: 'ISRECEIVER', width: 70, renderer: render },
+                    { header: '委托单位', dataIndex: 'ISCUSTOMER', width: 70, renderer: render },
                     { header: '供应商', dataIndex: 'ISSHIPPER', width: 65, renderer: render },
                     { header: '生产型企业', dataIndex: 'ISCOMPANY', width: 85, renderer: render }
                 ],
@@ -78,7 +79,8 @@
                         userid = record.get("ID");
                         var proxys = treeModelstore.proxy;
                         proxys.extraParams.userid = userid;
-                        proxys.extraParams.ISCUSTOMER = record.get("ISCUSTOMER"); proxys.extraParams.ISSHIPPER = record.get("ISSHIPPER"); proxys.extraParams.ISCOMPANY = record.get("ISCOMPANY");
+                        proxys.extraParams.ISRECEIVER = record.get("ISRECEIVER"); proxys.extraParams.ISCUSTOMER = record.get("ISCUSTOMER");
+                        proxys.extraParams.ISSHIPPER = record.get("ISSHIPPER"); proxys.extraParams.ISCOMPANY = record.get("ISCOMPANY");
                         treeModelstore.load();
                     }
                 },

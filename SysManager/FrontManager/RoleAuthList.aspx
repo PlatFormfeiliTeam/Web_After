@@ -38,7 +38,8 @@
         function grid_tree_panel() {
             var store_role = Ext.create('Ext.data.JsonStore', {
                 fields: ['ROLEID', 'ROLENAME'],
-                data: [{ "ROLEID": "ISCUSTOMER", "ROLENAME": "客户" }, { "ROLEID": "ISSHIPPER", "ROLENAME": "供应商" }, { "ROLEID": "ISCOMPANY", "ROLENAME": "生产型企业" }]
+                data: [{ "ROLEID": "ISRECEIVER", "ROLENAME": "接单单位" }, { "ROLEID": "ISCUSTOMER", "ROLENAME": "委托单位" }
+                    , { "ROLEID": "ISSHIPPER", "ROLENAME": "供应商" }, { "ROLEID": "ISCOMPANY", "ROLENAME": "生产型企业" }]
             });
 
             var gridpanel_role = Ext.create('Ext.grid.Panel', {
