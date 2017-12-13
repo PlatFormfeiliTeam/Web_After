@@ -20,7 +20,7 @@ namespace Web_After.SysManager.FrontManager
             string result = "";
 
             sql_table = "";
-            if (ISCUSTOMER == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISRECEIVER=1"; }
+            if (ISRECEIVER == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISRECEIVER=1"; }
             if (ISCUSTOMER == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISCUSTOMER=1"; }
             if (ISSHIPPER == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISSHIPPER=1"; }
             if (ISCOMPANY == "1") { sql_table = (sql_table == "" ? "" : sql_table + " or") + " ISCOMPANY=1"; }
