@@ -120,8 +120,8 @@
                     { header: '客户代码', dataIndex: 'CODE', width: 120, locked: true },
                     { header: '海关编码', dataIndex: 'HSCODE', width: 100, locked: true },
                     { header: '国检编码', dataIndex: 'CIQCODE', width: 100, locked: true },
-                    { header: '中文简称', dataIndex: 'CHINESEABBREVIATION', locked: true, width: 180 },
-                    { header: '中文名称', dataIndex: 'NAME', width: 250, tdCls: 'tdValign' },
+                    { header: '中文简称', dataIndex: 'NAME', locked: true, width: 250 },
+                    { header: '中文名称', dataIndex: 'CHINESEABBREVIATION', width: 180, tdCls: 'tdValign' },
                     { header: '中文地址', dataIndex: 'CHINESEADDRESS', width: 250 },
                     { header: '接单单位', dataIndex: 'ISRECEIVER', renderer: gridrender, width: 70 },
                     { header: '委托单位', dataIndex: 'ISCUSTOMER', renderer: gridrender, width: 70 },
@@ -187,16 +187,18 @@
                 blankText: '客户代码不可为空!'
             });
 
-            var field_CHINESEABBREVIATION = Ext.create('Ext.form.field.Text', {
-                id: 'CHINESEABBREVIATION',
-                name: 'CHINESEABBREVIATION',
-                fieldLabel: '中文简称', flex: .5,
+            var field_NAME = Ext.create('Ext.form.field.Text', {
+                id: 'NAME',
+                name: 'NAME',
+                fieldLabel: '中文简称',
+                allowBlank: false,
+                blankText: '中文简称不可为空!', flex: .5
             });
 
             var con_CODECHIN = {
                 xtype: 'fieldcontainer',
                 layout: 'hbox', margin: 0,
-                items: [field_CODE, field_CHINESEABBREVIATION]
+                items: [field_CODE, field_NAME]
             }
 
             var field_HSCODE = Ext.create('Ext.form.field.Text', {
@@ -216,9 +218,9 @@
                 items: [field_HSCODE, field_CIQCODE]
             }
 
-            var field_NAME = Ext.create('Ext.form.field.Text', {
-                id: 'NAME',
-                name: 'NAME',
+            var field_CHINESEABBREVIATION = Ext.create('Ext.form.field.Text', {
+                id: 'CHINESEABBREVIATION',
+                name: 'CHINESEABBREVIATION',
                 fieldLabel: '中文名称',
                 allowBlank: false,
                 blankText: '中文名称不可为空!'
@@ -354,7 +356,7 @@
                 },
                 items: [
                         { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [con_CODECHIN, con_HSCIQ] },
-                        { layout: 'column', height: 42, border: 0, items: [field_NAME, field_CHINESEADDRESS] },
+                        { layout: 'column', height: 42, border: 0, items: [field_CHINESEABBREVIATION, field_CHINESEADDRESS] },
                         { layout: 'column', height: 42, border: 0, items: [field_ENGLISHNAME, field_ENGLISHADDRESS] },
                         { layout: 'column', height: 42, border: 0, items: [con_COMBOBOX, rgb_TOOLVERSION] },
                         { layout: 'column', height: 42, border: 0, items: [con_CHK] },
