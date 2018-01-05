@@ -31,7 +31,17 @@ namespace Web_After.SysManager.FrontManager
                     sql = @"SELECT su.*, sc.name AS CUSTOMERNAME,sc.iscustomer,sc.isshipper,sc.iscompany,sc.isreceiver  
                             FROM sys_user su 
                                 LEFT JOIN cusdoc.sys_customer sc ON su.customerid = sc.id 
-                            WHERE su.customerid > 0 AND PARENTID IS NULL";
+                            WHERE su.customerid > 0 AND su.PARENTID IS NULL";
+                    
+                    if (!string.IsNullOrEmpty(Request["NAME_S"]))
+                    {
+                        sql += " and su.NAME like '%" + Request["NAME_S"] + "%'";
+                    }
+                    if (!string.IsNullOrEmpty(Request["REALNAME_S"]))
+                    {
+                        sql += " and su.REALNAME like '%" + Request["REALNAME_S"] + "%'";
+                    }
+
                     ents = DBMgr.GetDataTable(sql);
                     result = "{rows:" + JsonConvert.SerializeObject(ents) + "}";
                     Response.Write(result);

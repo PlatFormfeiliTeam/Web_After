@@ -11,24 +11,25 @@
     <script src="/js/jquery-1.8.2.min.js"></script>
     <link href="/css/iconfont/iconfont.css?t=<%=System.Configuration.ConfigurationManager.AppSettings["Version"].ToString() %>" rel="stylesheet" />   
     
-    <script src="/js/pan.js" type="text/javascript"></script>
+    <script src="/js/pan.js?t=<%=System.Configuration.ConfigurationManager.AppSettings["Version"].ToString() %>" type="text/javascript"></script>
     <script>
         var store_user; var treeModelstore, treeModel;
         var userid = "";
         Ext.onReady(function () {
+            init_search();
             grid_tree_panel();
 
-            var toolbar = Ext.create('Ext.toolbar.Toolbar', {
-                items: ['->',{ text: '<i class="icon iconfont" style="font-size:12px;">&#xe7d2;</i>&nbsp;分 配', handler: function () { SaveAuthorByRole(); } }]
-            })
+            //var toolbar = Ext.create('Ext.toolbar.Toolbar', {
+            //    items: ['->',{ text: '<i class="icon iconfont" style="font-size:12px;">&#xe7d2;</i>&nbsp;分 配', handler: function () { SaveAuthorByRole(); } }]
+            //})
 
             var panel = Ext.create('Ext.panel.Panel', {
                 title: '<font size=2>主账号BY角色</font>',
-                tbar: toolbar,
+                //tbar: toolbar,
                 layout: 'border',
                 region: 'center',
                 minHeight: 100,
-                items: [Ext.getCmp("gridUser"), treeModel]
+                items: [Ext.getCmp('formpanel_search'), Ext.getCmp("gridUser"), treeModel]
             });
 
             var viewport = Ext.create('Ext.container.Viewport', {
@@ -36,6 +37,35 @@
                 items: [panel]
             });
         });
+
+        function init_search() {
+            var txtNAME = Ext.create('Ext.form.field.Text', { id: 'NAME_S', name: 'NAME_S', fieldLabel: '账号' });
+            var txtREALNAME = Ext.create('Ext.form.field.Text', { id: 'REALNAME_S', name: 'REALNAME_S', fieldLabel: '姓名' });
+
+            var toolbar = Ext.create('Ext.toolbar.Toolbar', {
+                items: [
+                    { text: '<i class="icon iconfont">&#xe7d2;</i>&nbsp;分 配', handler: function () { SaveAuthorByRole(); } }                   
+                    , '->'
+                    , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("gridUser").store.load(); } }
+                    , { text: '<span class="icon iconfont">&#xe633;</span>&nbsp;重 置', width: 80, handler: function () { reset(); } }
+                ]
+            });
+
+            var formpanel_search = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_search',
+                region: 'north',
+                border: 0,
+                bbar: toolbar,
+                fieldDefaults: {
+                    margin: '5',
+                    columnWidth: 0.25,
+                    labelWidth: 70
+                },
+                items: [
+                { layout: 'column', border: 0, items: [txtNAME, txtREALNAME] }
+                ]
+            });
+        }
 
         function grid_tree_panel() {
             Ext.regModel('User', { fields: ['ID', 'CUSTOMERNAME', 'REALNAME', 'NAME', 'ISCUSTOMER', 'ISSHIPPER', 'ISCOMPANY','ISRECEIVER'] })
@@ -49,7 +79,12 @@
                         type: 'json'
                     }
                 },
-                autoLoad: true
+                autoLoad: true,
+                listeners: {
+                    beforeload: function (store, options) {
+                        store_user.getProxy().extraParams = Ext.getCmp('formpanel_search').getForm().getValues();
+                    }
+                }
             })
 
             var gridUser = Ext.create('Ext.grid.Panel', {
@@ -70,6 +105,9 @@
                     { header: '生产型企业', dataIndex: 'ISCOMPANY', width: 85, renderer: render }
                 ],
                 listeners: {
+                    beforeload: function (store, options) {
+                        store_user.getProxy().extraParams = Ext.getCmp('formpanel_search').getForm().getValues();
+                    },
                     itemclick: function (value, record, item, index, e, eOpts) {
                         treeModelstore.setProxy({
                             type: 'ajax',
@@ -195,6 +233,12 @@
                     }
                 }
             }
+        }
+
+        function reset() {
+            Ext.each(Ext.getCmp('formpanel_search').getForm().getFields().items, function (field) {
+                field.reset();
+            });
         }
 
     </script>
