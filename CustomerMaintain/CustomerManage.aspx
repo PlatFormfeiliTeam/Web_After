@@ -384,9 +384,12 @@
                                     });
                                 }
                                 else {
-                                    Ext.Msg.alert('提示', "保存失败", function () {
-                                        Ext.getCmp("pgbar").moveFirst(); Ext.getCmp("win_d").close();
-                                    });
+                                    if (data.flag == 1) { Ext.MessageBox.alert("提示", "客户代码不能重复!"); }
+                                    else {
+                                        Ext.Msg.alert('提示', "保存失败", function () {
+                                            Ext.getCmp("pgbar").moveFirst(); Ext.getCmp("win_d").close();
+                                        });
+                                    }
                                 }
 
                             }

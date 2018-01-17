@@ -150,7 +150,7 @@ namespace Web_After.CustomerMaintain
         {
             JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
 
-            string sql = "";
+            string sql = ""; DataTable dt_valid_name = new DataTable();
             if (string.IsNullOrEmpty(json.Value<string>("ID")))
             {
                 sql = @"insert into cusdoc.sys_customer(id
@@ -169,6 +169,8 @@ namespace Web_After.CustomerMaintain
                         , GetChk(json.Value<string>("LOGICAUDITFLAG")), GetChk(json.Value<string>("DOCSERVICECOMPANY")), json.Value<string>("ENABLED"), json.Value<string>("REMARK"), json.Value<string>("SOCIALCREDITNO")
                         , json.Value<string>("TOOLVERSION"),GetChk(json.Value<string>("ISRECEIVER"))
                     );
+
+                dt_valid_name = DBMgr.GetDataTable("select * from cusdoc.sys_customer where lower(code)='" + json.Value<string>("CODE").ToLower() + "'");
             }
             else
             {
@@ -183,14 +185,23 @@ namespace Web_After.CustomerMaintain
                         , GetChk(json.Value<string>("LOGICAUDITFLAG")), GetChk(json.Value<string>("DOCSERVICECOMPANY")), json.Value<int>("ENABLED"), json.Value<string>("REMARK"), json.Value<string>("SOCIALCREDITNO")
                         , json.Value<string>("TOOLVERSION"),GetChk(json.Value<string>("ISRECEIVER")), json.Value<string>("ID")
                    );
+                dt_valid_name = DBMgr.GetDataTable("select * from cusdoc.sys_customer where lower(code)='" + json.Value<string>("CODE").ToLower() + "' and id!=" + json.Value<string>("ID"));
             }
-
-            int i = DBMgr.ExecuteNonQuery(sql);
-
-            string response = "{\"success\":" + (i > 0 ? "true" : "false") + "}";
+            string response = "";
+             //验证用户是否重复
+            if (dt_valid_name != null && dt_valid_name.Rows.Count != 0)
+            {
+                response = "{\"success\":false,\"flag\":1}";
+            }
+            else
+            {
+                int i = DBMgr.ExecuteNonQuery(sql);
+                response = "{\"success\":" + (i > 0 ? "true" : "false") + "}";
+            }
             Response.Write(response);
             Response.End();
         }
+
         public string GetChk(string check_val)
         {
             return check_val == "on" ? "1" : "0";
