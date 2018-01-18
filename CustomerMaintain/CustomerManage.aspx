@@ -54,7 +54,7 @@
                 items: [
                     { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { addCustomer_Win(""); } }
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;修 改', width: 80, handler: function () { editCustomer(); } }
-                    , { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { del(); } }
+                    //, { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { del(); } }
                     , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { onItemUpload('customer'); } }
                     , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;导 出', handler: function () { exportdata(); } }
                     , '->'
@@ -173,7 +173,7 @@
             return str;
         }
 
-        function form_ini_win() {
+        function form_ini_win(ID) {
             var field_ID = Ext.create('Ext.form.field.Hidden', {
                 id: 'ID',
                 name: 'ID'
@@ -182,7 +182,7 @@
             var field_CODE = Ext.create('Ext.form.field.Text', {
                 id: 'CODE',
                 name: 'CODE',
-                fieldLabel: '客户代码', flex: .5,
+                fieldLabel: '客户代码', flex: .5, readOnly: ID,//编辑的时候不允许修改登录名
                 allowBlank: false,
                 blankText: '客户代码不可为空!'
             });
@@ -400,7 +400,7 @@
         }
 
         function addCustomer_Win(ID, formdata) {
-            form_ini_win();
+            form_ini_win(ID);
             if (ID != "") {
                 Ext.getCmp('formpanel_Win').getForm().setValues(formdata);
                 //rgb需要单独赋值
