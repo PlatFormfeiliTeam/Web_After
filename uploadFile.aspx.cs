@@ -82,6 +82,9 @@ namespace Web_After
                 case "customer":
                     importCustomer(sheet);
                     break;
+                case "company":
+                    importCompany(sheet);
+                    break;                   
             }
             
             return true;
@@ -122,6 +125,18 @@ namespace Web_After
             }
             int count= DBMgr.ExecuteNonQuery(sqlList);
         }
+
+
+        public void importCompany(ISheet sheet)
+        {
+            //string id,string incode, string code, string socialcreditno
+            List<string> sqlList = new List<string>();
+            for (int i = 1; i <= sheet.LastRowNum; i++)
+            {
+                
+            }
+
+        }
         public void setErrorInfo(string fieldName, string reason, int errorRow)
         {
             ExportErrorInfoEn error = new ExportErrorInfoEn();
@@ -130,5 +145,7 @@ namespace Web_After
             error.ErrorRow = (errorRow + 1);
             ErrorList.Add(error);
         }
+
+        
     }
 }

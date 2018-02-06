@@ -55,7 +55,8 @@
                     { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { addCustomer_Win(""); } }
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;修 改', width: 80, handler: function () { editCustomer(); } }
                     //, { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { del(); } }
-                    , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { onItemUpload('customer'); } }
+                    //, { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { onItemUpload('customer'); } }
+                    , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { importfile('add');; } }
                     , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;导 出', handler: function () { exportdata(); } }
                     , '->'
                     , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar").moveFirst(); } }
@@ -462,6 +463,90 @@
         function exportdata() {
             var path = 'CustomerManage.aspx?action=export';
             $('#exportform').attr("action", path).submit();
+        }
+
+
+        //导入
+        function importfile(action) {
+            if (action == "add") {
+                importexcel(action);
+            }
+
+        }
+
+        function importexcel(action) {
+
+            var radio_module = Ext.create('Ext.form.RadioGroup', {
+                name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
+                items: [
+                    { boxLabel: "<a href='/FileUpload/CustomerManage.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
+                ]
+            });
+
+
+            var uploadfile = Ext.create('Ext.form.field.File', {
+                id: 'UPLOADFILE', name: 'UPLOADFILE', fieldLabel: '导入数据', labelAlign: 'right', msgTarget: 'under'
+                , anchor: '90%', buttonText: '浏览文件', regex: /.*(.xls|.xlsx)$/, regexText: '只能上传xls,xlsx文件'
+                , allowBlank: false, blankText: '文件不能为空!'
+            });
+
+            var formpanel_upload = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_upload', height: 140,
+                fieldDefaults: {
+                    margin: '0 5 10 0',
+                    labelWidth: 80,
+                    labelAlign: 'right',
+                    labelSeparator: '',
+                    msgTarget: 'under'
+                },
+                buttonAlign: 'center',
+
+                items: [
+                    { layout: 'column', height: 42, border: 0, items: [radio_module] },
+                    { layout: 'column', height: 42, border: 0, items: [uploadfile] }
+                ],
+                buttons: [{
+                    text: '确认上传',
+                    handler: function () {
+                        if (Ext.getCmp('formpanel_upload').getForm().isValid()) {
+
+                            var formdata = Ext.encode(Ext.getCmp('formpanel_upload').getForm().getValues());
+
+                            Ext.getCmp('formpanel_upload').getForm().submit({
+                                type: 'Post',
+                                url: 'CustomerManage.aspx',
+                                params: { formdata: formdata, action: action },
+                                waitMsg: '数据导入中...',
+                                success: function (form, action) {
+                                    console.log(action.result);
+                                    var data = action.result.success;
+                                    var reg = /,$/gi;
+                                    idStr = data.replace(reg, "!");
+                                    Ext.Msg.alert('提示', idStr, function () {
+                                        pgbar.moveFirst();
+                                        Ext.getCmp('win_upload').close();
+                                    });
+                                },
+                                failure: function (form, action) {//失败要做的事情 
+                                    Ext.MessageBox.alert("提示", "保存失败", function () { });
+                                }
+                            });
+
+                        }
+                    }
+                }]
+            });
+
+            var win_upload = Ext.create("Ext.window.Window", {
+                id: "win_upload",
+                title: '企业导入',
+                width: 600,
+                height: 200,
+                modal: true,
+                items: [Ext.getCmp('formpanel_upload')]
+            });
+            
+            win_upload.show();
         }
     </script>
 </head>

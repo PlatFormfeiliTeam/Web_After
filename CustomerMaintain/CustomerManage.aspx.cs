@@ -9,7 +9,9 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Web_After.BasicManager.DeclInfor;
 using Web_After.Common;
+using Web_After.model;
 
 namespace Web_After.CustomerMaintain
 {
@@ -38,6 +40,10 @@ namespace Web_After.CustomerMaintain
                     case "save":
                         save(Request["formdata"]);
                         break;
+                    case "add":
+                        ImportExcelData();
+                        break;
+
                 }
             }
 
@@ -205,6 +211,119 @@ namespace Web_After.CustomerMaintain
         public string GetChk(string check_val)
         {
             return check_val == "on" ? "1" : "0";
+        }
+
+        public void ImportExcelData()
+        {
+            Base_Company_Method bcm = new Base_Company_Method();
+            string formdata = Request["formdata"]; string action = Request["action"];
+            JObject json_formdata = (JObject)JsonConvert.DeserializeObject(formdata);
+            string reponseresult = "";
+            HttpPostedFile postedFile = Request.Files["UPLOADFILE"];//获取上传信息对象  
+            string fileName = Path.GetFileName(postedFile.FileName);
+            if (!Directory.Exists("/FileUpload/PreData"))
+            {
+                Directory.CreateDirectory("/FileUpload/PreData");
+            }
+            string newfile = @"/FileUpload/PreData/" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_" + fileName;
+            postedFile.SaveAs(Server.MapPath(newfile));
+            Dictionary<int,List<int>> result = upload_base_company(newfile, fileName, action, json_formdata);
+
+            List<int> succInts = result[1];
+            List<int> errorInts = result[2];
+            string errorStr = "";
+            for (int i = 0; i < errorInts.Count; i++)
+            {
+                errorStr = errorStr + errorInts[i] + ",";
+            }
+
+            //返回失败信息
+            string responseerrorlist = "";
+            //返回成功信息
+            string responsesuccesslist = "";
+
+
+            if (errorInts.Count > 0)
+            {
+                responseerrorlist = "插入失败的行数为：" + errorStr;
+            }
+
+            if (succInts.Count > 0)
+            {
+                responsesuccesslist = "成功插入" + succInts[0] + "行!";
+            }
+            reponseresult = responsesuccesslist + responseerrorlist;
+
+            string response = "{\"success\":\"" + reponseresult + "\"}";
+            Response.Write(response);
+            Response.End();
+
+        }
+
+        public Dictionary<int,List<int>> upload_base_company(string newfile, string fileName, string action,
+            JObject json_formdata)
+        {
+            Base_Company_Method bcm = new Base_Company_Method();
+            Sql.CustomerManage cm = new Sql.CustomerManage();
+            CustomerEn cus = new CustomerEn();
+            DataTable dtExcel = bcm.GetExcelData_Table(Server.MapPath(newfile), 0);
+            List<string> stringList = new List<string>();
+
+            //记住发生错误的行数
+            List<int> errorlines = new List<int>();
+
+            //记住插入成功的个数
+            int count = 0;
+
+            //插入成功的个数(返回放入dictionary)
+            List<int> successinsert = new List<int>();
+
+            
+
+            //返回值
+            Dictionary<int,List<int>> returndic = new Dictionary<int, List<int>>();
+
+            for (int i = 0; i < dtExcel.Rows.Count; i++)
+            {
+
+                for (int j = 0; j < dtExcel.Columns.Count; j++)
+                {
+                    stringList.Add(dtExcel.Rows[i][j].ToString());
+                }
+
+                //客户编码                      //海关编码
+                string code = stringList[0];   string HSCODE = stringList[1];
+                //国检编码                       //中文名称
+                string CIQCODE = stringList[2]; string CHINESEABBREVIATION = stringList[3];
+                //中文简称                         //中文地址
+                string name = stringList[4];   string CHINESEADDRESS = stringList[5];
+                //英文名称                               //英文地址
+                string ENGLISHNAME = stringList[6];     string ENGLISHADDRESS = stringList[7];
+                //是否启用                                       //备注
+                string enabled = stringList[8]=="是"?"1":"0";  string remark = stringList[9];
+
+                //需要验证客户编码是否重复，客户编码是为空，中文简称不能为空
+                cus.Code = code; cus.HSCode = HSCODE;
+                cus.CIQCode = CIQCODE; cus.ChineseAbbreviation = CHINESEABBREVIATION;
+                cus.name = name; cus.ChineseAddress = CHINESEADDRESS;
+                cus.EnglishName = ENGLISHNAME; cus.EnglishAddress = ENGLISHADDRESS;
+                cus.Enabled = enabled.ToInt(); cus.Remark = remark;
+                int p = cm.before_import_check(code).Rows.Count;
+                if (cm.before_import_check(code).Rows.Count>0 || string.IsNullOrEmpty(code) || string.IsNullOrEmpty(name))
+                {
+                    errorlines.Add(i+2);
+                }
+                else
+                {
+                    cm.insert_import_sys_customer(cus);
+                    count = count + 1;
+                }
+                stringList.Clear();
+            }
+            successinsert.Add(count);
+            returndic.Add(1, successinsert);
+            returndic.Add(2, errorlines);
+            return returndic;
         }
     }
 }
