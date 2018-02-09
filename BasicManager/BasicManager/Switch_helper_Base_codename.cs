@@ -168,6 +168,55 @@ namespace Web_After.BasicManager.BasicManager
                             sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname,t4.name as yearname from base_customdistrict t1 left join sys_user t2 on t1.createman=t2.id 
                           left join sys_user t3 on t1.stopman=t3.id left join base_year t4 on t1.yearid=t4.id  where 1=1";
                             break;
+                        case "sys_status":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_status t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "sys_busitype":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_busitype t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_motorcade":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_motorcade t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "sys_declway":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_declway t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "sys_inspLibrary":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname,t4.name as yearname from sys_inspLibrary t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id left join base_year t4 on t1.yearid=t4.id  where 1=1";
+                            break;
+                        case "sys_NoticeType":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_NoticeType t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "sys_goodstype":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_goodstype t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_consigneetype":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_consigneetype t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_listtype":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_listtype t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_assistkind":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_assistkind t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_orderstatus":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_orderstatus t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_declstatus":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_declstatus t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+
                     }
                  break;
                 //新增
@@ -324,6 +373,78 @@ namespace Web_After.BasicManager.BasicManager
                                     '{4}','{5}','{6}','{7}')";
                             sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
                             break;
+                        case "sys_status":
+                            sql = @"insert into sys_status(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(sys_status_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "sys_busitype":
+                            sql = @"insert into sys_busitype(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(sys_busitype_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "base_motorcade":
+                            sql = @"insert into base_motorcade(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(base_motorcade_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "sys_declway":
+                            sql = @"insert into sys_declway(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(sys_declway_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "sys_inspLibrary":
+                            sql = @"insert into sys_inspLibrary(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(sys_inspLibrary_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "sys_NoticeType":
+                            sql = @"insert into sys_NoticeType(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(sys_NoticeType_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "sys_goodstype":
+                            sql = @"insert into sys_goodstype(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(sys_goodstype_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "base_consigneetype":
+                            sql = @"insert into base_consigneetype(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(base_consigneetype_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "base_listtype":
+                            sql = @"insert into base_listtype(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(base_listtype_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "base_assistkind":
+                            sql = @"insert into base_assistkind(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(base_assistkind_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "base_orderstatus":
+                            sql = @"insert into base_orderstatus(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(base_orderstatus_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
+                        case "base_declstatus":
+                            sql = @"insert into base_declstatus(id,code,name,createdate,startdate,enddate,createman,stopman,enabled,remark)
+                                    values(base_declstatus_id.nextval,'{0}','{1}',sysdate,to_date('{2}','yyyy/mm/dd hh24:mi:ss'),to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    '{4}','{5}','{6}','{7}')";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, createman, stopman, json.Value<string>("ENABLED"), json.Value<string>("REMARK"));
+                            break;
                     }
 
                 break;
@@ -430,6 +551,54 @@ namespace Web_After.BasicManager.BasicManager
                             break;
                         case "base_customdistrict":
                             sql = @"select * from base_customdistrict where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "sys_status":
+                            sql = @"select * from sys_status where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "sys_busitype":
+                            sql = @"select * from sys_busitype where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "base_motorcade":
+                            sql = @"select * from base_motorcade where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "sys_declway":
+                            sql = @"select * from sys_declway where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "sys_inspLibrary":
+                            sql = @"select * from sys_inspLibrary where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "sys_NoticeType":
+                            sql = @"select * from sys_NoticeType where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "sys_goodstype":
+                            sql = @"select * from sys_goodstype where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "base_consigneetype":
+                            sql = @"select * from base_consigneetype where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "base_listtype":
+                            sql = @"select * from base_listtype where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "base_assistkind":
+                            sql = @"select * from base_assistkind where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "base_orderstatus":
+                            sql = @"select * from base_orderstatus where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "base_declstatus":
+                            sql = @"select * from base_declstatus where code = '{0}'";
                             sql = String.Format(sql, json.Value<string>("CODE"));
                             break;
     
@@ -569,6 +738,66 @@ namespace Web_After.BasicManager.BasicManager
                                     remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
                             sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
                             break;
+                        case "sys_status":
+                            sql = @"update sys_status set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "sys_busitype":
+                            sql = @"update sys_busitype set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "base_motorcade":
+                            sql = @"update base_motorcade set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "sys_declway":
+                            sql = @"update sys_declway set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "sys_inspLibrary":
+                            sql = @"update sys_inspLibrary set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "sys_NoticeType":
+                            sql = @"update sys_NoticeType set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "sys_goodstype":
+                            sql = @"update sys_goodstype set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "base_consigneetype":
+                            sql = @"update base_consigneetype set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "base_listtype":
+                            sql = @"update base_listtype set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "base_assistkind":
+                            sql = @"update base_assistkind set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "base_orderstatus":
+                            sql = @"update base_orderstatus set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
+                        case "base_declstatus":
+                            sql = @"update base_declstatus set code = '{0}',name = '{1}',startdate = to_date('{2}','yyyy/mm/dd hh24:mi:ss'),enddate = to_date('{3}','yyyy/mm/dd hh24:mi:ss'),
+                                    remark = '{4}' ,stopman = '{5}',enabled = '{6}' where id = '{7}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), startdate, enddate, json.Value<string>("REMARK"), stopman, json.Value<string>("ENABLED"), json.Value<string>("ID"));
+                            break;
                     }
 
                 break;
@@ -675,6 +904,54 @@ namespace Web_After.BasicManager.BasicManager
                             break;
                         case "base_customdistrict":
                             sql = @"select * from base_customdistrict where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "sys_status":
+                            sql = @"select * from sys_status where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "sys_busitype":
+                            sql = @"select * from sys_busitype where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "base_motorcade":
+                            sql = @"select * from base_motorcade where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "sys_declway":
+                            sql = @"select * from sys_declway where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "sys_inspLibrary":
+                            sql = @"select * from sys_inspLibrary where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "sys_NoticeType":
+                            sql = @"select * from sys_NoticeType where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "sys_goodstype":
+                            sql = @"select * from sys_goodstype where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "base_consigneetype":
+                            sql = @"select * from base_consigneetype where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "base_listtype":
+                            sql = @"select * from base_listtype where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "base_assistkind":
+                            sql = @"select * from base_assistkind where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "base_orderstatus":
+                            sql = @"select * from base_orderstatus where code = '{0}' and id not in '{1}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
+                            break;
+                        case "base_declstatus":
+                            sql = @"select * from base_declstatus where code = '{0}' and id not in '{1}'";
                             sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("ID"));
                             break;
                     }
@@ -809,6 +1086,54 @@ namespace Web_After.BasicManager.BasicManager
                                 @"select t1.*,t2.name as createmanname,t3.name as stopmanname,t4.name as yearname from base_customdistrict t1 left join sys_user t2 on t1.createman=t2.id 
                           left join sys_user t3 on t1.stopman=t3.id left join base_year t4 on t1.yearid=t4.id  where 1=1";
                             break;
+                        case "sys_status":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_status t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "sys_busitype":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_busitype t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_motorcade":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_motorcade t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "sys_declway":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_declway t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "sys_inspLibrary":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname,t4.name as yearname from sys_inspLibrary t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id left join base_year t4 on t1.yearid=t4.id  where 1=1";
+                            break;
+                        case "sys_NoticeType":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_NoticeType t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "sys_goodstype":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from sys_goodstype t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_consigneetype":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_consigneetype t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_listtype":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_listtype t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_assistkind":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_assistkind t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_orderstatus":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_orderstatus t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
+                        case "base_declstatus":
+                            sql = @"select t1.*,t2.name as createmanname,t3.name as stopmanname from base_declstatus t1 left join sys_user t2 on t1.createman=t2.id 
+                          left join sys_user t3 on t1.stopman=t3.id where 1 = 1";
+                            break;
 
                     }
                 break;
@@ -915,6 +1240,54 @@ namespace Web_After.BasicManager.BasicManager
                             break;
                         case "base_customdistrict":
                             sql = @"select * from base_customdistrict where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "sys_status":
+                            sql = @"select * from sys_status where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "sys_busitype":
+                            sql = @"select * from sys_busitype where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "base_motorcade":
+                            sql = @"select * from base_motorcade where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "sys_declway":
+                            sql = @"select * from sys_declway where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "sys_inspLibrary":
+                            sql = @"select * from sys_inspLibrary where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "sys_NoticeType":
+                            sql = @"select * from sys_NoticeType where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "sys_goodstype":
+                            sql = @"select * from sys_goodstype where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "base_consigneetype":
+                            sql = @"select * from base_consigneetype where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "base_listtype":
+                            sql = @"select * from base_listtype where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "base_assistkind":
+                            sql = @"select * from base_assistkind where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "base_orderstatus":
+                            sql = @"select * from base_orderstatus where id = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("ID"));
+                            break;
+                        case "base_declstatus":
+                            sql = @"select * from base_declstatus where id = '{0}'";
                             sql = String.Format(sql, json.Value<string>("ID"));
                             break;
 
@@ -1050,6 +1423,66 @@ namespace Web_After.BasicManager.BasicManager
                             sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
                                     sysdate)";
                             sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Decl_CustomArea, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "sys_status":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_Status, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "sys_busitype":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_BusiType, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "base_motorcade":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Decl_Motorcade, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "sys_declway":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_DeclWay, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "sys_inspLibrary":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_InspLibrary, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "sys_NoticeType":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_NotcieType, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "sys_goodstype":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_GoodsType, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "base_consigneetype":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_ConsigneeType, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "base_listtype":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_ListType, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "base_assistkind":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_AssistKind, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "base_orderstatus":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_OrderStatus, createman, json.Value<string>("REASON"), contents);
+                            break;
+                        case "base_declstatus":
+                            sql = @"insert into base_alterrecord(id,tabid,tabkind,alterman,reason,contentes,alterdate) values(base_alterrecord_id.nextval,'{0}','{1}','{2}','{3}','{4}',
+                                    sysdate)";
+                            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.Busi_DeclStatus, createman, json.Value<string>("REASON"), contents);
                             break;
 
 
@@ -1232,6 +1665,78 @@ namespace Web_After.BasicManager.BasicManager
                     ColumName.Add("CODE");
                     ColumName.Add("NAME");
                     break;
+                case "sys_status":
+                    ColumName.Add("显示状态代码");
+                    ColumName.Add("显示状态名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "sys_busitype":
+                    ColumName.Add("业务类型代码");
+                    ColumName.Add("业务类型名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "base_motorcade":
+                    ColumName.Add("车队信息代码");
+                    ColumName.Add("车队信息名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "sys_declway":
+                    ColumName.Add("报关方式代码");
+                    ColumName.Add("报关方式名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "sys_inspLibrary":
+                    ColumName.Add("报检库别代码");
+                    ColumName.Add("报检库别名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "sys_NoticeType":
+                    ColumName.Add("通知类别代码");
+                    ColumName.Add("通知类别名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "sys_goodstype":
+                    ColumName.Add("货物类别代码");
+                    ColumName.Add("货物类别名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "base_consigneetype":
+                    ColumName.Add("收货人类型代码");
+                    ColumName.Add("收货人类型名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "base_listtype":
+                    ColumName.Add("清单类型代码");
+                    ColumName.Add("清单类型名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "base_assistkind":
+                    ColumName.Add("辅助选项代码");
+                    ColumName.Add("辅助选项名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "base_orderstatus":
+                    ColumName.Add("业务状态代码");
+                    ColumName.Add("业务状态名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
+                case "base_declstatus":
+                    ColumName.Add("报关状态代码");
+                    ColumName.Add("报关状态名称");
+                    ColumName.Add("CODE");
+                    ColumName.Add("NAME");
+                    break;
 
 
 
@@ -1305,7 +1810,6 @@ namespace Web_After.BasicManager.BasicManager
                 case "base_packing":
                     ExcelName = "包装种类";
                     break;
-
                 case "base_declproductunit":
                     ExcelName = "计量单位";
                     break;
@@ -1324,8 +1828,43 @@ namespace Web_After.BasicManager.BasicManager
                 case "base_customdistrict":
                     ExcelName = "关区代码";
                     break;
-                
-
+                case "sys_status":
+                    ExcelName = "显示状态";
+                    break;
+                case "sys_busitype":
+                    ExcelName = "业务类型";
+                    break;
+                case "base_motorcade":
+                    ExcelName = "车队信息";
+                    break;
+                case "sys_declway":
+                    ExcelName = "报关方式";
+                    break;
+                case "sys_inspLibrary":
+                    ExcelName = "报检库别";
+                    break;
+                case "sys_NoticeType":
+                    ExcelName = "通知类别";
+                    break;
+                case "sys_goodstype":
+                    ExcelName = "货物类别";
+                    break;
+                case "base_consigneetype":
+                    ExcelName = "收货人类型";
+                    break;
+                case "base_listtype":
+                    ExcelName = "清单类型";
+                    break;
+                case "base_assistkind":
+                    ExcelName = "辅助选项";
+                    break;
+                case "base_orderstatus":
+                    ExcelName = "业务状态";
+                    break;
+                case "base_declstatus":
+                    ExcelName = "报关状态";
+                    break;
+               
 
             }
             return ExcelName;

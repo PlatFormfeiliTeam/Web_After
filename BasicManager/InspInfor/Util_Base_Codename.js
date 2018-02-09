@@ -83,6 +83,42 @@
             case "base_customdistrict":
                 title = "关区代码";
                 break;
+            case "sys_status":
+                title = "显示状态";
+                break;
+            case "sys_busitype":
+                title = "业务类型";
+                break;
+            case "base_motorcade":
+                title = "车队信息";
+                break;
+            case "sys_declway":
+                title = "报关方式";
+                break;
+            case "sys_inspLibrary":
+                title = "报检库别";
+                break;
+            case "sys_NoticeType":
+                title = "通知类别";
+                break;
+            case "sys_goodstype":
+                title = "货物类别";
+                break;
+            case "base_consigneetype":
+                title = "收货人类型";
+                break;
+            case "base_listtype":
+                title = "清单类型";
+                break;
+            case "base_assistkind":
+                title = "辅助选项";
+                break;
+            case "base_orderstatus":
+                title = "业务状态";
+                break;
+            case "base_declstatus":
+                title = "报关状态";
+                break;
 
 
         }
@@ -167,6 +203,42 @@
         case "base_customdistrict":
             title = "关区代码";
             break;
+        case "sys_status":
+            title = "显示状态代码";
+            break;
+        case "sys_busitype":
+            title = "业务类型代码";
+            break;
+        case "base_motorcade":
+            title = "车队信息代码";
+            break;
+        case "sys_declway":
+            title = "报关方式代码";
+            break;
+        case "sys_inspLibrary":
+            title = "报检库别代码";
+            break;
+        case "sys_NoticeType":
+            title = "通知类别代码";
+            break;
+        case "sys_goodstype":
+            title = "货物类别代码";
+            break;
+        case "base_consigneetype":
+            title = "收货人类型代码";
+            break;
+        case "base_listtype":
+            title = "清单类型代码";
+            break;
+        case "base_assistkind":
+            title = "辅助选项代码";
+            break;
+        case "base_orderstatus":
+            title = "业务状态代码";
+            break;
+        case "base_declstatus":
+            title = "报关状态代码";
+            break;
         }
         return title;
     },
@@ -248,6 +320,42 @@
         case "base_customdistrict":
             title = "关区代码名称";
             break;
+        case "sys_status":
+            title = "显示状态名称";
+            break;
+        case "sys_busitype":
+            title = "业务类型名称";
+            break;
+        case "base_motorcade":
+            title = "车队信息名称";
+            break;
+        case "sys_declway":
+            title = "报关方式名称";
+            break;
+        case "sys_inspLibrary":
+            title = "报检库别名称";
+            break;
+        case "sys_NoticeType":
+            title = "通知类别名称";
+            break;
+        case "sys_goodstype":
+            title = "货物类别名称";
+            break;
+        case "base_consigneetype":
+            title = "收货人类型名称";
+            break;
+        case "base_listtype":
+            title = "清单类型名称";
+            break;
+        case "base_assistkind":
+            title = "辅助选项名称";
+            break;
+        case "base_orderstatus":
+            title = "业务状态名称";
+            break;
+        case "base_declstatus":
+            title = "报关状态名称";
+            break;
         }
         return title;
     },
@@ -268,7 +376,13 @@
             case "base_packing": case "base_declproductunit":
             case "base_exemptingway": case "sys_companynature":
             case "base_invoice": case "base_decluse":
-            case "base_customdistrict":
+            case "base_customdistrict": case "sys_status":
+            case "sys_busitype": case "base_motorcade":
+            case "sys_declway": case "sys_inspLibrary":
+            case "sys_NoticeType": case "sys_goodstype":
+            case "base_consigneetype": case "base_listtype":
+            case "base_assistkind": case "base_orderstatus":
+            case "base_declstatus":
             arr[0] = "CODE";
             arr[1] = "NAME";
             break;

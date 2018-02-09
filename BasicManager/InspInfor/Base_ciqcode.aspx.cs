@@ -64,7 +64,7 @@ namespace Web_After.BasicManager.InspInfor
             string strWhere = string.Empty;
             if (!string.IsNullOrEmpty(Request["CiqCodeBase"]))
             {
-                strWhere = strWhere + " and t1.Name = '" + Request["CiqCodeBase"] + "'";
+                strWhere = strWhere + " and t1.Name like '%" + Request["CiqCodeBase"] + "%'";
             }
             if (!string.IsNullOrEmpty(Request["start_date"]))
             {
