@@ -11,7 +11,7 @@
 <script src="/js/jquery-1.8.2.min.js"></script>
 <link href="/css/iconfont/iconfont.css" rel="stylesheet" />    
 <script src="/js/import/importExcel.js" type="text/javascript"></script>
-
+<script src="Base_year_Maintain.js"></script>
 <script type="text/javascript">
     var username = '<%=Username()%>';
     Ext.onReady(function() {
@@ -348,6 +348,19 @@
             return;
         }
         addCustomer_Win(recs[0].get("ID"), recs[0].data);       
+    }
+
+    //点击维护按钮
+    function Maintain() {
+        var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+        if (recs.length == 0) {
+            Ext.MessageBox.alert('提示', '请选择需要查看详细的记录！');
+            return;
+        }
+
+        util.addMaintain_Win(recs[0].get("ID"), recs[0].data);
+
+
     }
 </script>
 </head>

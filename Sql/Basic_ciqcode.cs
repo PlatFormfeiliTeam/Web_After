@@ -48,8 +48,8 @@ namespace Web_After.Sql
         //查询base_year是否有重复ICQ代码库（新增）
         public DataSet check_base_year(JObject json)
         {
-            string sql = @"select * from base_year where name = '{0}'";
-            sql = string.Format(sql, json.Value<string>("NAME"));
+            string sql = @"select * from base_year where name = '{0}' and kind = '{1}'";
+            sql = string.Format(sql, json.Value<string>("NAME"), (int)Base_YearKindEnum.CIQ);
             return DBMgrBase.GetDataSet(sql);
         }
 
@@ -65,8 +65,8 @@ namespace Web_After.Sql
         //查询base_year是否有重复ICQ代码库根据id和name（修改）
         public DataSet check_base_year_by_idandname(JObject json)
         {
-            string sql = @"select * from base_year where name = '{0}' and id not in ('{1}')";
-            sql = string.Format(sql, json.Value<string>("NAME"), json.Value<string>("ID"));
+            string sql = @"select * from base_year where name = '{0}' and id not in ('{1}') and kind = '{2}'";
+            sql = string.Format(sql, json.Value<string>("NAME"), json.Value<string>("ID"), (int)Base_YearKindEnum.CIQ);
             return DBMgrBase.GetDataSet(sql);
         }
 
