@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -8,6 +9,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Web_After.Common;
 
 namespace Web_After.BasicManager.InspInfor
 {
@@ -28,7 +30,7 @@ namespace Web_After.BasicManager.InspInfor
                         loadData(table);
                         break;
                     case "save":
-                        //save(table, Request["formdata"]);
+                        save(Request["formdata"]);
                         break;
                     case "export":
                         //export(table);
@@ -65,6 +67,51 @@ namespace Web_After.BasicManager.InspInfor
 
         }
 
+        public void save(string formdata)
+        {
+            JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
+            Sql.Base_Container bcsql = new Sql.Base_Container();
+            //禁用人
+            string stopman = "";
+            //返回重复结果
+            string repeat = "";
+            //返回前端的值
+            string response = "";
+
+            if (json.Value<string>("ENABLED") == "1")
+            {
+                stopman = "";
+            }
+            else
+            {
+                FormsIdentity identity = HttpContext.Current.User.Identity as FormsIdentity;
+                string userName = identity.Name;
+                JObject json_user = Extension.Get_UserInfo(userName);
+                stopman = (string)json_user.GetValue("ID");
+            }
+
+            if (String.IsNullOrEmpty(json.Value<string>("ID")))
+            {
+                if (json.Value<string>("ENABLED") == "1")
+                {
+                    List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("CODE"), json.Value<string>("NAME"),
+                        json.Value<string>("HSCODE"));
+
+                    repeat = bcsql.Check_Repeat(retunRepeat);
+                    if (repeat == "")
+                    {
+                        //insert数据向表base_company当是5时插入成功
+                        bcsql.insert_base_container(json, stopman);
+                        repeat = "5";
+
+                    }
+                }
+            }
+            else
+            {
+
+            }
+        }
 
         public string Username()
         {
