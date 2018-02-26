@@ -74,7 +74,7 @@
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;修 改', width: 80, handler: function () { editCustomer(param); } }
                     //, { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { del(); } }
                     , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { importfile('add', param); } }
-                    , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;导 出', handler: function () { exportdata(param); } }
+                    , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;导 出', handler: function () { exportdata(); } }
                     , '->'
                     , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar").moveFirst(); } }
                     , { text: '<span class="icon iconfont">&#xe633;</span>&nbsp;重 置', width: 80, handler: function () { reset(); } }
@@ -382,14 +382,134 @@
             win.show();
         }
 
+        function importfile(action) {
+            if (action == "add") {
+                importexcel(action);
+            }
+
+        }
+
+        function importexcel(action) {
+
+            var radio_module = Ext.create('Ext.form.RadioGroup', {
+                name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
+                items: [
+                    { boxLabel: "<a href='/FileUpload/base_containerstandard.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
+                ]
+            });
+
+
+            var uploadfile = Ext.create('Ext.form.field.File', {
+                id: 'UPLOADFILE', name: 'UPLOADFILE', fieldLabel: '导入数据', labelAlign: 'right', msgTarget: 'under'
+                , anchor: '90%', buttonText: '浏览文件', regex: /.*(.xls|.xlsx)$/, regexText: '只能上传xls,xlsx文件'
+                , allowBlank: false, blankText: '文件不能为空!'
+            });
+
+            var start_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'STARTDATE',
+                    name: 'STARTDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '启用日期',
+                    flex: .5
+
+                });
+
+            var end_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'ENDDATE',
+                    name: 'ENDDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '停用日期',
+                    flex: .5
+
+
+                });
+
+            var CreatemanName = Ext.create('Ext.form.field.Text', {
+                id: 'CREATEMANNAME',
+                name: 'CREATEMANNAME',
+                fieldLabel: '维护人',
+                readOnly: true,
+                flex: .5,
+                margin: '0 5 10 122',
+            });
+
+            var formpanel_upload = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_upload', height: 180,
+                fieldDefaults: {
+                    margin: '0 5 10 0',
+                    labelWidth: 80,
+                    labelAlign: 'right',
+                    labelSeparator: '',
+                    msgTarget: 'under'
+                },
+                buttonAlign: 'center',
+
+                items: [
+                    { layout: 'column', height: 42, border: 0, items: [radio_module, CreatemanName] },
+                    { layout: 'column', height: 42, border: 0, items: [start_date, end_date] },
+                    { layout: 'column', height: 42, border: 0, items: [uploadfile] }
+                ],
+                buttons: [{
+                    text: '确认上传',
+                    handler: function () {
+                        if (Ext.getCmp('formpanel_upload').getForm().isValid()) {
+
+                            var formdata = Ext.encode(Ext.getCmp('formpanel_upload').getForm().getValues());
+
+                            Ext.getCmp('formpanel_upload').getForm().submit({
+                                type: 'Post',
+                                url: 'Base_Container.aspx',
+                                params: { formdata: formdata, action: action },
+                                waitMsg: '数据导入中...',
+                                success: function (form, action) {
+                                    console.log(action.result);
+                                    var data = action.result.success;
+                                    var reg = /,$/gi;
+                                    idStr = data.replace(reg, "!");
+                                    Ext.Msg.alert('提示', idStr, function () {
+                                        pgbar.moveFirst();
+                                        Ext.getCmp('win_upload').close();
+                                    });
+                                },
+                                failure: function (form, action) {//失败要做的事情 
+                                    Ext.MessageBox.alert("提示", "保存失败", function () { });
+                                }
+                            });
+
+                        }
+                    }
+                }]
+            });
+
+            var win_upload = Ext.create("Ext.window.Window", {
+                id: "win_upload",
+                title: '集装箱规格',
+                width: 600,
+                height: 240,
+                modal: true,
+                items: [Ext.getCmp('formpanel_upload')]
+            });
+            Ext.getCmp('CREATEMANNAME').setValue(username);
+            win_upload.show();
+        }
+
+        function exportdata() {
+            var CODE_S = Ext.getCmp('CODE_S').getValue();
+            var CNNAME_S = Ext.getCmp('CNNAME_S').getValue();
+            var combo_ENABLED_S = Ext.getCmp('combo_ENABLED_S').getValue();
+            var path = 'Base_Container.aspx?action=export&CODE_S=' + CODE_S + '&CNNAME_S=' + CNNAME_S + '&combo_ENABLED_S=' + combo_ENABLED_S;
+            $('#exportform').attr("action", path).submit();
+        }
 
     </script>
 </head>
 <body>
-    <form id="form1" runat="server">
     <div>
-    
+        <form id="exportform" name="form" enctype="multipart/form-data" method="post"> <%--style="display:inline-block"--%>
+                   
+        </form>   
     </div>
-    </form>
 </body>
 </html>

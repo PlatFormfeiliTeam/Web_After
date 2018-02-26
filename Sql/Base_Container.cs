@@ -109,6 +109,19 @@ namespace Web_After.Sql
             return i;
         }
 
+        public void insert_base_container_excel(string code,string name,string hscode,string enabled,string remark,string stopman,string startdate,string enddate)
+        {
+            FormsIdentity identity = HttpContext.Current.User.Identity as FormsIdentity;
+            string userName = identity.Name;
+            JObject json_user = Extension.Get_UserInfo(userName);
+
+            string sql = @"insert into base_containerstandard (id,code,name,hscode,hsname,inspection,declaration,enabled,remark,createman,stopman,startdate,enddate,createdate)
+                                   values(base_containerstandard_id.nextval,'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}',to_date('{10}','yyyy/mm/dd hh24:mi:ss'),
+                                   to_date('{11}','yyyy/mm/dd hh24:mi:ss'),sysdate)";
+            sql = string.Format(sql, code, name, hscode, "", "", "", enabled, remark, json_user.GetValue("ID"), stopman, startdate, enddate);
+            DBMgrBase.ExecuteNonQuery(sql);
+        }
+
         /// <summary>
         ///从数据库根据id抓取数据
         /// </summary>
@@ -203,6 +216,20 @@ namespace Web_After.Sql
 
         }
 
+
+        public DataTable export_base_container(string strWhere)
+        {
+            string sql = @"select t1.*,
+                                  t2.name as createmanname,
+                                  t3.name as stopmanname
+                                  from base_containerstandard t1 left join sys_user t2 on t1.createman=t2.id 
+                                  left join sys_user t3 on t1.stopman=t3.id 
+                                  where 1 = 1 {0}";
+            sql = string.Format(sql, strWhere);
+            DataTable dt = DBMgrBase.GetDataTable(sql);
+            return dt;
+
+        }
         private DataTable check_code_repeat(string code, string strWhere)
         {
             string sql = "select * from base_containerstandard where enabled = '1' and lower(code) = lower('{0}') {1}";
