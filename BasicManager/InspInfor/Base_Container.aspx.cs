@@ -92,8 +92,6 @@ namespace Web_After.BasicManager.InspInfor
 
             if (String.IsNullOrEmpty(json.Value<string>("ID")))
             {
-                if (json.Value<string>("ENABLED") == "1")
-                {
                     List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("CODE"), json.Value<string>("NAME"),
                         json.Value<string>("HSCODE"));
 
@@ -105,12 +103,30 @@ namespace Web_After.BasicManager.InspInfor
                         repeat = "5";
 
                     }
-                }
             }
             else
             {
+                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("CODE"),
+                        json.Value<string>("NAME"),
+                        json.Value<string>("HSCODE"));
+                repeat = bcsql.Check_Repeat(retunRepeat);
+                if (repeat == "")
+                {
+                    DataTable dt = bcsql.LoadDataById(json.Value<string>("ID"));
+                    int i = bcsql.update_base_container(json, stopman);
+                    if (i > 0)
+                    {
 
+                        bcsql.insert_base_alterrecord(json, dt);
+                    }
+                    repeat = "5";
+                }
             }
+
+            response = "{\"success\":\"" + repeat + "\"}";
+
+            Response.Write(response);
+            Response.End();
         }
 
         public string Username()

@@ -11,25 +11,24 @@
     <script src="/js/jquery-1.8.2.min.js"></script>
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />    
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
-    <script src="Util_Base_Container.js"></script>
     <script type="text/javascript">
         var username = '<%=Username()%>';
 
         //集装箱规格：base_containerstandard
-        var param = util.getUrlParam('param');
+        var param = 'base_containerstandard';
         console.log(param);
         //获取title:集装箱规格
-        var title = util.getPanelTitle(param);
-        //获取searchCode,searchName: //获取grindpanel中前两行
-        var getSearchCode = util.getInitSearchSearchCode(param);
-        var getSearchName = util.getInitSearchSearchName(param);
-        var getHSCode = util.getGridNameCol3(param);
-        var getHSName = util.getGridNameCol4(param);
-        var getInspection = util.getGridNameCol5(param);
-        var getDeclaration = util.getGridNameCol6(param);
+        var title = '集装箱规格';
+
 
         //获取gridpanel中的colums
-        var arr = util.getGrindPanelColumsOne(param);
+        var arr = new Array();
+        arr[0] = "CODE";
+        arr[1] = "NAME";
+        arr[2] = "HSCODE";
+        arr[3] = "HSNAME";
+        arr[4] = "INSPECTION";
+        arr[5] = "DECLARATION";
 
         Ext.onReady(function () {
             init_search(param);
@@ -49,9 +48,8 @@
         });
 
         function init_search(param) {
-
-            var searchCode = Ext.create('Ext.form.field.Text', { id: 'CODE_S', name: 'CODE_S', fieldLabel: getSearchCode });
-            var searchName = Ext.create('Ext.form.field.Text', { id: 'CNNAME_S', name: 'CNNAME_S', fieldLabel: getSearchName });
+            var searchCode = Ext.create('Ext.form.field.Text', { id: 'CODE_S', name: 'CODE_S', fieldLabel: '集装箱规格代码' });
+            var searchName = Ext.create('Ext.form.field.Text', { id: 'CNNAME_S', name: 'CNNAME_S', fieldLabel: '集装箱规格名称' });
 
 
 
@@ -142,12 +140,12 @@
                     { xtype: 'rownumberer', width: 35 },
 
 
-                    { header: getSearchCode, dataIndex: arr[0], width: 150 },
-                    { header: getSearchName, dataIndex: arr[1], width: 150 },
-                    { header: getHSCode, dataIndex: arr[2], width: 150 },
-                    { header: getHSName, dataIndex: arr[3], width: 150 },
-                    { header: getInspection, dataIndex: arr[4], width: 150 },
-                    { header: getDeclaration, dataIndex: arr[5], width: 150 },
+                    { header: '集装箱规格代码', dataIndex: arr[0], width: 150 },
+                    { header: '集装箱规格名称', dataIndex: arr[1], width: 150 },
+                    { header: '集装箱HS编码', dataIndex: arr[2], width: 150 },
+                    { header: '集装箱商品名称', dataIndex: arr[3], width: 150 },
+                    { header: '检验检疫类别', dataIndex: arr[4], width: 150 },
+                    { header: '海关监管条件', dataIndex: arr[5], width: 150 },
 
                     { header: '启用情况', dataIndex: 'ENABLED', renderer: gridrender, width: 100 },
                     { header: '启用时间', dataIndex: 'STARTDATE', width: 100 },
@@ -192,6 +190,13 @@
             addCustomer_Win(recs[0].get("ID"), recs[0].data);
         }
 
+        //重置查询条件
+        function reset() {
+            Ext.each(Ext.getCmp('formpanel_search').getForm().getFields().items,
+                function (field) {
+                    field.reset();
+                });
+        }
 
         //初始化编辑的页面
         function form_ini_win() {
