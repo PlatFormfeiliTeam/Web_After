@@ -399,6 +399,136 @@
             });
         }
 
+        //重置查询条件
+        function reset() {
+            Ext.each(Ext.getCmp('formpanel_search').getForm().getFields().items,
+                function (field) {
+                    field.reset();
+                });
+        }
+
+        function importfile(action) {
+            if (action == "add") {
+                importexcel(action);
+            }
+
+        }
+
+        function importexcel(action) {
+
+            var radio_module = Ext.create('Ext.form.RadioGroup', {
+                name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
+                items: [
+                    { boxLabel: "<a href='/FileUpload/rela_hsciq.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
+                ]
+            });
+
+
+            var uploadfile = Ext.create('Ext.form.field.File', {
+                id: 'UPLOADFILE', name: 'UPLOADFILE', fieldLabel: '导入数据', labelAlign: 'right', msgTarget: 'under'
+                , anchor: '90%', buttonText: '浏览文件', regex: /.*(.xls|.xlsx)$/, regexText: '只能上传xls,xlsx文件'
+                , allowBlank: false, blankText: '文件不能为空!'
+            });
+
+            var start_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'STARTDATE',
+                    name: 'STARTDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '启用日期',
+                    flex: .5
+
+                });
+
+            var end_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'ENDDATE',
+                    name: 'ENDDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '停用日期',
+                    flex: .5
+
+
+                });
+
+            var CreatemanName = Ext.create('Ext.form.field.Text', {
+                id: 'CREATEMANNAME',
+                name: 'CREATEMANNAME',
+                fieldLabel: '维护人',
+                readOnly: true,
+                flex: .5,
+                margin: '0 5 10 122',
+            });
+
+            var formpanel_upload = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_upload', height: 180,
+                fieldDefaults: {
+                    margin: '0 5 10 0',
+                    labelWidth: 80,
+                    labelAlign: 'right',
+                    labelSeparator: '',
+                    msgTarget: 'under'
+                },
+                buttonAlign: 'center',
+
+                items: [
+                    { layout: 'column', height: 42, border: 0, items: [radio_module, CreatemanName] },
+                    { layout: 'column', height: 42, border: 0, items: [start_date, end_date] },
+                    { layout: 'column', height: 42, border: 0, items: [uploadfile] }
+                ],
+                buttons: [{
+                    text: '确认上传',
+                    handler: function () {
+                        if (Ext.getCmp('formpanel_upload').getForm().isValid()) {
+
+                            var formdata = Ext.encode(Ext.getCmp('formpanel_upload').getForm().getValues());
+
+                            Ext.getCmp('formpanel_upload').getForm().submit({
+                                type: 'Post',
+                                url: 'RelaHSCIQ.aspx',
+                                params: { formdata: formdata, action: action },
+                                waitMsg: '数据导入中...',
+                                success: function (form, action) {
+                                    console.log(action.result);
+                                    var data = action.result.success;
+                                    var reg = /,$/gi;
+                                    idStr = data.replace(reg, "!");
+                                    Ext.Msg.alert('提示', idStr, function () {
+                                        pgbar.moveFirst();
+                                        Ext.getCmp('win_upload').close();
+                                    });
+                                },
+                                failure: function (form, action) {//失败要做的事情 
+                                    Ext.MessageBox.alert("提示", "保存失败", function () { });
+                                }
+                            });
+
+                        }
+                    }
+                }]
+            });
+
+            var win_upload = Ext.create("Ext.window.Window", {
+                id: "win_upload",
+                title: '集装箱规格',
+                width: 600,
+                height: 240,
+                modal: true,
+                items: [Ext.getCmp('formpanel_upload')]
+            });
+            Ext.getCmp('CREATEMANNAME').setValue(username);
+            win_upload.show();
+        }
+
+        function exportdata() {
+            var HSCODE = Ext.getCmp('CODE_HS').getValue();
+            var HSNAME = Ext.getCmp('NAME_HS').getValue();
+            var CIQ_CODE = Ext.getCmp('CODE_CIQ').getValue();
+            var CIQ_NAME = Ext.getCmp('NAME_CIQ').getValue();
+            var combo_ENABLED_S = Ext.getCmp('combo_ENABLED_S').getValue();
+            var path = 'RelaHSCIQ.aspx?action=export&HSCODE=' + HSCODE + '&HSNAME=' + HSNAME + '&combo_ENABLED_S=' + combo_ENABLED_S + '&CIQ_CODE=' + CIQ_CODE + '&CIQ_NAME=' + CIQ_NAME;
+            $('#exportform').attr("action", path).submit();
+        }
 
     </script>
 </head>

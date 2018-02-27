@@ -63,6 +63,22 @@ namespace Web_After.Sql
             return i;
         }
 
+        public int insert_rela_hs_ciq_excel(string HSCODE, string CIQCODE,string ENABLED,string REMARK, string stopman, string STARTDATE,string ENDDATE)
+        {
+            FormsIdentity identity = HttpContext.Current.User.Identity as FormsIdentity;
+            string userName = identity.Name;
+            JObject json_user = Extension.Get_UserInfo(userName);
+            string sql = @"insert into rela_hsciq (id,hscode,ciqcode,createman,stopman,createdate,startdate,enddate,yearid,enabled,remark)
+                                   values (rela_hsciq_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'','{6}','{7}')";
+            sql = string.Format(sql, HSCODE, CIQCODE, json_user.GetValue("ID"), stopman,
+                STARTDATE,
+                ENDDATE,
+                ENABLED,REMARK);
+            int i = DBMgrBase.ExecuteNonQuery(sql);
+            return i;
+        }
+
         public int update_rela_hs_ciq(JObject json, string stopman)
         {
             int i = 0;
@@ -162,6 +178,15 @@ namespace Web_After.Sql
                 str += "停用时间：" + dt.Rows[0]["EndDate"] + "——>" + json.Value<string>("ENDDATE") + "。";
             }
             return str;
+
+        }
+
+
+        public DataTable export_rela_hs_ciq(string strWhere)
+        {
+            string sql = @"select t1.*,t2.hsname as hsname,t3.ciqname,t4.name as createmanname,t5.name as stopmanname from rela_hsciq t1 left join base_insphs t2 on 
+                                   t1.hscode=(t2.hscode||t2.extracode) left join base_ciqcode t3 on t1.ciqcode=t3.ciq  left join sys_user t4 on t1.createman=t4.id left join sys_user t5 on t1.stopman=t5.id {0}";
+            sql = string.Format(sql, strWhere);
 
         }
 
