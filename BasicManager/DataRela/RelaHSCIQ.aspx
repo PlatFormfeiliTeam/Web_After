@@ -4,32 +4,47 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title></title>
-     <link href="/Extjs42/resources/css/ext-all-neptune.css" rel="stylesheet" type="text/css" />
+    <link href="/Extjs42/resources/css/ext-all-neptune.css" rel="stylesheet" type="text/css" />
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
     <script src="/js/jquery-1.8.2.min.js"></script>
-    <link href="/css/iconfont/iconfont.css" rel="stylesheet" />    
+    <link href="/css/iconfont/iconfont.css" rel="stylesheet" />
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
     <script type="text/javascript">
         var username = '<%=Username()%>';
         var title = 'HS与CIQ对应关系';
+        var common_data_HS = [], common_data_CIQ = [];
+        var store_HS, store_CIQ;
 
         Ext.onReady(function () {
-            init_search();
-            gridbind();
+            Ext.Ajax.request({
+                url: 'RelaHSCIQ.aspx',
+                params: { action: 'Ini_Base_Data' },
+                type: 'Post',
+                success: function (response, option) {
+                    var commondata = Ext.decode(response.responseText);
+                    common_data_HS = commondata.HS;//hs代码
+                    common_data_CIQ = commondata.CIQ;//CIQ代码
+                    store_HS = Ext.create('Ext.data.JsonStore', { fields: ['CODE', 'NAME'], data: common_data_HS });
+                    store_CIQ = Ext.create('Ext.data.JsonStore', { fields: ['CODE', 'NAME'], data: common_data_CIQ });
 
-            var panel = Ext.create('Ext.form.Panel', {
-                title: title,
-                region: 'center',
-                layout: 'border',
-                items: [Ext.getCmp('formpanel_search'), Ext.getCmp('gridpanel')]
+                    init_search();
+                    gridbind();
+
+                    var panel = Ext.create('Ext.form.Panel', {
+                        title: title,
+                        region: 'center',
+                        layout: 'border',
+                        items: [Ext.getCmp('formpanel_search'), Ext.getCmp('gridpanel')]
+                    });
+                    var viewport = Ext.create('Ext.container.Viewport',
+                        {
+                            layout: 'border',
+                            items: [panel]
+                        });
+                }
             });
-            var viewport = Ext.create('Ext.container.Viewport',
-                {
-                    layout: 'border',
-                    items: [panel]
-                });
         });
 
         //查询栏
@@ -191,6 +206,15 @@
             win.show();
         }
 
+        //编辑
+        function editCustomer() {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要查看详细的记录！');
+                return;
+            }
+            addCustomer_Win(recs[0].get("ID"), recs[0].data);
+        }
 
         function form_ini_win() {
             var field_ID = Ext.create('Ext.form.field.Hidden', {
@@ -198,22 +222,56 @@
                 name: 'ID'
             });
 
-            var field_Code = Ext.create('Ext.form.field.Text', {
+            var store_for_hs = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_HS
+            });
+            
+            var store_for_ciq = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_CIQ
+            });
+
+            var field_Code = Ext.create('Ext.form.field.ComboBox', {
                 id: 'HSCODE',
                 name: 'HSCODE',
+                store: store_for_hs,
+                hideTrigger: true,
+                minChars: 4,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
                 fieldLabel: 'HS代码',
                 flex: .5,
                 allowBlank: false,
-                blankText: 'HS代码不可为空!'
+                blankText: 'HS代码不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
             });
 
-            var field_Name = Ext.create('Ext.form.field.Text', {
+            var field_Name = Ext.create('Ext.form.field.ComboBox', {
                 id: 'CIQCODE',
                 name: 'CIQCODE',
+                store: store_for_ciq,
+                displayField: 'NAME',
+                valueField: 'CODE',
+                hideTrigger: true,
+                minChars: 4,
+                queryMode: 'local',
+                anyMatch: true,
                 fieldLabel: 'CIQ代码',
                 flex: .5,
                 allowBlank: false,
-                blankText: 'CIQ代码不可为空!'
+                blankText: 'CIQ代码不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
             });
 
             var store_ENABLED = Ext.create('Ext.data.JsonStore', {
@@ -346,9 +404,8 @@
 </head>
 <body>
     <form id="form1" runat="server">
-    <div>
-    
-    </div>
+        <div>
+        </div>
     </form>
 </body>
 </html>

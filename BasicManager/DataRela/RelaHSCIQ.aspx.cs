@@ -37,12 +37,28 @@ namespace Web_After.BasicManager.DataRela
                         break;
                     case "add":
                         //ImportExcelData();
+                    case "Ini_Base_Data":
+                        Ini_Base_Data();
                         break;
 
                 }
             }
         }
 
+        private void Ini_Base_Data()
+        {
+            string sql = "";
+            string HS = "[]";
+            sql = "SELECT HSCODE||EXTRACODE as CODE,HSNAME||'('||HSCODE||EXTRACODE||')'  as NAME FROM base_insphs where HSCODE is not null and enabled=1";
+            HS = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+
+            string CIQ = "[]";//委托单位
+            sql = "SELECT CIQ as CODE,CIQNAME||'('||CIQ||')' as NAME FROM base_ciqcode where enabled=1";
+            CIQ = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+
+            Response.Write("{HS:" + HS + ",CIQ:" + CIQ +"}");
+            Response.End();
+        }
         private void loadData()
         {
             string strWhere = " where t1.enabled=1 and t2.enabled=1 ";
@@ -97,14 +113,40 @@ namespace Web_After.BasicManager.DataRela
                 stopman = (string)json_user.GetValue("ID");
             }
 
+            //插入
             if (String.IsNullOrEmpty(json.Value<string>("ID")))
             {
-
+                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("HSCODE"), json.Value<string>("CIQCODE"));
+                repeat = bcsql.Check_Repeat(retunRepeat);
+                if (repeat == "")
+                {
+                    //insert数据向表base_company当是5时插入成功
+                    bcsql.insert_rela_hs_ciq(json, stopman);
+                    repeat = "5";
+                }
             }
             else
             {
-
+                //更新
+                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("HSCODE"), json.Value<string>("CIQCODE"));
+                repeat = bcsql.Check_Repeat(retunRepeat);
+                if (repeat == "")
+                {
+                    //insert数据向表base_company当是5时插入成功
+                    DataTable dt = bcsql.LoadDataById(json.Value<string>("ID"));
+                    int i  = bcsql.update_rela_hs_ciq(json, stopman);
+                    if (i > 0)
+                    {
+                        bcsql.insert_base_alterrecord(json, dt);
+                    }
+                    repeat = "5";
+                }
             }
+
+            response = "{\"success\":\"" + repeat + "\"}";
+
+            Response.Write(response);
+            Response.End();
         }
 
         public string Username()
