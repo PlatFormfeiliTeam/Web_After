@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Base_Container.aspx.cs" Inherits="Web_After.BasicManager.InspInfor.Base_Container" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RelaHSCIQ.aspx.cs" Inherits="Web_After.BasicManager.DataRela.RelaHSCIQ" %>
 
 <!DOCTYPE html>
 
@@ -13,26 +13,11 @@
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
     <script type="text/javascript">
         var username = '<%=Username()%>';
-
-        //集装箱规格：base_containerstandard
-        var param = 'base_containerstandard';
-        console.log(param);
-        //获取title:集装箱规格
-        var title = '集装箱规格';
-
-
-        //获取gridpanel中的colums
-        var arr = new Array();
-        arr[0] = "CODE";
-        arr[1] = "NAME";
-        arr[2] = "HSCODE";
-        arr[3] = "HSNAME";
-        arr[4] = "INSPECTION";
-        arr[5] = "DECLARATION";
+        var title = 'HS与CIQ对应关系';
 
         Ext.onReady(function () {
-            init_search(param);
-            gridbind(param);
+            init_search();
+            gridbind();
 
             var panel = Ext.create('Ext.form.Panel', {
                 title: title,
@@ -47,10 +32,12 @@
                 });
         });
 
-        function init_search(param) {
-            var searchCode = Ext.create('Ext.form.field.Text', { id: 'CODE_S', name: 'CODE_S', fieldLabel: '集装箱规格代码' });
-            var searchName = Ext.create('Ext.form.field.Text', { id: 'CNNAME_S', name: 'CNNAME_S', fieldLabel: '集装箱规格名称' });
-
+        //查询栏
+        function init_search() {
+            var searchCode = Ext.create('Ext.form.field.Text', { id: 'CODE_HS', name: 'CODE_HS', fieldLabel: 'HS代码' });
+            var searchName = Ext.create('Ext.form.field.Text', { id: 'NAME_HS', name: 'NAME_HS', fieldLabel: 'HS名称' });
+            var searchCiq = Ext.create('Ext.form.field.Text', { id: 'CODE_CIQ', name: 'CODE_CIQ', fieldLabel: 'CIQ代码' });
+            var searchCiqName = Ext.create('Ext.form.field.Text', { id: 'NAME_CIQ', name: 'NAME_CIQ', fieldLabel: 'CIQ名称' });
 
 
             var store_ENABLED_S = Ext.create('Ext.data.JsonStore', {
@@ -70,10 +57,10 @@
 
             var toolbar = Ext.create('Ext.toolbar.Toolbar', {
                 items: [
-                    { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { addCustomer_Win("", "", param); } }
-                    , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;修 改', width: 80, handler: function () { editCustomer(param); } }
+                    { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { addCustomer_Win("", ""); } }
+                    , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;修 改', width: 80, handler: function () { editCustomer(); } }
                     //, { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { del(); } }
-                    , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { importfile('add', param); } }
+                    , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { importfile('add'); } }
                     , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;导 出', handler: function () { exportdata(); } }
                     , '->'
                     , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar").moveFirst(); } }
@@ -92,22 +79,22 @@
                     labelWidth: 95
                 },
                 items: [
-                    { layout: 'column', border: 0, items: [searchCode, searchName, combo_ENABLED_S] }
+                    { layout: 'column', border: 0, items: [searchCode, searchName, searchCiq, searchCiqName, combo_ENABLED_S] }
 
                 ]
             });
         }
 
         //数据绑定
-        function gridbind(param) {
+        function gridbind() {
             var store_customer = Ext.create('Ext.data.JsonStore',
                 {
-                    fields: [arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], 'ENABLED', 'STARTDATE', 'CREATEMANNAME',
+                    fields: ['HSCODE', 'HSNAME', 'CIQCODE', 'CIQNAME', 'ENABLED', 'STARTDATE', 'CREATEMANNAME',
                         'CREATEDATE', 'STOPMANNAME', 'ENDDATE', 'REMARK', 'ID'],
                     pageSize: 20,
                     proxy: {
                         type: 'ajax',
-                        url: 'Base_Container.aspx?action=loadData&table=' + param,
+                        url: 'RelaHSCIQ.aspx?action=loadData',
                         reader: {
                             root: 'rows',
                             type: 'json',
@@ -140,13 +127,10 @@
                     { xtype: 'rownumberer', width: 35 },
 
 
-                    { header: '集装箱规格代码', dataIndex: arr[0], width: 150 },
-                    { header: '集装箱规格名称', dataIndex: arr[1], width: 150 },
-                    { header: '集装箱HS编码', dataIndex: arr[2], width: 150 },
-                    { header: '集装箱商品名称', dataIndex: arr[3], width: 150 },
-                    { header: '检验检疫类别', dataIndex: arr[4], width: 150 },
-                    { header: '海关监管条件', dataIndex: arr[5], width: 150 },
-
+                    { header: 'HS代码', dataIndex: 'HSCODE', width: 150 },
+                    { header: 'HS名称', dataIndex: 'HSNAME', width: 150 },
+                    { header: 'CIQ代码', dataIndex: 'CIQCODE', width: 150 },
+                    { header: 'CIQ名称', dataIndex: 'CIQNAME', width: 150 },
                     { header: '启用情况', dataIndex: 'ENABLED', renderer: gridrender, width: 100 },
                     { header: '启用时间', dataIndex: 'STARTDATE', width: 100 },
 
@@ -160,7 +144,7 @@
                 listeners:
                 {
                     'itemdblclick': function (view, record, item, index, e) {
-                        editCustomer();
+                        //editCustomer();
                     }
                 },
                 viewConfig: {
@@ -180,25 +164,34 @@
             return str;
         }
 
-        //编辑
-        function editCustomer() {
-            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
-            if (recs.length == 0) {
-                Ext.MessageBox.alert('提示', '请选择需要查看详细的记录！');
-                return;
+        //新增
+        function addCustomer_Win(ID, formdata) {
+            form_ini_win();
+            Ext.getCmp('CREATEMANNAME').setValue(username);
+
+
+            if (ID != "") {
+
+                Ext.getCmp('REASON').hidden = false;
+                Ext.getCmp('REASON').allowBlank = false;
+                Ext.getCmp('REASON').blankText = '修改原因不可为空!';
+
+                //默认值的
+                Ext.getCmp('formpanel_Win').getForm().setValues(formdata);
             }
-            addCustomer_Win(recs[0].get("ID"), recs[0].data);
+
+            var win = Ext.create("Ext.window.Window", {
+                id: "win_d",
+                title: 'HS与CIQ对应关系',
+                width: 1200,
+                height: 430,
+                modal: true,
+                items: [Ext.getCmp('formpanel_Win')]
+            });
+            win.show();
         }
 
-        //重置查询条件
-        function reset() {
-            Ext.each(Ext.getCmp('formpanel_search').getForm().getFields().items,
-                function (field) {
-                    field.reset();
-                });
-        }
 
-        //初始化编辑的页面
         function form_ini_win() {
             var field_ID = Ext.create('Ext.form.field.Hidden', {
                 id: 'ID',
@@ -206,28 +199,21 @@
             });
 
             var field_Code = Ext.create('Ext.form.field.Text', {
-                id: 'CODE',
-                name: 'CODE',
-                fieldLabel: '集装箱规格代码',
+                id: 'HSCODE',
+                name: 'HSCODE',
+                fieldLabel: 'HS代码',
                 flex: .5,
                 allowBlank: false,
-                blankText: '集装箱规格代码不可为空!'
+                blankText: 'HS代码不可为空!'
             });
 
             var field_Name = Ext.create('Ext.form.field.Text', {
-                id: 'NAME',
-                name: 'NAME',
-                fieldLabel: '集装箱规格名称',
+                id: 'CIQCODE',
+                name: 'CIQCODE',
+                fieldLabel: 'CIQ代码',
                 flex: .5,
                 allowBlank: false,
-                blankText: '集装箱规格名称不可为空!'
-            });
-
-            var field_Hscode = Ext.create('Ext.form.field.Text', {
-                id: 'HSCODE',
-                name: 'HSCODE',
-                fieldLabel: 'HS编码',
-                flex: .5
+                blankText: 'CIQ代码不可为空!'
             });
 
             var store_ENABLED = Ext.create('Ext.data.JsonStore', {
@@ -305,7 +291,7 @@
                 },
                 items: [
                     { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [field_Code, field_Name] },
-                    { layout: 'column', height: 42, border: 0, items: [field_Hscode, combo_ENABLED] },
+                    { layout: 'column', height: 42, border: 0, items: [combo_ENABLED] },
                     { layout: 'column', height: 42, border: 0, items: [start_date, end_date] },
                     { layout: 'column', height: 42, border: 0, items: [CreatemanName] },
                     { layout: 'column', height: 42, border: 0, items: [field_REMARK, change_reason] },
@@ -324,7 +310,7 @@
                         var formdata = Ext.encode(Ext.getCmp('formpanel_Win').getForm().getValues());
                         console.log('aaaaa');
                         Ext.Ajax.request({
-                            url: 'Base_Container.aspx',
+                            url: 'RelaHSCIQ.aspx',
                             type: 'Post',
                             params: { action: 'save', formdata: formdata },
                             success: function (response, option) {
@@ -356,160 +342,13 @@
         }
 
 
-        function addCustomer_Win(ID, formdata) {
-            form_ini_win();
-            Ext.getCmp('CREATEMANNAME').setValue(username);
-
-
-            if (ID != "") {
-
-                Ext.getCmp('REASON').hidden = false;
-                Ext.getCmp('REASON').allowBlank = false;
-                Ext.getCmp('REASON').blankText = '修改原因不可为空!';
-
-                //默认值的
-                Ext.getCmp('formpanel_Win').getForm().setValues(formdata);
-            }
-
-            var win = Ext.create("Ext.window.Window", {
-                id: "win_d",
-                title: '集装箱规格',
-                width: 1200,
-                height: 430,
-                modal: true,
-                items: [Ext.getCmp('formpanel_Win')]
-            });
-            win.show();
-        }
-
-        function importfile(action) {
-            if (action == "add") {
-                importexcel(action);
-            }
-
-        }
-
-        function importexcel(action) {
-
-            var radio_module = Ext.create('Ext.form.RadioGroup', {
-                name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
-                items: [
-                    { boxLabel: "<a href='/FileUpload/base_containerstandard.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
-                ]
-            });
-
-
-            var uploadfile = Ext.create('Ext.form.field.File', {
-                id: 'UPLOADFILE', name: 'UPLOADFILE', fieldLabel: '导入数据', labelAlign: 'right', msgTarget: 'under'
-                , anchor: '90%', buttonText: '浏览文件', regex: /.*(.xls|.xlsx)$/, regexText: '只能上传xls,xlsx文件'
-                , allowBlank: false, blankText: '文件不能为空!'
-            });
-
-            var start_date = Ext.create('Ext.form.field.Date',
-                {
-                    id: 'STARTDATE',
-                    name: 'STARTDATE',
-                    format: 'Y-m-d',
-                    fieldLabel: '启用日期',
-                    flex: .5
-
-                });
-
-            var end_date = Ext.create('Ext.form.field.Date',
-                {
-                    id: 'ENDDATE',
-                    name: 'ENDDATE',
-                    format: 'Y-m-d',
-                    fieldLabel: '停用日期',
-                    flex: .5
-
-
-                });
-
-            var CreatemanName = Ext.create('Ext.form.field.Text', {
-                id: 'CREATEMANNAME',
-                name: 'CREATEMANNAME',
-                fieldLabel: '维护人',
-                readOnly: true,
-                flex: .5,
-                margin: '0 5 10 122',
-            });
-
-            var formpanel_upload = Ext.create('Ext.form.Panel', {
-                id: 'formpanel_upload', height: 180,
-                fieldDefaults: {
-                    margin: '0 5 10 0',
-                    labelWidth: 80,
-                    labelAlign: 'right',
-                    labelSeparator: '',
-                    msgTarget: 'under'
-                },
-                buttonAlign: 'center',
-
-                items: [
-                    { layout: 'column', height: 42, border: 0, items: [radio_module, CreatemanName] },
-                    { layout: 'column', height: 42, border: 0, items: [start_date, end_date] },
-                    { layout: 'column', height: 42, border: 0, items: [uploadfile] }
-                ],
-                buttons: [{
-                    text: '确认上传',
-                    handler: function () {
-                        if (Ext.getCmp('formpanel_upload').getForm().isValid()) {
-
-                            var formdata = Ext.encode(Ext.getCmp('formpanel_upload').getForm().getValues());
-
-                            Ext.getCmp('formpanel_upload').getForm().submit({
-                                type: 'Post',
-                                url: 'Base_Container.aspx',
-                                params: { formdata: formdata, action: action },
-                                waitMsg: '数据导入中...',
-                                success: function (form, action) {
-                                    console.log(action.result);
-                                    var data = action.result.success;
-                                    var reg = /,$/gi;
-                                    idStr = data.replace(reg, "!");
-                                    Ext.Msg.alert('提示', idStr, function () {
-                                        pgbar.moveFirst();
-                                        Ext.getCmp('win_upload').close();
-                                    });
-                                },
-                                failure: function (form, action) {//失败要做的事情 
-                                    Ext.MessageBox.alert("提示", "保存失败", function () { });
-                                }
-                            });
-
-                        }
-                    }
-                }]
-            });
-
-            var win_upload = Ext.create("Ext.window.Window", {
-                id: "win_upload",
-                title: '集装箱规格',
-                width: 600,
-                height: 240,
-                modal: true,
-                items: [Ext.getCmp('formpanel_upload')]
-            });
-            Ext.getCmp('CREATEMANNAME').setValue(username);
-            win_upload.show();
-        }
-
-        function exportdata() {
-            var CODE_S = Ext.getCmp('CODE_S').getValue();
-            var CNNAME_S = Ext.getCmp('CNNAME_S').getValue();
-            var combo_ENABLED_S = Ext.getCmp('combo_ENABLED_S').getValue();
-            var path = 'Base_Container.aspx?action=export&CODE_S=' + CODE_S + '&CNNAME_S=' + CNNAME_S + '&combo_ENABLED_S=' + combo_ENABLED_S;
-            $('#exportform').attr("action", path).submit();
-        }
-
     </script>
 </head>
 <body>
+    <form id="form1" runat="server">
     <div>
-        <form id="exportform" name="form" enctype="multipart/form-data" method="post"> <%--style="display:inline-block"--%>
-                   
-        </form>   
+    
     </div>
+    </form>
 </body>
 </html>
