@@ -500,7 +500,7 @@
 
             var win_upload = Ext.create("Ext.window.Window", {
                 id: "win_upload",
-                title: '集装箱规格',
+                title: '国家代码对应关系',
                 width: 600,
                 height: 240,
                 modal: true,
