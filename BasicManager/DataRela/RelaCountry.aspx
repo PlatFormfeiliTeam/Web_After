@@ -175,6 +175,229 @@
             }
             return str;
         }
+
+        //新增
+        function addCustomer_Win(ID, formdata) {
+            form_ini_win();
+            Ext.getCmp('CREATEMANNAME').setValue(username);
+
+
+            if (ID != "") {
+
+                Ext.getCmp('REASON').hidden = false;
+                Ext.getCmp('REASON').allowBlank = false;
+                Ext.getCmp('REASON').blankText = '修改原因不可为空!';
+
+                //默认值的
+                Ext.getCmp('formpanel_Win').getForm().setValues(formdata);
+            }
+
+            var win = Ext.create("Ext.window.Window", {
+                id: "win_d",
+                title: '国别代码对应关系',
+                width: 1200,
+                height: 430,
+                modal: true,
+                items: [Ext.getCmp('formpanel_Win')]
+            });
+            win.show();
+        }
+
+
+        function form_ini_win() {
+            var field_ID = Ext.create('Ext.form.field.Hidden', {
+                id: 'ID',
+                name: 'ID'
+            });
+
+            var store_for_decl = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_country_decl
+            });
+
+            var store_for_insp = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_country_insp
+            });
+
+            var field_Code = Ext.create('Ext.form.field.ComboBox', {
+                id: 'DECLCOUNTRY',
+                name: 'DECLCOUNTRY',
+                store: store_for_decl,
+                hideTrigger: true,
+                minChars: 2,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '报关国家代码',
+                flex: .5,
+                allowBlank: false,
+                blankText: '报关国家代码不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
+            var field_Name = Ext.create('Ext.form.field.ComboBox', {
+                id: 'INSPCOUNTRY',
+                name: 'INSPCOUNTRY',
+                store: store_for_insp,
+                displayField: 'NAME',
+                valueField: 'CODE',
+                hideTrigger: true,
+                minChars: 2,
+                queryMode: 'local',
+                anyMatch: true,
+                fieldLabel: '报检国家代码',
+                flex: .5,
+                allowBlank: false,
+                blankText: '报检国家代码不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
+            var store_ENABLED = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: [{ "CODE": 0, "NAME": "否" }, { "CODE": 1, "NAME": "是" }]
+            });
+            var combo_ENABLED = Ext.create('Ext.form.field.ComboBox', {
+                id: 'combo_ENABLED',
+                name: 'ENABLED',
+                store: store_ENABLED,
+                queryMode: 'local',
+                anyMatch: true,
+                fieldLabel: '是否启用', flex: .5,
+                displayField: 'NAME',
+                valueField: 'CODE',
+                value: 1,
+                allowBlank: false,
+                blankText: '是否启用不能为空!'
+            });
+
+            var start_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'STARTDATE',
+                    name: 'STARTDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '启用日期',
+                    flex: .5
+
+                });
+
+            var end_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'ENDDATE',
+                    name: 'ENDDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '停用日期',
+                    flex: .5
+                });
+            var CreatemanName = Ext.create('Ext.form.field.Text', {
+                id: 'CREATEMANNAME',
+                name: 'CREATEMANNAME',
+                fieldLabel: '维护人',
+                readOnly: true
+            });
+
+
+            var field_REMARK = Ext.create('Ext.form.field.Text', {
+                id: 'REMARK',
+                name: 'REMARK',
+                fieldLabel: '备注'
+            });
+
+            //修改原因输入框
+            var change_reason = Ext.create('Ext.form.field.Text', {
+                id: 'REASON',
+                name: 'REASON',
+                fieldLabel: '修改原因',
+                hidden: true
+
+
+            });
+
+            var formpanel_Win = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_Win',
+                minHeight: 170,
+                border: 0,
+                buttonAlign: 'center',
+                fieldDefaults: {
+                    margin: '0 5 10 0',
+                    labelWidth: 100,
+                    columnWidth: .5,
+                    labelAlign: 'right',
+                    labelSeparator: '',
+                    msgTarget: 'under'
+                },
+                items: [
+                    { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [field_Code, field_Name] },
+                    { layout: 'column', height: 42, border: 0, items: [combo_ENABLED] },
+                    { layout: 'column', height: 42, border: 0, items: [start_date, end_date] },
+                    { layout: 'column', height: 42, border: 0, items: [CreatemanName] },
+                    { layout: 'column', height: 42, border: 0, items: [field_REMARK, change_reason] },
+
+                    field_ID
+                ],
+                buttons: [{
+
+                    text: '<span class="icon iconfont" style="font-size:12px;">&#xe60c;</span>&nbsp;保存', handler: function () {
+                        console.log('bbbb');
+                        if (!Ext.getCmp('formpanel_Win').getForm().isValid()) {
+
+                            return;
+                        }
+
+                        var formdata = Ext.encode(Ext.getCmp('formpanel_Win').getForm().getValues());
+                        console.log('aaaaa');
+                        Ext.Ajax.request({
+                            url: 'RelaCountry.aspx',
+                            type: 'Post',
+                            params: { action: 'save', formdata: formdata },
+                            success: function (response, option) {
+
+                                var data = Ext.decode(response.responseText);
+                                if (data.success == "5") {
+                                    Ext.Msg.alert('提示',
+                                        "保存成功",
+                                        function () {
+                                            Ext.getCmp("pgbar").moveFirst();
+                                            Ext.getCmp("win_d").close();
+                                        });
+                                } else {
+                                    var errorMsg = data.success;
+                                    var reg = /,$/gi;
+                                    idStr = errorMsg.replace(reg, "!");
+                                    Ext.Msg.alert('提示', "保存失败:" + idStr, function () {
+                                        Ext.getCmp("pgbar").moveFirst(); Ext.getCmp("win_d").close();
+                                    });
+                                }
+
+
+                            }
+                        });
+
+                    }
+                }]
+            });
+        }
+
+        //编辑
+        function editCustomer() {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要查看详细的记录！');
+                return;
+            }
+            addCustomer_Win(recs[0].get("ID"), recs[0].data);
+        }
+
+
      </script>
 </head>
 <body>

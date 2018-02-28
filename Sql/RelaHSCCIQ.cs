@@ -35,7 +35,6 @@ namespace Web_After.Sql
                 strWhere = " and id not in('" + id + "')";
             }
             List<int> addList = new List<int>();
-            Sql.Base_Company bc = new Sql.Base_Company();
             //对应关系重复返回值为1
             if (check_hscode_repeat(hscode, ciqcode, strWhere).Rows.Count > 0)
             {
@@ -162,7 +161,7 @@ namespace Web_After.Sql
 
             if (dt.Rows[0]["enabled"] != json.Value<string>("ENABLED"))
             {
-                str += "启用：" + dt.Rows[0]["name"] + "——>" + json.Value<string>("NAME") + "。";
+                str += "启用：" + dt.Rows[0]["enabled"] + "——>" + json.Value<string>("ENABLED") + "。";
             }
 
             if (dt.Rows[0]["remark"] != json.Value<string>("REMARK"))

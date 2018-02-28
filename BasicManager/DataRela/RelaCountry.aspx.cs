@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -28,7 +29,7 @@ namespace Web_After.BasicManager.DataRela
                         loadData();
                         break;
                     case "save":
-                        //save(Request["formdata"]);
+                        save(Request["formdata"]);
                         break;
                     case "export":
                         //export();
@@ -78,6 +79,67 @@ namespace Web_After.BasicManager.DataRela
                 Convert.ToInt32(Request["limit"]));
             string json = JsonConvert.SerializeObject(dt, iso);
             Response.Write("{rows:" + json + ",total:" + totalProperty + "}");
+            Response.End();
+        }
+
+        public void save(string formdata)
+        {
+            JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
+            Sql.RelaCountry bcsql = new Sql.RelaCountry();
+            //禁用人
+            string stopman = "";
+            //返回重复结果
+            string repeat = "";
+            //返回前端的值
+            string response = "";
+
+            if (json.Value<string>("ENABLED") == "1")
+            {
+                stopman = "";
+            }
+            else
+            {
+                FormsIdentity identity = HttpContext.Current.User.Identity as FormsIdentity;
+                string userName = identity.Name;
+                JObject json_user = Extension.Get_UserInfo(userName);
+                stopman = (string)json_user.GetValue("ID");
+            }
+
+            if (String.IsNullOrEmpty(json.Value<string>("ID")))
+            {
+                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLCOUNTRY"), json.Value<string>("INSPCOUNTRY"));
+                if (retunRepeat.Count > 0)
+                {
+                    repeat = "此报关国别或报检国别已经有对应关系存在，请检查";
+                }
+                else
+                {
+                    int i = bcsql.insert_relaCountry(json, stopman);
+                    repeat = "5";
+                }
+            }
+            else
+            {
+                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLCOUNTRY"), json.Value<string>("INSPCOUNTRY"));
+                if (retunRepeat.Count > 0)
+                {
+                    repeat = "此报关国别或报检国别已经有对应关系存在，请检查";
+                }
+                else
+                {
+                    DataTable dt = bcsql.LoadDataById(json.Value<string>("ID"));
+                    int i=  bcsql.update_relaCountry(json, stopman);
+                    if (i > 0)
+                    {
+                        bcsql.insert_base_alterrecord(json, dt);
+                    }
+                    repeat = "5";
+                }
+            }
+
+            response = "{\"success\":\"" + repeat + "\"}";
+
+            Response.Write(response);
             Response.End();
         }
 
