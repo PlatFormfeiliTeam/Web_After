@@ -187,7 +187,7 @@ namespace Web_After.Sql
             string sql = @"select t1.*,t2.hsname as hsname,t3.ciqname,t4.name as createmanname,t5.name as stopmanname from rela_hsciq t1 left join base_insphs t2 on 
                                    t1.hscode=(t2.hscode||t2.extracode) left join base_ciqcode t3 on t1.ciqcode=t3.ciq  left join sys_user t4 on t1.createman=t4.id left join sys_user t5 on t1.stopman=t5.id {0}";
             sql = string.Format(sql, strWhere);
-
+            return DBMgrBase.GetDataTable(sql);
         }
 
     }

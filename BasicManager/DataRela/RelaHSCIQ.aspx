@@ -533,9 +533,10 @@
     </script>
 </head>
 <body>
-    <form id="form1" runat="server">
-        <div>
-        </div>
-    </form>
+    <div>
+        <form id="exportform" name="form" enctype="multipart/form-data" method="post"> <%--style="display:inline-block"--%>
+                   
+        </form>   
+    </div>
 </body>
 </html>
