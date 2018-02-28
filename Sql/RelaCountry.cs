@@ -150,5 +150,26 @@ namespace Web_After.Sql
 
         }
 
+        public void insert_rela_country_excel(string DECLCOUNTRY, string INSPCOUNTRY, string ENABLED, string REMARK, string stopman, string STARTDATE, string ENDDATE)
+        {
+            FormsIdentity identity = HttpContext.Current.User.Identity as FormsIdentity;
+            string userName = identity.Name;
+            JObject json_user = Extension.Get_UserInfo(userName);
+            string sql = @"insert into rela_country (id,declcountry,inspcountry,createman,stopman,createdate,startdate,enddate,enabled,remark,yearid)
+                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}','')";
+            sql = string.Format(sql, DECLCOUNTRY, INSPCOUNTRY, json_user.GetValue("ID"), stopman,
+                STARTDATE, ENDDATE, ENABLED, REMARK);
+            int i = DBMgrBase.ExecuteNonQuery(sql);
+        }
+
+        public DataTable export_rela_country(string strWhere)
+        {
+            string sql = @"select t1.*,t2.name as declcountryname,t3.name as inspcountryname,t4.name as createmanname,t5.name as stopmanname from rela_country t1 left join 
+                                  base_country t2 on t1.declcountry=t2.code left join base_inspcountry t3 on t1.inspcountry=t3.code  left join sys_user t4 on t1.createman=t4.id left join sys_user t5 on t1.stopman=t5.id {0}";
+            sql = string.Format(sql, strWhere);
+            return DBMgrBase.GetDataTable(sql);
+        }
+
     }
 }
