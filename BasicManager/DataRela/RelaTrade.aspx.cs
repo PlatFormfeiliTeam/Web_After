@@ -15,7 +15,7 @@ using Web_After.Common;
 
 namespace Web_After.BasicManager.DataRela
 {
-    public partial class RelaPackage : System.Web.UI.Page
+    public partial class RelaTrade : System.Web.UI.Page
     {
         IsoDateTimeConverter iso = new IsoDateTimeConverter();//序列化JSON对象时,日期的处理格式
         int totalProperty = 0;
@@ -34,7 +34,7 @@ namespace Web_After.BasicManager.DataRela
                         save(Request["formdata"]);
                         break;
                     case "export":
-                        export();
+                        //export();
                         break;
                     case "add":
                         ImportExcelData();
@@ -44,41 +44,40 @@ namespace Web_After.BasicManager.DataRela
                         break;
                 }
             }
-
         }
-
 
         public void Ini_Base_Data()
         {
             string sql = "";
-            string DECLPACKAGE = "[]";//报关包装类型
-            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_packing where CODE is not null and enabled=1";
-            DECLPACKAGE = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+            string DECLTRADE = "[]";//报关
+            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_decltradeway where CODE is not null and enabled=1";
+            DECLTRADE = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
 
-            string INSPPACKAGE = "[]";//报检包装类型
-            sql = "SELECT CODE as CODE,NAME||'('||CODE||')' as NAME FROM base_insppackage where CODE is not null and enabled=1";
-            INSPPACKAGE = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+            string INSPTRADE = "[]";//报检
+            sql = "SELECT CODE as CODE,NAME||'('||CODE||')' as NAME FROM base_tradeway where CODE is not null and enabled=1";
+            INSPTRADE = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
 
-            Response.Write("{DECLPACKAGE:" + DECLPACKAGE + ",INSPPACKAGE:" + INSPPACKAGE + "}");
+            Response.Write("{DECLTRADE:" + DECLTRADE + ",INSPTRADE:" + INSPTRADE + "}");
             Response.End();
         }
+
 
         private void loadData()
         {
             string strWhere = " where 1=1 ";
-            if (!string.IsNullOrEmpty(Request["DECLPACKAGECODE"]))
+            if (!string.IsNullOrEmpty(Request["DECLTRADECODE"]))
             {
-                strWhere = strWhere + " and t1.declpackage like '%" + Request["DECLPACKAGECODE"] + "%'";
+                strWhere = strWhere + " and t1.decltrade like '%" + Request["DECLTRADECODE"] + "%'";
             }
-            if (!string.IsNullOrEmpty(Request["DECLPACKAGENAME"]))
+            if (!string.IsNullOrEmpty(Request["DECLTRADENAME"]))
             {
-                strWhere = strWhere + " and t2.name like '%" + Request["DECLPACKAGENAME"] + "%'";
+                strWhere = strWhere + " and t2.name like '%" + Request["DECLTRADENAME"] + "%'";
             }
             if (!string.IsNullOrEmpty(Request["ENABLED_S"]))
             {
                 strWhere = strWhere + " and t1.enabled='" + Request["ENABLED_S"] + "'";
             }
-            Sql.RelaPackage bc = new Sql.RelaPackage();
+            Sql.RelaTrade bc = new Sql.RelaTrade();
             DataTable dt = bc.LoaData(strWhere, "", "", ref totalProperty, Convert.ToInt32(Request["start"]),
                 Convert.ToInt32(Request["limit"]));
             string json = JsonConvert.SerializeObject(dt, iso);
@@ -86,11 +85,10 @@ namespace Web_After.BasicManager.DataRela
             Response.End();
         }
 
-
         public void save(string formdata)
         {
             JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
-            Sql.RelaPackage bcsql = new Sql.RelaPackage();
+            Sql.RelaTrade bcsql = new Sql.RelaTrade();
             //禁用人
             string stopman = "";
             //返回重复结果
@@ -112,14 +110,14 @@ namespace Web_After.BasicManager.DataRela
 
             if (String.IsNullOrEmpty(json.Value<string>("ID")))
             {
-                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLPACKAGE"), json.Value<string>("INSPPACKAGE"));
+                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLTRADE"), json.Value<string>("INSPTRADE"));
                 if (retunRepeat.Count > 0)
                 {
-                    repeat = "此报关包装类别和报检包装类别已经有对应关系存在，请检查";
+                    repeat = "此报关报检贸易方式已经有对应关系存在，请检查";
                 }
                 else
                 {
-                    int i = bcsql.insert_relaPackage(json, stopman);
+                    int i = bcsql.insert_relaTrade(json, stopman);
                     repeat = "5";
                 }
             }
@@ -128,12 +126,12 @@ namespace Web_After.BasicManager.DataRela
                 List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLCOUNTRY"), json.Value<string>("INSPCOUNTRY"));
                 if (retunRepeat.Count > 0)
                 {
-                    repeat = "此报关包装类别和报检包装类别已经有对应关系存在，请检查";
+                    repeat = "此报关报检贸易方式已经有对应关系存在，请检查";
                 }
                 else
                 {
                     DataTable dt = bcsql.LoadDataById(json.Value<string>("ID"));
-                    int i = bcsql.update_relaPackage(json, stopman);
+                    int i = bcsql.update_relaTrade(json, stopman);
                     if (i > 0)
                     {
                         bcsql.insert_base_alterrecord(json, dt);
@@ -148,7 +146,6 @@ namespace Web_After.BasicManager.DataRela
             Response.End();
         }
 
-
         public void ImportExcelData()
         {
             string formdata = Request["formdata"];
@@ -162,10 +159,10 @@ namespace Web_After.BasicManager.DataRela
                 Directory.CreateDirectory("/FileUpload/PreData");
             }
             string newfile = @"/FileUpload/PreData/" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_" + fileName;
-            postedFile.SaveAs(Server.MapPath(newfile));
+            //postedFile.SaveAs(Server.MapPath(newfile));
 
             //本机不加Server.MapPath
-            //postedFile.SaveAs(newfile);
+            postedFile.SaveAs(newfile);
 
             //npoi的方法
             //DataTable dt = NPOIHelper.RenderDataTableFromExcel(newfile, ".xls", 0, 0);
@@ -209,7 +206,7 @@ namespace Web_After.BasicManager.DataRela
 
         public Dictionary<int, List<int>> upload_RelaCountry(string newfile, string fileName, string action, JObject json_formdata)
         {
-            Sql.RelaPackage bc = new Sql.RelaPackage();
+            Sql.RelaTrade bc = new Sql.RelaTrade();
             DataTable dtExcel = GetExcelData_Table(Server.MapPath(newfile), 0);
             //DataTable dtExcel = GetExcelData_Table(newfile, 0);
             List<string> stringList = new List<string>();
@@ -237,9 +234,9 @@ namespace Web_After.BasicManager.DataRela
 
                 }
                 //报关         
-                string DECLPACKAGE = stringList[0];
+                string DECLTRADE = stringList[0];
                 //报检          
-                string INSPPACKAGE = stringList[2];
+                string INSPTRADE = stringList[2];
 
                 string REMARK = stringList[4];
                 //string ENABLED = stringList[4] == "是" ? "1" : "0";
@@ -266,7 +263,7 @@ namespace Web_After.BasicManager.DataRela
                     stopman = (string)json_user.GetValue("ID");
                 }
                 //导入判断条件
-                List<int> inlist = bc.CheckRepeat("", DECLPACKAGE, INSPPACKAGE);
+                List<int> inlist = bc.CheckRepeat("", DECLTRADE, INSPTRADE);
 
                 if (inlist.Count > 0)
                 {
@@ -275,7 +272,7 @@ namespace Web_After.BasicManager.DataRela
                 }
                 else
                 {
-                    bc.insert_rela_package_excel(DECLPACKAGE, INSPPACKAGE, ENABLED, REMARK, stopman, STARTDATE, ENDDATE);
+                    bc.insert_rela_trade_excel(DECLTRADE, INSPTRADE, ENABLED, REMARK, stopman, STARTDATE, ENDDATE);
                     count = count + 1;
                 }
 
@@ -301,17 +298,16 @@ namespace Web_After.BasicManager.DataRela
 
         }
 
-
         public void export()
         {
             string strWhere = " where 1=1 ";
-            if (!string.IsNullOrEmpty(Request["DECLPACKAGECODE"]))
+            if (!string.IsNullOrEmpty(Request["DECLTRADE"]))
             {
-                strWhere = strWhere + " and t1.declpackage like '%" + Request["DECLPACKAGECODE"] + "%'";
+                strWhere = strWhere + " and t1.decltrade like '%" + Request["DECLTRADE"] + "%'";
             }
-            if (!string.IsNullOrEmpty(Request["DECLPACKAGENAME"]))
+            if (!string.IsNullOrEmpty(Request["DECLTRADENAME"]))
             {
-                strWhere = strWhere + " and t2.name like '%" + Request["DECLPACKAGENAME"] + "%'";
+                strWhere = strWhere + " and t2.name like '%" + Request["DECLTRADENAME"] + "%'";
             }
             string combo_ENABLED_S2 = Request["combo_ENABLED_S"];
             if (combo_ENABLED_S2 == "null")
@@ -323,18 +319,18 @@ namespace Web_After.BasicManager.DataRela
             {
                 strWhere = strWhere + " and t1.enabled='" + combo_ENABLED_S2 + "'";
             }
-            Sql.RelaPackage bc = new Sql.RelaPackage();
+            Sql.RelaTrade bc = new Sql.RelaTrade();
 
-            DataTable dt = bc.export_rela_package(strWhere);
+            DataTable dt = bc.export_rela_trade(strWhere);
             //创建Excel文件的对象
             NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
             //添加一个导出成功sheet
-            NPOI.SS.UserModel.ISheet sheet_S = book.CreateSheet("包装类别对应关系");
+            NPOI.SS.UserModel.ISheet sheet_S = book.CreateSheet("贸易方式对应关系");
             NPOI.SS.UserModel.IRow row1 = sheet_S.CreateRow(0);
-            row1.CreateCell(0).SetCellValue("报关包装代码");
-            row1.CreateCell(1).SetCellValue("报关包装名称");
-            row1.CreateCell(2).SetCellValue("报检包装代码");
-            row1.CreateCell(3).SetCellValue("报检包装名称");
+            row1.CreateCell(0).SetCellValue("报关贸易方式代码");
+            row1.CreateCell(1).SetCellValue("报关贸易方式名称");
+            row1.CreateCell(2).SetCellValue("报检贸易方式代码");
+            row1.CreateCell(3).SetCellValue("报检贸易方式名称");
             row1.CreateCell(4).SetCellValue("启用情况");
             row1.CreateCell(5).SetCellValue("启用时间");
             row1.CreateCell(6).SetCellValue("维护人");
@@ -346,10 +342,10 @@ namespace Web_After.BasicManager.DataRela
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 NPOI.SS.UserModel.IRow rowtemp = sheet_S.CreateRow(i + 1);
-                rowtemp.CreateCell(0).SetCellValue(dt.Rows[i]["DECLPACKAGE"].ToString());
-                rowtemp.CreateCell(1).SetCellValue(dt.Rows[i]["DECLPACKAGENAME"].ToString());
-                rowtemp.CreateCell(2).SetCellValue(dt.Rows[i]["INSPPACKAGE"].ToString());
-                rowtemp.CreateCell(3).SetCellValue(dt.Rows[i]["INSPPACKAGENAME"].ToString());
+                rowtemp.CreateCell(0).SetCellValue(dt.Rows[i]["DECLTRADE"].ToString());
+                rowtemp.CreateCell(1).SetCellValue(dt.Rows[i]["DECLTRADENAME"].ToString());
+                rowtemp.CreateCell(2).SetCellValue(dt.Rows[i]["INSPTRADE"].ToString());
+                rowtemp.CreateCell(3).SetCellValue(dt.Rows[i]["INSPTRADENAME"].ToString());
                 rowtemp.CreateCell(4).SetCellValue(dt.Rows[i]["ENABLED"].ToString() == "1" ? "是" : "否");
                 rowtemp.CreateCell(5).SetCellValue(dt.Rows[i]["STARTDATE"].ToString());
                 rowtemp.CreateCell(6).SetCellValue(dt.Rows[i]["CREATEMANNAME"].ToString());
@@ -361,7 +357,7 @@ namespace Web_After.BasicManager.DataRela
             try
             {
                 // 输出Excel
-                string filename = "包装类别对应关系.xls";
+                string filename = "贸易方式对应关系.xls";
                 Response.ContentType = "application/vnd.ms-excel";
                 Response.AddHeader("Content-Disposition", string.Format("attachment;filename={0}", Server.UrlEncode(filename)));
                 Response.Clear();
@@ -377,8 +373,6 @@ namespace Web_After.BasicManager.DataRela
             }
 
         }
-
-
 
         public string Username()
         {
