@@ -159,10 +159,10 @@ namespace Web_After.BasicManager.DataRela
                 Directory.CreateDirectory("/FileUpload/PreData");
             }
             string newfile = @"/FileUpload/PreData/" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_" + fileName;
-            //postedFile.SaveAs(Server.MapPath(newfile));
+            postedFile.SaveAs(Server.MapPath(newfile));
 
             //本机不加Server.MapPath
-            postedFile.SaveAs(newfile);
+            //postedFile.SaveAs(newfile);
 
             //npoi的方法
             //DataTable dt = NPOIHelper.RenderDataTableFromExcel(newfile, ".xls", 0, 0);
