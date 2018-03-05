@@ -184,13 +184,355 @@
                 });
         }
 
+        //新增
+        function addCustomer_Win(ID, formdata) {
+            form_ini_win();
+            Ext.getCmp('CREATEMANNAME').setValue(username);
+
+
+            if (ID != "") {
+
+                Ext.getCmp('REASON').hidden = false;
+                Ext.getCmp('REASON').allowBlank = false;
+                Ext.getCmp('REASON').blankText = '修改原因不可为空!';
+
+                //默认值的
+                Ext.getCmp('formpanel_Win').getForm().setValues(formdata);
+            }
+
+            var win = Ext.create("Ext.window.Window", {
+                id: "win_d",
+                title: '运输工具对应关系',
+                width: 1200,
+                height: 430,
+                modal: true,
+                items: [Ext.getCmp('formpanel_Win')]
+            });
+            win.show();
+        }
+
+
+        function form_ini_win() {
+            var field_ID = Ext.create('Ext.form.field.Hidden', {
+                id: 'ID',
+                name: 'ID'
+            });
+
+            var store_for_decl = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_transport_decl
+            });
+
+            var store_for_insp = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_transport_insp
+            });
+
+            var field_Code = Ext.create('Ext.form.field.ComboBox', {
+                id: 'DECLTRANSPORT',
+                name: 'DECLTRANSPORT',
+                store: store_for_decl,
+                hideTrigger: true,
+                minChars: 1,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '报关运输方式代码',
+                flex: .5,
+                allowBlank: false,
+                blankText: '报关运输方式代码不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
+            var field_Name = Ext.create('Ext.form.field.ComboBox', {
+                id: 'INSPTRANSPORT',
+                name: 'INSPTRANSPORT',
+                store: store_for_insp,
+                displayField: 'NAME',
+                valueField: 'CODE',
+                hideTrigger: true,
+                minChars: 1,
+                queryMode: 'local',
+                anyMatch: true,
+                fieldLabel: '报检运输方式代码',
+                flex: .5,
+                allowBlank: false,
+                blankText: '报检运输方式代码不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
+            var store_ENABLED = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: [{ "CODE": 0, "NAME": "否" }, { "CODE": 1, "NAME": "是" }]
+            });
+            var combo_ENABLED = Ext.create('Ext.form.field.ComboBox', {
+                id: 'combo_ENABLED',
+                name: 'ENABLED',
+                store: store_ENABLED,
+                queryMode: 'local',
+                anyMatch: true,
+                fieldLabel: '是否启用', flex: .5,
+                displayField: 'NAME',
+                valueField: 'CODE',
+                value: 1,
+                allowBlank: false,
+                blankText: '是否启用不能为空!'
+            });
+
+            var start_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'STARTDATE',
+                    name: 'STARTDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '启用日期',
+                    flex: .5
+
+                });
+
+            var end_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'ENDDATE',
+                    name: 'ENDDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '停用日期',
+                    flex: .5
+                });
+            var CreatemanName = Ext.create('Ext.form.field.Text', {
+                id: 'CREATEMANNAME',
+                name: 'CREATEMANNAME',
+                fieldLabel: '维护人',
+                readOnly: true
+            });
+
+
+            var field_REMARK = Ext.create('Ext.form.field.Text', {
+                id: 'REMARK',
+                name: 'REMARK',
+                fieldLabel: '备注'
+            });
+
+            //修改原因输入框
+            var change_reason = Ext.create('Ext.form.field.Text', {
+                id: 'REASON',
+                name: 'REASON',
+                fieldLabel: '修改原因',
+                hidden: true
+
+
+            });
+
+            var formpanel_Win = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_Win',
+                minHeight: 170,
+                border: 0,
+                buttonAlign: 'center',
+                fieldDefaults: {
+                    margin: '0 5 10 0',
+                    labelWidth: 100,
+                    columnWidth: .5,
+                    labelAlign: 'right',
+                    labelSeparator: '',
+                    msgTarget: 'under'
+                },
+                items: [
+                    { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [field_Code, field_Name] },
+                    { layout: 'column', height: 42, border: 0, items: [combo_ENABLED] },
+                    { layout: 'column', height: 42, border: 0, items: [start_date, end_date] },
+                    { layout: 'column', height: 42, border: 0, items: [CreatemanName] },
+                    { layout: 'column', height: 42, border: 0, items: [field_REMARK, change_reason] },
+
+                    field_ID
+                ],
+                buttons: [{
+
+                    text: '<span class="icon iconfont" style="font-size:12px;">&#xe60c;</span>&nbsp;保存', handler: function () {
+                        console.log('bbbb');
+                        if (!Ext.getCmp('formpanel_Win').getForm().isValid()) {
+
+                            return;
+                        }
+
+                        var formdata = Ext.encode(Ext.getCmp('formpanel_Win').getForm().getValues());
+                        console.log('aaaaa');
+                        Ext.Ajax.request({
+                            url: 'RelaTransport.aspx',
+                            type: 'Post',
+                            params: { action: 'save', formdata: formdata },
+                            success: function (response, option) {
+
+                                var data = Ext.decode(response.responseText);
+                                if (data.success == "5") {
+                                    Ext.Msg.alert('提示',
+                                        "保存成功",
+                                        function () {
+                                            Ext.getCmp("pgbar").moveFirst();
+                                            Ext.getCmp("win_d").close();
+                                        });
+                                } else {
+                                    var errorMsg = data.success;
+                                    var reg = /,$/gi;
+                                    idStr = errorMsg.replace(reg, "!");
+                                    Ext.Msg.alert('提示', "保存失败:" + idStr, function () {
+                                        Ext.getCmp("pgbar").moveFirst(); Ext.getCmp("win_d").close();
+                                    });
+                                }
+
+
+                            }
+                        });
+
+                    }
+                }]
+            });
+        }
+
+        //编辑
+        function editCustomer() {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要查看详细的记录！');
+                return;
+            }
+            addCustomer_Win(recs[0].get("ID"), recs[0].data);
+        }
+
+        function importfile(action) {
+            if (action == "add") {
+                importexcel(action);
+            }
+
+        }
+
+        function importexcel(action) {
+
+            var radio_module = Ext.create('Ext.form.RadioGroup', {
+                name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
+                items: [
+                    { boxLabel: "<a href='/FileUpload/rela_transport.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
+                ]
+            });
+
+
+            var uploadfile = Ext.create('Ext.form.field.File', {
+                id: 'UPLOADFILE', name: 'UPLOADFILE', fieldLabel: '导入数据', labelAlign: 'right', msgTarget: 'under'
+                , anchor: '90%', buttonText: '浏览文件', regex: /.*(.xls|.xlsx)$/, regexText: '只能上传xls,xlsx文件'
+                , allowBlank: false, blankText: '文件不能为空!'
+            });
+
+            var start_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'STARTDATE',
+                    name: 'STARTDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '启用日期',
+                    flex: .5
+
+                });
+
+            var end_date = Ext.create('Ext.form.field.Date',
+                {
+                    id: 'ENDDATE',
+                    name: 'ENDDATE',
+                    format: 'Y-m-d',
+                    fieldLabel: '停用日期',
+                    flex: .5
+
+
+                });
+
+            var CreatemanName = Ext.create('Ext.form.field.Text', {
+                id: 'CREATEMANNAME',
+                name: 'CREATEMANNAME',
+                fieldLabel: '维护人',
+                readOnly: true,
+                flex: .5,
+                margin: '0 5 10 122',
+            });
+
+            var formpanel_upload = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_upload', height: 180,
+                fieldDefaults: {
+                    margin: '0 5 10 0',
+                    labelWidth: 80,
+                    labelAlign: 'right',
+                    labelSeparator: '',
+                    msgTarget: 'under'
+                },
+                buttonAlign: 'center',
+
+                items: [
+                    { layout: 'column', height: 42, border: 0, items: [radio_module, CreatemanName] },
+                    { layout: 'column', height: 42, border: 0, items: [start_date, end_date] },
+                    { layout: 'column', height: 42, border: 0, items: [uploadfile] }
+                ],
+                buttons: [{
+                    text: '确认上传',
+                    handler: function () {
+                        if (Ext.getCmp('formpanel_upload').getForm().isValid()) {
+
+                            var formdata = Ext.encode(Ext.getCmp('formpanel_upload').getForm().getValues());
+
+                            Ext.getCmp('formpanel_upload').getForm().submit({
+                                type: 'Post',
+                                url: 'RelaTransport.aspx',
+                                params: { formdata: formdata, action: action },
+                                waitMsg: '数据导入中...',
+                                success: function (form, action) {
+                                    console.log(action.result);
+                                    var data = action.result.success;
+                                    var reg = /,$/gi;
+                                    idStr = data.replace(reg, "!");
+                                    Ext.Msg.alert('提示', idStr, function () {
+                                        pgbar.moveFirst();
+                                        Ext.getCmp('win_upload').close();
+                                    });
+                                },
+                                failure: function (form, action) {//失败要做的事情 
+                                    Ext.MessageBox.alert("提示", "保存失败", function () { });
+                                }
+                            });
+
+                        }
+                    }
+                }]
+            });
+
+            var win_upload = Ext.create("Ext.window.Window", {
+                id: "win_upload",
+                title: '运输方式对应关系',
+                width: 600,
+                height: 240,
+                modal: true,
+                items: [Ext.getCmp('formpanel_upload')]
+            });
+            Ext.getCmp('CREATEMANNAME').setValue(username);
+            win_upload.show();
+        }
+
+        function exportdata() {
+            var DECLTRANSPORTCODE = Ext.getCmp('DECLTRANSPORTCODE').getValue();
+            var DECLTRANSPORTNAME = Ext.getCmp('DECLTRANSPORTNAME').getValue();
+            var combo_ENABLED_S = Ext.getCmp('combo_ENABLED_S').getValue();
+            var path = 'RelaTransport.aspx?action=export&DECLTRANSPORTCODE=' + DECLTRANSPORTCODE + '&DECLTRANSPORTNAME=' + DECLTRANSPORTNAME + '&combo_ENABLED_S=' + combo_ENABLED_S;
+            $('#exportform').attr("action", path).submit();
+        }
+
     </script>
 </head>
 <body>
-    <form id="form1" runat="server">
     <div>
-    
+        <form id="exportform" name="form" enctype="multipart/form-data" method="post"> <%--style="display:inline-block"--%>
+                   
+        </form>   
     </div>
-    </form>
 </body>
 </html>
