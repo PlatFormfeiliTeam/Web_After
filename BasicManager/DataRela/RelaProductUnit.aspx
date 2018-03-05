@@ -518,6 +518,14 @@
             var path = 'RelaProductUnit.aspx?action=export&DECLUNITCODE=' + DECLUNITCODE + '&DECUNITNAME=' + DECUNITNAME + '&combo_ENABLED_S=' + combo_ENABLED_S;
             $('#exportform').attr("action", path).submit();
         }
+
+        //重置查询条件
+        function reset() {
+            Ext.each(Ext.getCmp('formpanel_search').getForm().getFields().items,
+                function (field) {
+                    field.reset();
+                });
+        }
     </script>
 </head>
 <body>

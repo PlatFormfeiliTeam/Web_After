@@ -517,6 +517,14 @@
             $('#exportform').attr("action", path).submit();
         }
 
+        //重置查询条件
+        function reset() {
+            Ext.each(Ext.getCmp('formpanel_search').getForm().getFields().items,
+                function (field) {
+                    field.reset();
+                });
+        }
+
     </script>
 </head>
 <body>
