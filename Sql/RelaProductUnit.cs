@@ -57,7 +57,7 @@ base_declproductunit t2 on t1.declproductunit=t2.code left join base_productunit
             string userName = identity.Name;
             JObject json_user = Extension.Get_UserInfo(userName);
             string sql = @"insert into rela_productunit (id,declproductunit,inspproductunit,createman,stopman,createdate,startdate,enddate,enabled,remark,yearid)
-                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  values(rela_productunit_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}','')";
             sql = string.Format(sql, json.Value<string>("DECLPRODUCTUNIT"), json.Value<string>("INSPPRODUCTUNIT"), json_user.GetValue("ID"), stopman,
                 json.Value<string>("STARTDATE") == "" ? DateTime.MinValue.ToShortDateString() : json.Value<string>("STARTDATE"),
@@ -152,7 +152,7 @@ base_declproductunit t2 on t1.declproductunit=t2.code left join base_productunit
             string userName = identity.Name;
             JObject json_user = Extension.Get_UserInfo(userName);
             string sql = @"insert into rela_productunit (id,declproductunit,inspproductunit,createman,stopman,createdate,startdate,enddate,enabled,remark,yearid)
-                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  values(rela_productunit_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}','')";
             sql = string.Format(sql, DECLUNIT, INSPUNIT, json_user.GetValue("ID"), stopman,
                 STARTDATE, ENDDATE, ENABLED, REMARK);

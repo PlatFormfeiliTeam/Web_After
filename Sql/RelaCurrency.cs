@@ -56,7 +56,7 @@ namespace Web_After.Sql
             JObject json_user = Extension.Get_UserInfo(userName);
 
             string sql = @"insert into rela_currency (id,declcurrency,inspcurrency,createman,stopman,createdate,startdate,enddate,enabled,remark,yearid)
-                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  values(rela_currency_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}','')";
             sql = string.Format(sql, json.Value<string>("DECLCURRENCY"), json.Value<string>("INSPCURRENCY"), json_user.GetValue("ID"), stopman,
                 json.Value<string>("STARTDATE") == "" ? DateTime.MinValue.ToShortDateString() : json.Value<string>("STARTDATE"),
@@ -150,7 +150,7 @@ namespace Web_After.Sql
             string userName = identity.Name;
             JObject json_user = Extension.Get_UserInfo(userName);
             string sql = @"insert into rela_currency (id,declcurrency,inspcurrency,createman,stopman,createdate,startdate,enddate,enabled,remark,yearid)
-                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  values(rela_currency_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}','')";
             sql = string.Format(sql, DECLCURRENCY, INSPCURRENCY, json_user.GetValue("ID"), stopman,
                 STARTDATE, ENDDATE, ENABLED, REMARK);

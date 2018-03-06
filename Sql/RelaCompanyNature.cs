@@ -59,7 +59,7 @@ namespace Web_After.Sql
             //values(rela_country_id.nextval,'{0-declcountry}','{1-inspcountry}','{2-createman}','{3-stopman}',sysdate,to_date('4-startdate','yyyy-mm-dd hh24:mi:ss'),
             //to_date('5-enddate','yyyy-mm-dd hh24:mi:ss'),'{6-enabled}','{7-remark}','')";
             string sql = @"insert into rela_companynature (id,declcompanynature,inspcompanynature,createman,stopman,createdate,startdate,enddate,enabled,remark)
-                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  values(rela_companynature_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}')";
             sql = string.Format(sql, json.Value<string>("DECLCOMPANYNATURE"), json.Value<string>("INSPCOMPANYNATURE"), json_user.GetValue("ID"), stopman,
                 json.Value<string>("STARTDATE") == "" ? DateTime.MinValue.ToShortDateString() : json.Value<string>("STARTDATE"),
@@ -154,7 +154,7 @@ namespace Web_After.Sql
             string userName = identity.Name;
             JObject json_user = Extension.Get_UserInfo(userName);
             string sql = @"insert into rela_companynature (id,declcompanynature,inspcompanynature,createman,stopman,createdate,startdate,enddate,enabled,remark)
-                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  values(rela_companynature_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}')";
             sql = string.Format(sql, DECLCOMPANYNATURE, INSPCOMPANYNATURE, json_user.GetValue("ID"), stopman,
                 STARTDATE, ENDDATE, ENABLED, REMARK);

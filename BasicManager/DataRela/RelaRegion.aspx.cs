@@ -15,7 +15,7 @@ using Web_After.Common;
 
 namespace Web_After.BasicManager.DataRela
 {
-    public partial class RelaHarbor : System.Web.UI.Page
+    public partial class RelaRegion : System.Web.UI.Page
     {
         IsoDateTimeConverter iso = new IsoDateTimeConverter();//序列化JSON对象时,日期的处理格式
         int totalProperty = 0;
@@ -61,35 +61,34 @@ namespace Web_After.BasicManager.DataRela
         public void Ini_Base_Data()
         {
             string sql = "";
-            string DECLPORT = "[]";//报关
-            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_harbour where CODE is not null and enabled=1";
-            DECLPORT = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+            string DECLREGION = "[]";//报关
+            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_shipping_destination where CODE is not null and enabled=1";
+            DECLREGION = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
 
-            string INSPPORT = "[]";//报检
-            sql = "SELECT CODE as CODE,NAME||'('||CODE||')' as NAME FROM base_port where CODE is not null and enabled=1";
-            INSPPORT = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+            string INSPREGION = "[]";//报检
+            sql = "SELECT CODE as CODE,NAME||'('||CODE||')' as NAME FROM base_withinregion where CODE is not null and enabled=1";
+            INSPREGION = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
 
-            Response.Write("{DECLPORT:" + DECLPORT + ",INSPPORT:" + INSPPORT + "}");
+            Response.Write("{DECLREGION:" + DECLREGION + ",INSPREGION:" + INSPREGION + "}");
             Response.End();
         }
 
-
         private void loadData()
         {
-            string strWhere = " where 1=1 and t1.kind=2 ";
-            if (!string.IsNullOrEmpty(Request["DECLPORTCODE"]))
+            string strWhere = " where 1=1 ";
+            if (!string.IsNullOrEmpty(Request["DECLREGIONCODE"]))
             {
-                strWhere = strWhere + " and t1.declport like '%" + Request["DECLPORTCODE"] + "%'";
+                strWhere = strWhere + " and t1.declregion like '%" + Request["DECLREGIONCODE"] + "%'";
             }
-            if (!string.IsNullOrEmpty(Request["DECLPORTNAME"]))
+            if (!string.IsNullOrEmpty(Request["DECLREGIONNAME"]))
             {
-                strWhere = strWhere + " and t2.name like '%" + Request["DECLPORTNAME"] + "%'";
+                strWhere = strWhere + " and t2.name like '%" + Request["DECLREGIONNAME"] + "%'";
             }
             if (!string.IsNullOrEmpty(Request["ENABLED_S"]))
             {
                 strWhere = strWhere + " and t1.enabled='" + Request["ENABLED_S"] + "'";
             }
-            Sql.RelaHarbor bc = new Sql.RelaHarbor();
+            Sql.RelaRegion bc = new Sql.RelaRegion();
             DataTable dt = bc.LoaData(strWhere, "", "", ref totalProperty, Convert.ToInt32(Request["start"]),
                 Convert.ToInt32(Request["limit"]));
             string json = JsonConvert.SerializeObject(dt, iso);
@@ -97,10 +96,11 @@ namespace Web_After.BasicManager.DataRela
             Response.End();
         }
 
+
         public void save(string formdata)
         {
             JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
-            Sql.RelaHarbor bcsql = new Sql.RelaHarbor();
+            Sql.RelaRegion bcsql = new Sql.RelaRegion();
             //禁用人
             string stopman = "";
             //返回重复结果
@@ -122,28 +122,28 @@ namespace Web_After.BasicManager.DataRela
 
             if (String.IsNullOrEmpty(json.Value<string>("ID")))
             {
-                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLPORT"), json.Value<string>("INSPPORT"));
+                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECREGION"), json.Value<string>("INSPREGION"));
                 if (retunRepeat.Count > 0)
                 {
-                    repeat = "此报关港口和报检港口已经有对应关系存在，请检查";
+                    repeat = "此报关境内地区和报检境内地区已经有对应关系存在，请检查";
                 }
                 else
                 {
-                    int i = bcsql.insert_relaHarbor(json, stopman);
+                    int i = bcsql.insert_relaRegion(json, stopman);
                     repeat = "5";
                 }
             }
             else
             {
-                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLPORT"), json.Value<string>("INSPPORT"));
+                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECREGION"), json.Value<string>("INSPREGION"));
                 if (retunRepeat.Count > 0)
                 {
-                    repeat = "此报关港口和报检港口已经有对应关系存在，请检查";
+                    repeat = "此报关境内地区和报检境内地区已经有对应关系存在，请检查";
                 }
                 else
                 {
                     DataTable dt = bcsql.LoadDataById(json.Value<string>("ID"));
-                    int i = bcsql.update_relaHarbor(json, stopman);
+                    int i = bcsql.update_relaRegion(json, stopman);
                     if (i > 0)
                     {
                         bcsql.insert_base_alterrecord(json, dt);
@@ -171,10 +171,10 @@ namespace Web_After.BasicManager.DataRela
                 Directory.CreateDirectory("/FileUpload/PreData");
             }
             string newfile = @"/FileUpload/PreData/" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_" + fileName;
-            postedFile.SaveAs(Server.MapPath(newfile));
+            //postedFile.SaveAs(Server.MapPath(newfile));
 
             //本机不加Server.MapPath
-            //postedFile.SaveAs(newfile);
+            postedFile.SaveAs(newfile);
 
             //npoi的方法
             //DataTable dt = NPOIHelper.RenderDataTableFromExcel(newfile, ".xls", 0, 0);
@@ -182,7 +182,7 @@ namespace Web_After.BasicManager.DataRela
             //string a = dt.Rows[0][0].ToString();
 
 
-            Dictionary<int, List<int>> result = upload_RelaHarbor(newfile, fileName, action, json_formdata);
+            Dictionary<int, List<int>> result = upload_RelaRegion(newfile, fileName, action, json_formdata);
             //成功的条数
             List<int> success = result[1];
             //失败列
@@ -216,11 +216,11 @@ namespace Web_After.BasicManager.DataRela
             Response.End();
         }
 
-        public Dictionary<int, List<int>> upload_RelaHarbor(string newfile, string fileName, string action, JObject json_formdata)
+        public Dictionary<int, List<int>> upload_RelaRegion(string newfile, string fileName, string action, JObject json_formdata)
         {
-            Sql.RelaHarbor bc = new Sql.RelaHarbor();
-            DataTable dtExcel = GetExcelData_Table(Server.MapPath(newfile), 0);
-            //DataTable dtExcel = GetExcelData_Table(newfile, 0);
+            Sql.RelaRegion bc = new Sql.RelaRegion();
+            //DataTable dtExcel = GetExcelData_Table(Server.MapPath(newfile), 0);
+            DataTable dtExcel = GetExcelData_Table(newfile, 0);
             List<string> stringList = new List<string>();
             //停用人
             string stopman = "";
@@ -246,9 +246,9 @@ namespace Web_After.BasicManager.DataRela
 
                 }
                 //报关         
-                string DECLPORT = stringList[0];
+                string DECLREGION = stringList[0];
                 //报检          
-                string INSPPORT = stringList[2];
+                string INSPREGION = stringList[2];
 
                 string REMARK = stringList[4];
                 //string ENABLED = stringList[4] == "是" ? "1" : "0";
@@ -275,7 +275,7 @@ namespace Web_After.BasicManager.DataRela
                     stopman = (string)json_user.GetValue("ID");
                 }
                 //导入判断条件
-                List<int> inlist = bc.CheckRepeat("", DECLPORT, INSPPORT);
+                List<int> inlist = bc.CheckRepeat("", DECLREGION, INSPREGION);
 
                 if (inlist.Count > 0)
                 {
@@ -284,7 +284,7 @@ namespace Web_After.BasicManager.DataRela
                 }
                 else
                 {
-                    bc.insert_rela_harbor_excel(DECLPORT, INSPPORT, ENABLED, REMARK, stopman, STARTDATE, ENDDATE);
+                    bc.insert_rela_region_excel(DECLREGION, INSPREGION, ENABLED, REMARK, stopman, STARTDATE, ENDDATE);
                     count = count + 1;
                 }
 
@@ -312,14 +312,14 @@ namespace Web_After.BasicManager.DataRela
 
         public void export()
         {
-            string strWhere = " where 1=1 and t1.kind=2 ";
-            if (!string.IsNullOrEmpty(Request["DECLPORTCODE"]))
+            string strWhere = " where 1=1  ";
+            if (!string.IsNullOrEmpty(Request["DECLREGIONCODE"]))
             {
-                strWhere = strWhere + " and t1.declport like '%" + Request["DECLPORTCODE"] + "%'";
+                strWhere = strWhere + " and t1.declregion like '%" + Request["DECLREGIONCODE"] + "%'";
             }
-            if (!string.IsNullOrEmpty(Request["DECLPORTNAME"]))
+            if (!string.IsNullOrEmpty(Request["DECLREGIONNAME"]))
             {
-                strWhere = strWhere + " and t2.name like '%" + Request["DECLPORTNAME"] + "%'";
+                strWhere = strWhere + " and t2.name like '%" + Request["DECLREGIONNAME"] + "%'";
             }
             string combo_ENABLED_S2 = Request["combo_ENABLED_S"];
             if (combo_ENABLED_S2 == "null")
@@ -331,18 +331,18 @@ namespace Web_After.BasicManager.DataRela
             {
                 strWhere = strWhere + " and t1.enabled='" + combo_ENABLED_S2 + "'";
             }
-            Sql.RelaHarbor bc = new Sql.RelaHarbor();
+            Sql.RelaRegion bc = new Sql.RelaRegion();
 
-            DataTable dt = bc.export_rela_harbor(strWhere);
+            DataTable dt = bc.export_rela_region(strWhere);
             //创建Excel文件的对象
             NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
             //添加一个导出成功sheet
-            NPOI.SS.UserModel.ISheet sheet_S = book.CreateSheet("港口对应关系");
+            NPOI.SS.UserModel.ISheet sheet_S = book.CreateSheet("境内地区对应关系");
             NPOI.SS.UserModel.IRow row1 = sheet_S.CreateRow(0);
-            row1.CreateCell(0).SetCellValue("报关港口代码");
-            row1.CreateCell(1).SetCellValue("报关港口名称");
-            row1.CreateCell(2).SetCellValue("报检港口代码");
-            row1.CreateCell(3).SetCellValue("报检港口名称");
+            row1.CreateCell(0).SetCellValue("报关境内地区代码");
+            row1.CreateCell(1).SetCellValue("报关境内地区名称");
+            row1.CreateCell(2).SetCellValue("报检境内地区代码");
+            row1.CreateCell(3).SetCellValue("报检境内地区名称");
             row1.CreateCell(4).SetCellValue("启用情况");
             row1.CreateCell(5).SetCellValue("启用时间");
             row1.CreateCell(6).SetCellValue("维护人");
@@ -354,10 +354,10 @@ namespace Web_After.BasicManager.DataRela
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 NPOI.SS.UserModel.IRow rowtemp = sheet_S.CreateRow(i + 1);
-                rowtemp.CreateCell(0).SetCellValue(dt.Rows[i]["DECLPORT"].ToString());
-                rowtemp.CreateCell(1).SetCellValue(dt.Rows[i]["DECLPORTNAME"].ToString());
-                rowtemp.CreateCell(2).SetCellValue(dt.Rows[i]["INSPPORT"].ToString());
-                rowtemp.CreateCell(3).SetCellValue(dt.Rows[i]["INSPPORTNAME"].ToString());
+                rowtemp.CreateCell(0).SetCellValue(dt.Rows[i]["DECLREGION"].ToString());
+                rowtemp.CreateCell(1).SetCellValue(dt.Rows[i]["DECLREGIONNAME"].ToString());
+                rowtemp.CreateCell(2).SetCellValue(dt.Rows[i]["INSPREGION"].ToString());
+                rowtemp.CreateCell(3).SetCellValue(dt.Rows[i]["INSPREGIONNAME"].ToString());
                 rowtemp.CreateCell(4).SetCellValue(dt.Rows[i]["ENABLED"].ToString() == "1" ? "是" : "否");
                 rowtemp.CreateCell(5).SetCellValue(dt.Rows[i]["STARTDATE"].ToString());
                 rowtemp.CreateCell(6).SetCellValue(dt.Rows[i]["CREATEMANNAME"].ToString());
@@ -369,7 +369,7 @@ namespace Web_After.BasicManager.DataRela
             try
             {
                 // 输出Excel
-                string filename = "港口对应关系.xls";
+                string filename = "境内地区对应关系.xls";
                 Response.ContentType = "application/vnd.ms-excel";
                 Response.AddHeader("Content-Disposition", string.Format("attachment;filename={0}", Server.UrlEncode(filename)));
                 Response.Clear();
@@ -385,6 +385,7 @@ namespace Web_After.BasicManager.DataRela
             }
 
         }
-
     }
+
+
 }

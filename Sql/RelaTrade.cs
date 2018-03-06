@@ -57,7 +57,7 @@ namespace Web_After.Sql
             string userName = identity.Name;
             JObject json_user = Extension.Get_UserInfo(userName);
             string sql = @"insert into rela_trade (id,decltrade,insptrade,createman,stopman,createdate,startdate,enddate,enabled,remark,yearid)
-                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  values(rela_trade_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}','')";
             sql = string.Format(sql, json.Value<string>("DECLTRADE"), json.Value<string>("INSPTRADE"), json_user.GetValue("ID"), stopman,
                 json.Value<string>("STARTDATE") == "" ? DateTime.MinValue.ToShortDateString() : json.Value<string>("STARTDATE"),
@@ -151,7 +151,7 @@ namespace Web_After.Sql
             string userName = identity.Name;
             JObject json_user = Extension.Get_UserInfo(userName);
             string sql = @"insert into rela_trade (id,decltrade,insptrade,createman,stopman,createdate,startdate,enddate,enabled,remark,yearid)
-                                  values(rela_country_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
+                                  values(rela_trade_id.nextval,'{0}','{1}','{2}','{3}',sysdate,to_date('{4}','yyyy-mm-dd hh24:mi:ss'),
                                   to_date('{5}','yyyy-mm-dd hh24:mi:ss'),'{6}','{7}','')";
             sql = string.Format(sql, DECLTRADE, INSPTRADE, json_user.GetValue("ID"), stopman,
                 STARTDATE, ENDDATE, ENABLED, REMARK);
