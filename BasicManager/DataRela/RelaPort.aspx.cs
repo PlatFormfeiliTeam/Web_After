@@ -15,11 +15,10 @@ using Web_After.Common;
 
 namespace Web_After.BasicManager.DataRela
 {
-    public partial class RelaHarbor : System.Web.UI.Page
+    public partial class RelaPort : System.Web.UI.Page
     {
         IsoDateTimeConverter iso = new IsoDateTimeConverter();//序列化JSON对象时,日期的处理格式
         int totalProperty = 0;
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -62,7 +61,7 @@ namespace Web_After.BasicManager.DataRela
         {
             string sql = "";
             string DECLPORT = "[]";//报关
-            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_harbour where CODE is not null and enabled=1";
+            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_customdistrict where CODE is not null and enabled=1";
             DECLPORT = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
 
             string INSPPORT = "[]";//报检
@@ -73,10 +72,9 @@ namespace Web_After.BasicManager.DataRela
             Response.End();
         }
 
-
         private void loadData()
         {
-            string strWhere = " where 1=1 and t1.kind=2 ";
+            string strWhere = " where 1=1 and t1.kind=1 ";
             if (!string.IsNullOrEmpty(Request["DECLPORTCODE"]))
             {
                 strWhere = strWhere + " and t1.declport like '%" + Request["DECLPORTCODE"] + "%'";
@@ -89,18 +87,17 @@ namespace Web_After.BasicManager.DataRela
             {
                 strWhere = strWhere + " and t1.enabled='" + Request["ENABLED_S"] + "'";
             }
-            Sql.RelaHarbor bc = new Sql.RelaHarbor();
+            Sql.RelaPort bc = new Sql.RelaPort();
             DataTable dt = bc.LoaData(strWhere, "", "", ref totalProperty, Convert.ToInt32(Request["start"]),
                 Convert.ToInt32(Request["limit"]));
             string json = JsonConvert.SerializeObject(dt, iso);
             Response.Write("{rows:" + json + ",total:" + totalProperty + "}");
             Response.End();
         }
-
         public void save(string formdata)
         {
             JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
-            Sql.RelaHarbor bcsql = new Sql.RelaHarbor();
+            Sql.RelaPort bcsql = new Sql.RelaPort();
             //禁用人
             string stopman = "";
             //返回重复结果
@@ -125,7 +122,7 @@ namespace Web_After.BasicManager.DataRela
                 List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLPORT"), json.Value<string>("INSPPORT"));
                 if (retunRepeat.Count > 0)
                 {
-                    repeat = "此报关港口和报检港口已经有对应关系存在，请检查";
+                    repeat = "此报关口岸和报检口岸已经有对应关系存在，请检查";
                 }
                 else
                 {
@@ -138,7 +135,7 @@ namespace Web_After.BasicManager.DataRela
                 List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLPORT"), json.Value<string>("INSPPORT"));
                 if (retunRepeat.Count > 0)
                 {
-                    repeat = "此报关港口和报检港口已经有对应关系存在，请检查";
+                    repeat = "此报关口岸和报检口岸已经有对应关系存在，请检查";
                 }
                 else
                 {
@@ -157,6 +154,7 @@ namespace Web_After.BasicManager.DataRela
             Response.Write(response);
             Response.End();
         }
+
 
         public void ImportExcelData()
         {
@@ -218,7 +216,7 @@ namespace Web_After.BasicManager.DataRela
 
         public Dictionary<int, List<int>> upload_RelaHarbor(string newfile, string fileName, string action, JObject json_formdata)
         {
-            Sql.RelaHarbor bc = new Sql.RelaHarbor();
+            Sql.RelaPort bc = new Sql.RelaPort();
             DataTable dtExcel = GetExcelData_Table(Server.MapPath(newfile), 0);
             //DataTable dtExcel = GetExcelData_Table(newfile, 0);
             List<string> stringList = new List<string>();
@@ -312,7 +310,7 @@ namespace Web_After.BasicManager.DataRela
 
         public void export()
         {
-            string strWhere = " where 1=1 and t1.kind=2 ";
+            string strWhere = " where 1=1 and t1.kind=1 ";
             if (!string.IsNullOrEmpty(Request["DECLPORTCODE"]))
             {
                 strWhere = strWhere + " and t1.declport like '%" + Request["DECLPORTCODE"] + "%'";
@@ -331,18 +329,18 @@ namespace Web_After.BasicManager.DataRela
             {
                 strWhere = strWhere + " and t1.enabled='" + combo_ENABLED_S2 + "'";
             }
-            Sql.RelaHarbor bc = new Sql.RelaHarbor();
+            Sql.RelaPort bc = new Sql.RelaPort();
 
             DataTable dt = bc.export_rela_harbor(strWhere);
             //创建Excel文件的对象
             NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
             //添加一个导出成功sheet
-            NPOI.SS.UserModel.ISheet sheet_S = book.CreateSheet("港口对应关系");
+            NPOI.SS.UserModel.ISheet sheet_S = book.CreateSheet("口岸对应关系");
             NPOI.SS.UserModel.IRow row1 = sheet_S.CreateRow(0);
-            row1.CreateCell(0).SetCellValue("报关港口代码");
-            row1.CreateCell(1).SetCellValue("报关港口名称");
-            row1.CreateCell(2).SetCellValue("报检港口代码");
-            row1.CreateCell(3).SetCellValue("报检港口名称");
+            row1.CreateCell(0).SetCellValue("报关口岸代码");
+            row1.CreateCell(1).SetCellValue("报关口岸名称");
+            row1.CreateCell(2).SetCellValue("报检口岸代码");
+            row1.CreateCell(3).SetCellValue("报检口岸名称");
             row1.CreateCell(4).SetCellValue("启用情况");
             row1.CreateCell(5).SetCellValue("启用时间");
             row1.CreateCell(6).SetCellValue("维护人");
@@ -369,7 +367,7 @@ namespace Web_After.BasicManager.DataRela
             try
             {
                 // 输出Excel
-                string filename = "港口对应关系.xls";
+                string filename = "口岸对应关系.xls";
                 Response.ContentType = "application/vnd.ms-excel";
                 Response.AddHeader("Content-Disposition", string.Format("attachment;filename={0}", Server.UrlEncode(filename)));
                 Response.Clear();

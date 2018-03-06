@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RelaHarbor.aspx.cs" Inherits="Web_After.BasicManager.DataRela.RelaHarbor" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RelaPort.aspx.cs" Inherits="Web_After.BasicManager.DataRela.RelaPort" %>
 
 <!DOCTYPE html>
 
@@ -6,20 +6,20 @@
 <head runat="server">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title></title>
-    <link href="/Extjs42/resources/css/ext-all-neptune.css" rel="stylesheet" type="text/css" />
+     <link href="/Extjs42/resources/css/ext-all-neptune.css" rel="stylesheet" type="text/css" />
     <script src="/Extjs42/bootstrap.js" type="text/javascript"></script>
     <script src="/js/jquery-1.8.2.min.js"></script>
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />    
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
     <script type="text/javascript">
-    var title = "港口对应关系";
+        var title = "港口对应关系";
         var username = '<%=Username()%>';
         var common_data_port_decl = [], common_data_port_insp = [];
         var store_port_decl, store_port_insp;
 
         Ext.onReady(function () {
             Ext.Ajax.request({
-                url: 'RelaHarbor.aspx',
+                url: 'RelaPort.aspx',
                 params: { action: 'Ini_Base_Data' },
                 type: 'Post',
                 success: function (response, option) {
@@ -46,10 +46,11 @@
                 }
             });
         });
+
         //查询栏
         function init_search() {
-            var searchCode = Ext.create('Ext.form.field.Text', { id: 'DECLPORTCODE', name: 'DECLPORTCODE', fieldLabel: '报关港口代码' });
-            var searchName = Ext.create('Ext.form.field.Text', { id: 'DECLPORTNAME', name: 'DECLPORTNAME', fieldLabel: '报关港口名称' });
+            var searchCode = Ext.create('Ext.form.field.Text', { id: 'DECLPORTCODE', name: 'DECLPORTCODE', fieldLabel: '报关口岸代码' });
+            var searchName = Ext.create('Ext.form.field.Text', { id: 'DECLPORTNAME', name: 'DECLPORTNAME', fieldLabel: '报关口岸名称' });
 
             var store_ENABLED_S = Ext.create('Ext.data.JsonStore', {
                 fields: ['CODE', 'NAME'],
@@ -105,7 +106,7 @@
                     pageSize: 20,
                     proxy: {
                         type: 'ajax',
-                        url: 'RelaHarbor.aspx?action=loadData',
+                        url: 'RelaPort.aspx?action=loadData',
                         reader: {
                             root: 'rows',
                             type: 'json',
@@ -138,10 +139,10 @@
                     { xtype: 'rownumberer', width: 35 },
 
 
-                    { header: '报关港口代码', dataIndex: 'DECLPORT', width: 150 },
-                    { header: '报关港口名称', dataIndex: 'DECLPORTNAME', width: 150 },
-                    { header: '报检港口代码', dataIndex: 'INSPPORT', width: 150 },
-                    { header: '报检港口名称', dataIndex: 'INSPPORTNAME', width: 150 },
+                    { header: '报关口岸代码', dataIndex: 'DECLPORT', width: 150 },
+                    { header: '报关口岸名称', dataIndex: 'DECLPORTNAME', width: 150 },
+                    { header: '报检口岸代码', dataIndex: 'INSPPORT', width: 150 },
+                    { header: '报检口岸名称', dataIndex: 'INSPPORTNAME', width: 150 },
                     { header: '启用情况', dataIndex: 'ENABLED', renderer: gridrender, width: 100 },
                     { header: '启用时间', dataIndex: 'STARTDATE', width: 100 },
 
@@ -202,7 +203,7 @@
 
             var win = Ext.create("Ext.window.Window", {
                 id: "win_d",
-                title: '港口对应关系',
+                title: '口岸对应关系',
                 width: 1200,
                 height: 430,
                 modal: true,
@@ -238,10 +239,10 @@
                 displayField: 'NAME',
                 valueField: 'CODE',
                 anyMatch: true,
-                fieldLabel: '报关港口代码',
+                fieldLabel: '报关口岸代码',
                 flex: .5,
                 allowBlank: false,
-                blankText: '报关港口代码不可为空!',
+                blankText: '报关口岸代码不可为空!',
                 listeners: {
                     focus: function (cb) {
                         cb.clearInvalid();
@@ -259,10 +260,10 @@
                 minChars: 1,
                 queryMode: 'local',
                 anyMatch: true,
-                fieldLabel: '报检港口代码',
+                fieldLabel: '报检口岸代码',
                 flex: .5,
                 allowBlank: false,
-                blankText: '报检港口代码不可为空!',
+                blankText: '报检口岸代码不可为空!',
                 listeners: {
                     focus: function (cb) {
                         cb.clearInvalid();
@@ -364,7 +365,7 @@
                         var formdata = Ext.encode(Ext.getCmp('formpanel_Win').getForm().getValues());
                         console.log('aaaaa');
                         Ext.Ajax.request({
-                            url: 'RelaHarbor.aspx',
+                            url: 'RelaPort.aspx',
                             type: 'Post',
                             params: { action: 'save', formdata: formdata },
                             success: function (response, option) {
@@ -405,11 +406,11 @@
             addCustomer_Win(recs[0].get("ID"), recs[0].data);
         }
 
+
         function importfile(action) {
             if (action == "add") {
                 importexcel(action);
             }
-
         }
 
 
@@ -418,7 +419,7 @@
             var radio_module = Ext.create('Ext.form.RadioGroup', {
                 name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
                 items: [
-                    { boxLabel: "<a href='/FileUpload/rela_harbor.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
+                    { boxLabel: "<a href='/FileUpload/rela_port.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
                 ]
             });
 
@@ -484,7 +485,7 @@
 
                             Ext.getCmp('formpanel_upload').getForm().submit({
                                 type: 'Post',
-                                url: 'RelaHarbor.aspx',
+                                url: 'RelaPort.aspx',
                                 params: { formdata: formdata, action: action },
                                 waitMsg: '数据导入中...',
                                 success: function (form, action) {
@@ -509,7 +510,7 @@
 
             var win_upload = Ext.create("Ext.window.Window", {
                 id: "win_upload",
-                title: '港口对应关系',
+                title: '口岸对应关系',
                 width: 600,
                 height: 240,
                 modal: true,
@@ -524,10 +525,10 @@
             var DECLPORTCODE = Ext.getCmp('DECLPORTCODE').getValue();
             var DECLPORTNAME = Ext.getCmp('DECLPORTNAME').getValue();
             var combo_ENABLED_S = Ext.getCmp('combo_ENABLED_S').getValue();
-            var path = 'RelaHarbor.aspx?action=export&DECLPORTCODE=' + DECLPORTCODE + '&DECLPORTNAME=' + DECLPORTNAME + '&combo_ENABLED_S=' + combo_ENABLED_S;
+            var path = 'RelaPort.aspx?action=export&DECLPORTCODE=' + DECLPORTCODE + '&DECLPORTNAME=' + DECLPORTNAME + '&combo_ENABLED_S=' + combo_ENABLED_S;
             $('#exportform').attr("action", path).submit();
         }
-     </script>
+    </script>
 </head>
 <body>
     <div>
