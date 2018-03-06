@@ -171,10 +171,10 @@ namespace Web_After.BasicManager.DataRela
                 Directory.CreateDirectory("/FileUpload/PreData");
             }
             string newfile = @"/FileUpload/PreData/" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_" + fileName;
-            //postedFile.SaveAs(Server.MapPath(newfile));
+            postedFile.SaveAs(Server.MapPath(newfile));
 
             //本机不加Server.MapPath
-            postedFile.SaveAs(newfile);
+            //postedFile.SaveAs(newfile);
 
             //npoi的方法
             //DataTable dt = NPOIHelper.RenderDataTableFromExcel(newfile, ".xls", 0, 0);
@@ -219,8 +219,8 @@ namespace Web_After.BasicManager.DataRela
         public Dictionary<int, List<int>> upload_RelaRegion(string newfile, string fileName, string action, JObject json_formdata)
         {
             Sql.RelaRegion bc = new Sql.RelaRegion();
-            //DataTable dtExcel = GetExcelData_Table(Server.MapPath(newfile), 0);
-            DataTable dtExcel = GetExcelData_Table(newfile, 0);
+            DataTable dtExcel = GetExcelData_Table(Server.MapPath(newfile), 0);
+            //DataTable dtExcel = GetExcelData_Table(newfile, 0);
             List<string> stringList = new List<string>();
             //停用人
             string stopman = "";
