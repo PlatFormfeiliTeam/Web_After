@@ -34,7 +34,7 @@ namespace Web_After.BasicManager.DataRela
                         save(Request["formdata"]);
                         break;
                     case "export":
-                        //export();
+                        export();
                         break;
                     case "add":
                         ImportExcelData();

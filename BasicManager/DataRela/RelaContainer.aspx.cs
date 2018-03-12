@@ -15,10 +15,11 @@ using Web_After.Common;
 
 namespace Web_After.BasicManager.DataRela
 {
-    public partial class RelaPort : System.Web.UI.Page
+    public partial class RelaContainer : System.Web.UI.Page
     {
         IsoDateTimeConverter iso = new IsoDateTimeConverter();//序列化JSON对象时,日期的处理格式
         int totalProperty = 0;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -46,6 +47,48 @@ namespace Web_After.BasicManager.DataRela
             }
         }
 
+        public void Ini_Base_Data()
+        {
+            string sql = "";
+            string CONTAINERSIZE = "[]";
+            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_containersize where CODE is not null and enabled=1";
+            CONTAINERSIZE = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+            string CONTAINERTYPE = "[]";
+            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_containertype where CODE is not null and enabled=1";
+            CONTAINERTYPE = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+            string CONTAINERSTANDARD = "[]";
+            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_containerstandard where CODE is not null and enabled=1";
+            CONTAINERSTANDARD = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
+
+            Response.Write("{CONTAINERSIZE:" + CONTAINERSIZE + ",CONTAINERTYPE:" + CONTAINERTYPE + ",CONTAINERSTANDARD:" + CONTAINERSTANDARD + "}");
+            Response.End();
+        }
+
+        private void loadData()
+        {
+            string strWhere = " where 1=1 ";
+            if (!string.IsNullOrEmpty(Request["SEARCHCONTAINERTYPE"]))
+            {
+                strWhere = strWhere + " and t5.name like '%" + Request["SEARCHCONTAINERTYPE"] + "%'";
+            }
+            if (!string.IsNullOrEmpty(Request["SEARCHFORTNAME"]))
+            {
+                strWhere = strWhere + " and t1.FormatName like '%" + Request["SEARCHFORTNAME"] + "%'";
+            }
+            if (!string.IsNullOrEmpty(Request["ENABLED_S"]))
+            {
+                strWhere = strWhere + " and t1.enabled='" + Request["ENABLED_S"] + "'";
+            }
+            Sql.RelaContainer bc = new Sql.RelaContainer();
+            DataTable dt = bc.LoaData(strWhere, "", "", ref totalProperty, Convert.ToInt32(Request["start"]),
+                Convert.ToInt32(Request["limit"]));
+            string json = JsonConvert.SerializeObject(dt, iso);
+            Response.Write("{rows:" + json + ",total:" + totalProperty + "}");
+            Response.End();
+        }
+
+
+
         public string Username()
         {
             string userName = "";
@@ -57,47 +100,10 @@ namespace Web_After.BasicManager.DataRela
             return userName = identity.Name;
         }
 
-        public void Ini_Base_Data()
-        {
-            string sql = "";
-            string DECLPORT = "[]";//报关
-            sql = "SELECT CODE as CODE,NAME||'('||CODE||')'  as NAME FROM base_customdistrict where CODE is not null and enabled=1";
-            DECLPORT = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
-
-            string INSPPORT = "[]";//报检
-            sql = "SELECT CODE as CODE,NAME||'('||CODE||')' as NAME FROM base_port where CODE is not null and enabled=1";
-            INSPPORT = JsonConvert.SerializeObject(DBMgrBase.GetDataTable(sql));
-
-            Response.Write("{DECLPORT:" + DECLPORT + ",INSPPORT:" + INSPPORT + "}");
-            Response.End();
-        }
-
-        private void loadData()
-        {
-            string strWhere = " where 1=1 and t1.kind=1 ";
-            if (!string.IsNullOrEmpty(Request["DECLPORTCODE"]))
-            {
-                strWhere = strWhere + " and t1.declport like '%" + Request["DECLPORTCODE"] + "%'";
-            }
-            if (!string.IsNullOrEmpty(Request["DECLPORTNAME"]))
-            {
-                strWhere = strWhere + " and t2.name like '%" + Request["DECLPORTNAME"] + "%'";
-            }
-            if (!string.IsNullOrEmpty(Request["ENABLED_S"]))
-            {
-                strWhere = strWhere + " and t1.enabled='" + Request["ENABLED_S"] + "'";
-            }
-            Sql.RelaPort bc = new Sql.RelaPort();
-            DataTable dt = bc.LoaData(strWhere, "", "", ref totalProperty, Convert.ToInt32(Request["start"]),
-                Convert.ToInt32(Request["limit"]));
-            string json = JsonConvert.SerializeObject(dt, iso);
-            Response.Write("{rows:" + json + ",total:" + totalProperty + "}");
-            Response.End();
-        }
         public void save(string formdata)
         {
             JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
-            Sql.RelaPort bcsql = new Sql.RelaPort();
+            Sql.RelaContainer bcsql = new Sql.RelaContainer();
             //禁用人
             string stopman = "";
             //返回重复结果
@@ -117,30 +123,26 @@ namespace Web_After.BasicManager.DataRela
                 stopman = (string)json_user.GetValue("ID");
             }
 
+            //插入
             if (String.IsNullOrEmpty(json.Value<string>("ID")))
             {
-                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLPORT"), json.Value<string>("INSPPORT"));
-                if (retunRepeat.Count > 0)
+                repeat = bcsql.CheckRepeat(formdata);
+                if (repeat == "")
                 {
-                    repeat = "此报关口岸和报检口岸已经有对应关系存在，请检查";
-                }
-                else
-                {
-                    int i = bcsql.insert_relaPackage(json, stopman);
+                    //insert数据向表base_company当是5时插入成功
+                    bcsql.insert_rela_container(json, stopman);
                     repeat = "5";
                 }
             }
             else
             {
-                List<int> retunRepeat = bcsql.CheckRepeat(json.Value<string>("ID"), json.Value<string>("DECLPORT"), json.Value<string>("INSPPORT"));
-                if (retunRepeat.Count > 0)
+                //更新
+                repeat = bcsql.CheckRepeat(formdata);
+                if (repeat == "")
                 {
-                    repeat = "此报关口岸和报检口岸已经有对应关系存在，请检查";
-                }
-                else
-                {
+                    //insert数据向表base_company当是5时插入成功
                     DataTable dt = bcsql.LoadDataById(json.Value<string>("ID"));
-                    int i = bcsql.update_relaHarbor(json, stopman);
+                    int i = bcsql.update_rela_container(json, stopman);
                     if (i > 0)
                     {
                         bcsql.insert_base_alterrecord(json, dt);
@@ -156,6 +158,9 @@ namespace Web_After.BasicManager.DataRela
         }
 
 
+        /// <summary>
+        /// 导入excel数据
+        /// </summary>
         public void ImportExcelData()
         {
             string formdata = Request["formdata"];
@@ -180,7 +185,7 @@ namespace Web_After.BasicManager.DataRela
             //string a = dt.Rows[0][0].ToString();
 
 
-            Dictionary<int, List<int>> result = upload_RelaHarbor(newfile, fileName, action, json_formdata);
+            Dictionary<int, List<int>> result = upload_RelaContainer(newfile, fileName, action, json_formdata);
             //成功的条数
             List<int> success = result[1];
             //失败列
@@ -213,10 +218,9 @@ namespace Web_After.BasicManager.DataRela
             Response.Write(response);
             Response.End();
         }
-
-        public Dictionary<int, List<int>> upload_RelaHarbor(string newfile, string fileName, string action, JObject json_formdata)
+        public Dictionary<int, List<int>> upload_RelaContainer(string newfile, string fileName, string action, JObject json_formdata)
         {
-            Sql.RelaPort bc = new Sql.RelaPort();
+            Sql.RelaContainer bc = new Sql.RelaContainer();
             //DataTable dtExcel = GetExcelData_Table(Server.MapPath(newfile), 0);
             DataTable dtExcel = GetExcelData_Table(newfile, 0);
             List<string> stringList = new List<string>();
@@ -243,13 +247,19 @@ namespace Web_After.BasicManager.DataRela
 
 
                 }
-                //报关         
-                string DECLPORT = stringList[0];
-                //报检          
-                string INSPPORT = stringList[2];
+                //       
+                string CONTAINERSIZE = stringList[0];
+                //              
+                string CONTAINERTYPE = stringList[1];
 
-                string REMARK = stringList[4];
-                //string ENABLED = stringList[4] == "是" ? "1" : "0";
+                string FORMATCODE = stringList[2];
+
+                string FORMATNAME = stringList[3];
+
+                string CONTAINERHS = stringList[4];
+
+                string REMARK = stringList[5];
+
                 string ENABLED = "1";
                 //维护人
                 string CREATEMANNAME = json_formdata.Value<string>("CREATEMANNAME");
@@ -273,17 +283,16 @@ namespace Web_After.BasicManager.DataRela
                     stopman = (string)json_user.GetValue("ID");
                 }
                 //导入判断条件
-                List<int> inlist = bc.CheckRepeat("", DECLPORT, INSPPORT);
+                string check_repeat = bc.CheckRepeat(CONTAINERSIZE, CONTAINERTYPE, FORMATCODE);
 
-                if (inlist.Count > 0)
+                if (check_repeat == "")
                 {
-                    repeatListerror.Add(i + 2);
-
+                    bc.insert_rela_container(CONTAINERSIZE, CONTAINERTYPE, FORMATCODE, FORMATNAME, CONTAINERHS, ENABLED, REMARK, stopman, STARTDATE, ENDDATE);
+                    count = count + 1;
                 }
                 else
                 {
-                    bc.insert_rela_harbor_excel(DECLPORT, INSPPORT, ENABLED, REMARK, stopman, STARTDATE, ENDDATE);
-                    count = count + 1;
+                    repeatListerror.Add(i + 2);
                 }
 
                 //清除
@@ -310,64 +319,66 @@ namespace Web_After.BasicManager.DataRela
 
         public void export()
         {
-            string strWhere = " where 1=1 and t1.kind=1 ";
-            if (!string.IsNullOrEmpty(Request["DECLPORTCODE"]))
-            {
-                strWhere = strWhere + " and t1.declport like '%" + Request["DECLPORTCODE"] + "%'";
-            }
-            if (!string.IsNullOrEmpty(Request["DECLPORTNAME"]))
-            {
-                strWhere = strWhere + " and t2.name like '%" + Request["DECLPORTNAME"] + "%'";
-            }
+            string strWhere = " where 1=1 ";
             string combo_ENABLED_S2 = Request["combo_ENABLED_S"];
             if (combo_ENABLED_S2 == "null")
             {
                 combo_ENABLED_S2 = String.Empty;
+            }
+            if (!string.IsNullOrEmpty(Request["SEARCHCONTAINERTYPE"]))
+            {
+                strWhere = strWhere + " and t5.name like '%" + Request["SEARCHCONTAINERTYPE"] + "%'";
+            }
+            if (!string.IsNullOrEmpty(Request["SEARCHFORTNAME"]))
+            {
+                strWhere = strWhere + " and t1.FormatName like '%" + Request["SEARCHFORTNAME"] + "%'";
             }
 
             if (!string.IsNullOrEmpty(combo_ENABLED_S2))
             {
                 strWhere = strWhere + " and t1.enabled='" + combo_ENABLED_S2 + "'";
             }
-            Sql.RelaPort bc = new Sql.RelaPort();
+            Sql.RelaContainer bc = new Sql.RelaContainer();
 
-            DataTable dt = bc.export_rela_harbor(strWhere);
+            DataTable dt = bc.export_rela_container(strWhere);
             //创建Excel文件的对象
             NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
             //添加一个导出成功sheet
-            NPOI.SS.UserModel.ISheet sheet_S = book.CreateSheet("口岸对应关系");
+            NPOI.SS.UserModel.ISheet sheet_S = book.CreateSheet("集装箱对应关系");
             NPOI.SS.UserModel.IRow row1 = sheet_S.CreateRow(0);
-            row1.CreateCell(0).SetCellValue("报关口岸代码");
-            row1.CreateCell(1).SetCellValue("报关口岸名称");
-            row1.CreateCell(2).SetCellValue("报检口岸代码");
-            row1.CreateCell(3).SetCellValue("报检口岸名称");
-            row1.CreateCell(4).SetCellValue("启用情况");
-            row1.CreateCell(5).SetCellValue("启用时间");
-            row1.CreateCell(6).SetCellValue("维护人");
-            row1.CreateCell(7).SetCellValue("维护时间");
-            row1.CreateCell(8).SetCellValue("停用人");
-            row1.CreateCell(9).SetCellValue("停用时间");
-            row1.CreateCell(10).SetCellValue("备注");
+            row1.CreateCell(0).SetCellValue("集装箱尺寸");
+            row1.CreateCell(1).SetCellValue("集装箱类型");
+            row1.CreateCell(2).SetCellValue("集装箱规格");
+            row1.CreateCell(3).SetCellValue("集装箱规格名称");
+            row1.CreateCell(4).SetCellValue("集装箱HS编码");
+            row1.CreateCell(5).SetCellValue("启用情况");
+            row1.CreateCell(6).SetCellValue("启用时间");
+            row1.CreateCell(7).SetCellValue("维护人");
+            row1.CreateCell(8).SetCellValue("维护时间");
+            row1.CreateCell(9).SetCellValue("停用人");
+            row1.CreateCell(10).SetCellValue("停用时间");
+            row1.CreateCell(11).SetCellValue("备注");
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 NPOI.SS.UserModel.IRow rowtemp = sheet_S.CreateRow(i + 1);
-                rowtemp.CreateCell(0).SetCellValue(dt.Rows[i]["DECLPORT"].ToString());
-                rowtemp.CreateCell(1).SetCellValue(dt.Rows[i]["DECLPORTNAME"].ToString());
-                rowtemp.CreateCell(2).SetCellValue(dt.Rows[i]["INSPPORT"].ToString());
-                rowtemp.CreateCell(3).SetCellValue(dt.Rows[i]["INSPPORTNAME"].ToString());
-                rowtemp.CreateCell(4).SetCellValue(dt.Rows[i]["ENABLED"].ToString() == "1" ? "是" : "否");
-                rowtemp.CreateCell(5).SetCellValue(dt.Rows[i]["STARTDATE"].ToString());
-                rowtemp.CreateCell(6).SetCellValue(dt.Rows[i]["CREATEMANNAME"].ToString());
-                rowtemp.CreateCell(7).SetCellValue(dt.Rows[i]["CREATEDATE"].ToString());
-                rowtemp.CreateCell(8).SetCellValue(dt.Rows[i]["STOPMANNAME"].ToString());
-                rowtemp.CreateCell(9).SetCellValue(dt.Rows[i]["ENDDATE"].ToString());
-                rowtemp.CreateCell(10).SetCellValue(dt.Rows[i]["REMARK"].ToString());
+                rowtemp.CreateCell(0).SetCellValue(dt.Rows[i]["CONTAINERSIZE"].ToString());
+                rowtemp.CreateCell(1).SetCellValue(dt.Rows[i]["CONTAINERTYPE"].ToString());
+                rowtemp.CreateCell(2).SetCellValue(dt.Rows[i]["FORMATCODE"].ToString());
+                rowtemp.CreateCell(3).SetCellValue(dt.Rows[i]["FORMATNAME"].ToString());
+                rowtemp.CreateCell(4).SetCellValue(dt.Rows[i]["CONTAINERHS"].ToString());
+                rowtemp.CreateCell(5).SetCellValue(dt.Rows[i]["ENABLED"].ToString() == "1" ? "是" : "否");
+                rowtemp.CreateCell(6).SetCellValue(dt.Rows[i]["STARTDATE"].ToString());
+                rowtemp.CreateCell(7).SetCellValue(dt.Rows[i]["CREATEMANNAME"].ToString());
+                rowtemp.CreateCell(8).SetCellValue(dt.Rows[i]["CREATEDATE"].ToString());
+                rowtemp.CreateCell(9).SetCellValue(dt.Rows[i]["STOPMANNAME"].ToString());
+                rowtemp.CreateCell(10).SetCellValue(dt.Rows[i]["ENDDATE"].ToString());
+                rowtemp.CreateCell(11).SetCellValue(dt.Rows[i]["REMARK"].ToString());
             }
             try
             {
                 // 输出Excel
-                string filename = "口岸对应关系.xls";
+                string filename = "集装箱对应关系.xls";
                 Response.ContentType = "application/vnd.ms-excel";
                 Response.AddHeader("Content-Disposition", string.Format("attachment;filename={0}", Server.UrlEncode(filename)));
                 Response.Clear();
@@ -384,5 +395,7 @@ namespace Web_After.BasicManager.DataRela
 
         }
 
+
     }
+
 }

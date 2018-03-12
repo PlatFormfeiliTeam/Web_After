@@ -103,7 +103,7 @@ base_declproductunit t2 on t1.declproductunit=t2.code left join base_productunit
                                 '{0}','{1}','{2}',
                                 '{3}','{4}',sysdate)";
             sql = String.Format(sql,
-                                json.Value<string>("ID"), (int)Base_YearKindEnum.Insp_ContainerStandard, json_user.GetValue("ID"),
+                                json.Value<string>("ID"), (int)Base_YearKindEnum.Rela_ProductUnit, json_user.GetValue("ID"),
                                 json.Value<string>("REASON"), getChange(dt, json));
             int i = DBMgrBase.ExecuteNonQuery(sql);
 
