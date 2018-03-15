@@ -10,6 +10,6 @@
 namespace Web_After.BasicManager.InspInfor {
     
     
-    public partial class Base_year {
+    public partial class Base_blend_web {
     }
 }

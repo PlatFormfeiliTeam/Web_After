@@ -257,8 +257,6 @@
             name: 'REASON',
             fieldLabel: '修改原因',
             hidden: true
-
-
         });
         //新增布局
         var formpanel_Win = Ext.create('Ext.form.Panel', {

@@ -11,7 +11,7 @@
     <script src="/js/jquery-1.8.2.min.js"></script>
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />    
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
-    <script src="Util_Base_Codename.js"></script>
+    <script src="/BasicManager/js/Util_Base_Codename.js"></script>
     <script type="text/javascript">
         var username = '<%=Username()%>';
 
@@ -140,7 +140,7 @@
                 columns: [
                     { xtype: 'rownumberer', width: 35 },
                     
-
+                    
                     { header: getSearchCode, dataIndex: arr[0], width: 150 },
                     { header: getSearchName, dataIndex: arr[1], width: 150 },
 

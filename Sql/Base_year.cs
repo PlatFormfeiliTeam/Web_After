@@ -135,5 +135,118 @@ namespace Web_After.Sql
             DataTable loDataSet = DBMgrBase.GetDataTable(sql);
             return loDataSet;
         }
+
+        //新增HS编码
+        public int insert_base_insphs(JObject json,string yearid)
+        {
+            bcm.getCommonInformation(out stopman, out createman, out startdate, out enddate, json);
+            string sql = @"insert into base_insphs(id,
+                           hscode,hsname,weight,customregulatory,
+                           yearid,num,createdate,startdate,
+                           enddate,createman,stopman,enabled,
+                           remark,inspectionregulatory,legalunit) values(base_insphs_id.nextval,
+                           '{0}','{1}','{2}','{3}',
+                           '{4}','{5}',sysdate,to_date('{6}','yyyy/mm/dd hh24:mi:ss'),
+                           to_date('{7}','yyyy/mm/dd hh24:mi:ss'),'{8}','{9}','{10}',
+                           '{11}','{12}','{13}')";
+            sql = String.Format(sql,
+                            json.Value<string>("HSCODE"), json.Value<string>("HSNAME"), json.Value<string>("WEIGHT"), json.Value<string>("CUSTOMREGULATORY"),
+                            yearid, json.Value<string>("NUMNAME"), startdate, 
+                            enddate, createman, stopman, json.Value<string>("ENABLED"),
+                            json.Value<string>("REMARK"), json.Value<string>("INSPECTIONREGULATORY"), json.Value<string>("LEGALUNITNAME"));
+            int i = DBMgrBase.ExecuteNonQuery(sql);
+            return i;
+        }
+        //检查HS编码是否重复
+        public DataTable check_repeat_base_insphs(JObject json,string yearid)
+        {
+            string sql = @"select * from base_insphs where hscode = '{0}' and yearid = '{1}'";
+            sql = String.Format(sql,json.Value<string>("HSCODE"),yearid);
+            DataTable dt = DBMgrBase.GetDataTable(sql);
+            return dt;
+        }
+
+        //更新HS编码
+        public int update_base_insphs(JObject json,string yearid)
+        {
+            bcm.getCommonInformation(out stopman, out createman, out startdate, out enddate, json);
+            string sql = @"update base_insphs set 
+                            hscode='{0}',hsname='{1}',weight='{2}',
+                            customregulatory='{3}',inspectionregulatory='{4}',
+                            num='{5}',startdate=to_date('{6}','yyyy/mm/dd hh24:mi:ss'),enddate=to_date('{7}','yyyy/mm/dd hh24:mi:ss'),
+                            remark='{8}',legalunit='{9}',stopman = '{10}' where id='{11}'";
+            sql = String.Format(sql,
+                            json.Value<string>("HSCODE"), json.Value<string>("HSNAME"), json.Value<string>("WEIGHT"),
+                            json.Value<string>("CUSTOMREGULATORY"), json.Value<string>("INSPECTIONREGULATORY"),
+                            json.Value<string>("NUMNAME"), startdate, enddate, json.Value<string>("REMARK"), json.Value<string>("LEGALUNITNAME"), stopman,json.Value<string>("ID")
+                            );
+            int i = DBMgrBase.ExecuteNonQuery(sql);
+            return i;
+        }
+        //更新时验证HS编码重复
+        public DataTable check_repeat_base_insphs_update(JObject json,string yearid)
+        {
+            string sql = @"select * from base_insphs where hscode = '{0}' and id not in ('{1}') and yearid = '{2}'";
+            sql = String.Format(sql, json.Value<string>("HSCODE"), json.Value<string>("ID"),yearid);
+            DataTable dt = DBMgrBase.GetDataTable(sql);
+            return dt;
+        }
+        //导出数据
+        public DataTable export_table(string yearid,string strwhere)
+        {
+            string sql = @"select t1.*,
+                           t2.name as createmanname,
+                           t3.name as stopmanname,
+                           t4.name as yearname,
+                           t5.name as weightname,
+                           t6.name as numname,
+                           t7.name as legalunitname
+                              from base_insphs t1
+                              left join sys_user t2
+                                on t1.createman = t2.id
+                              left join sys_user t3
+                                on t1.stopman = t3.id
+                              left join base_year t4
+                                on t1.yearid = t4.id
+                              left join BASE_PRODUCTUNIT t5
+                                on t1.weight = t5.code
+                              left join BASE_PRODUCTUNIT t6
+                                on t6.code = t1.num
+                              left join base_productunit t7
+                                on t1.legalunit = t7.code
+                           where 1 = 1
+                           and t1.yearid = '{0}' {1}
+                           ";
+            sql = string.Format(sql, yearid, strwhere);
+            DataTable dt = DBMgrBase.GetDataTable(sql);
+            return dt;
+        }
+        //根据ID来找出修改之前的数据
+        public DataTable Before_Change(JObject json)
+        {
+            string sql = @"select * from base_insphs where id = '{0}'";
+            sql = String.Format(sql,json.Value<string>("ID"));
+            DataTable dt = DBMgrBase.GetDataTable(sql);
+            return dt;
+        }
+        //保存修改记录
+        public int saveChangeBaseHsCode(JObject json, string content)
+        {
+            FormsIdentity identity = HttpContext.Current.User.Identity as FormsIdentity;
+            string userName = identity.Name;
+            JObject json_user = Extension.Get_UserInfo(userName);
+
+            string sql = @"insert into base_alterrecord(id,
+                            tabid,tabkind,alterman,
+                            reason,contentes,alterdate) values(base_alterrecord_id.nextval,
+                            '{0}','{1}','{2}',
+                            '{3}','{4}',sysdate)";
+            sql = String.Format(sql, json.Value<string>("ID"), (int)Base_YearKindEnum.HS, json_user.GetValue("ID"),
+                json.Value<string>("REASON"), content
+            );
+            int i = DBMgrBase.ExecuteNonQuery(sql);
+            return i;
+        }
+
     }
 }

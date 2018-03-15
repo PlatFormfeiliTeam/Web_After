@@ -359,7 +359,6 @@
         }
         return title;
     },
-    
     //获取gridpanel中的colums
     getGrindPanelColumsOne: function(param) {
         var arr = new Array();

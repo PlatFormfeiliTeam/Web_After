@@ -11,7 +11,7 @@
     <script src="/js/jquery-1.8.2.min.js"></script>
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />    
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
-    <script src="Base_ciqcode_Maintain.js" type="text/javascript"></script>
+    <script src="/BasicManager/js/Base_ciqcode_Maintain.js" type="text/javascript"></script>
     <script type="text/javascript">
         var username = '<%=Username()%>';
         //http://localhost:8013//BasicManager/InspInfor/Base_ciqcode.aspx
@@ -80,7 +80,7 @@
                 items: [
                     { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { addCustomer_Win(""); } }
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;修 改', width: 80, handler: function () { editCustomer(); } }
-                    , { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;维 护', width: 80, handler: function () { Maintain(); } }
+                    , { text: '<span class="icon iconfont">&#xe617;</span>&nbsp;维 护', width: 80, handler: function () { Maintain(); } }
                     , '->'
                     , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar").moveFirst(); } }
                     , { text: '<span class="icon iconfont">&#xe633;</span>&nbsp;重 置', width: 80, handler: function () { reset(); } }

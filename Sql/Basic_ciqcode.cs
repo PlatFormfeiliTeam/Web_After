@@ -119,7 +119,7 @@ namespace Web_After.Sql
         //重复CIQ代码验证
         public DataTable check_repeat_base_ciqcode(JObject json,string yearid)
         {
-            string sql = "select * from base_ciqcode where ciq = '{0}' ";
+            string sql = "select * from base_ciqcode where ciq = '{0}'";
             sql = String.Format(sql,json.Value<string>("CIQ"),yearid);
             DataTable dt = DBMgrBase.GetDataTable(sql);
             return dt;
