@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
+using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Web_After.Common;
@@ -26,7 +27,7 @@ namespace Web_After.PageConfig
             if (!IsPostBack)
             {
                 string action = Request["action"];
-                iso.DateTimeFormat = "yyyy-MM-dd";
+                iso.DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
                 switch (action)
                 {
                     case "loadData":
@@ -54,6 +55,43 @@ namespace Web_After.PageConfig
             }
         }
 
+        [WebMethod]
+        public  static string EnableConfig(string id)
+        {
+            string[] array = id.Split(';');
+            foreach (var item in array)
+            {
+                if (!string.IsNullOrEmpty(item))
+                {
+                    string sqlStr = "update web_pageconfig t1 set t1.enabled='1' where t1.id='{0}'";
+                    sqlStr = string.Format(sqlStr, item);
+                    DBMgr.ExecuteNonQuery(sqlStr);
+                    sqlStr = "update web_pageconfig_detail t1 set t1.enabled='1' where t1.parentid='{0}'";
+                    sqlStr = string.Format(sqlStr, item);
+                    DBMgr.ExecuteNonQuery(sqlStr);
+                }
+            }
+            return "success";
+        }
+
+        [WebMethod]
+        public static string DisableConfig(string id)
+        {
+            string[] array = id.Split(';');
+            foreach (var item in array)
+            {
+                if (!string.IsNullOrEmpty(item))
+                {
+                    string sqlStr = "update web_pageconfig t1 set t1.enabled='0' where t1.id='{0}'";
+                    sqlStr = string.Format(sqlStr, item);
+                    DBMgr.ExecuteNonQuery(sqlStr);
+                    sqlStr = "update web_pageconfig_detail t1 set t1.enabled='0' where t1.parentid='{0}'";
+                    sqlStr = string.Format(sqlStr, item);
+                    DBMgr.ExecuteNonQuery(sqlStr);
+                }
+            }
+            return "success";
+        }
 
         /// <summary>
         /// 保存或更新数据
@@ -75,7 +113,11 @@ namespace Web_After.PageConfig
                 repeat =CanUpdateOrInsert(en);
                 if (string.IsNullOrEmpty(repeat))
                 {
-
+                    int i = AddConfig(en);
+                    if (i > 0)
+                    {
+                        repeat = "5";//代表成功
+                    }
                 }
             }
             else
@@ -84,12 +126,41 @@ namespace Web_After.PageConfig
                 repeat = CanUpdateOrInsert(en);
                 if (string.IsNullOrEmpty(repeat))
                 {
-
+                    int i = UpdateConfig(en);
+                    if (i > 0)
+                    {
+                        repeat = "5";//代表成功
+                    }
                 }
             }
             response = "{\"success\":\"" + repeat + "\"}";
             Response.Write(response);
             Response.End();
+        }
+
+        /// <summary>
+        /// 新增一笔记录
+        /// </summary>
+        /// <param name="en"></param>
+        /// <returns></returns>
+        public int AddConfig(WEB_PAGECONFIG en)
+        {
+            string sqlStr = @"insert into web_pageconfig (ID,code,name,pagename,configcontent,customercode,createtime,enabled,userid,username)
+                                         values (web_pageconfig_id.nextval,'{0}','{1}','{2}','{3}','{4}',sysdate,'{5}','{6}','{7}')";
+
+            sqlStr = string.Format(sqlStr, en.CODE, en.NAME, en.PAGENAME, en.CONFIGCONTENT, en.CUSTOMERCODE, en.ENABLED, en.USERID, en.USERNAME);
+            int i = DBMgr.ExecuteNonQuery(sqlStr);
+            return i;
+        }
+
+
+        public int UpdateConfig(WEB_PAGECONFIG en)
+        {
+            string sqlStr = @"update web_pageconfig set code='{0}',name='{1}',pagename='{2}',configcontent='{3}',customercode='{4}',
+                                         enabled='{5}',userid='{6}',username='{7}' where id='{8}'";
+            sqlStr = string.Format(sqlStr,en.CODE,en.NAME,en.PAGENAME,en.CONFIGCONTENT,en.CUSTOMERCODE,en.ENABLED,en.USERID,en.USERNAME,en.ID);
+            int i = DBMgr.ExecuteNonQuery(sqlStr);
+            return i;
         }
 
         /// <summary>
@@ -120,7 +191,8 @@ namespace Web_After.PageConfig
             }
             return result;
         }
-
+         
+        #region 基础信息
         /// <summary>
         /// 业务细项
         /// </summary>
@@ -161,6 +233,7 @@ namespace Web_After.PageConfig
             Response.End();
 
         }
+        #endregion
 
         /// <summary>
         /// 加载数据
@@ -220,6 +293,7 @@ namespace Web_After.PageConfig
             Response.End();
         }
 
+        #region 工具方法
         //将配置内容拆开成业务类型和业务细项
         public DataTable ProcessDataTable(DataTable dt)
         {
@@ -281,6 +355,6 @@ namespace Web_After.PageConfig
                 return null;
             }
         }
-
+        #endregion
     }
 }

@@ -17,10 +17,6 @@
         var store1, store2, store3;
 
         Ext.onReady(function () {
-
-
-
-
             Ext.Ajax.request({
                 url: 'MainConfig.aspx',
                 params: { action: 'Ini_Base_Data' },
@@ -56,7 +52,7 @@
                 ]
             });
 
-             store1 = Ext.create("Ext.data.Store", {
+            store1 = Ext.create("Ext.data.Store", {
                 storeId: "store1",
                 model: "comboboxbusitype",
                 proxy: {
@@ -76,7 +72,7 @@
                 ]
             });
 
-             store2 = Ext.create("Ext.data.Store", {
+            store2 = Ext.create("Ext.data.Store", {
                 storeId: "store2",
                 model: "comboboxbusidetail",
                 proxy: {
@@ -91,7 +87,7 @@
             store1.load();
             store2.load();
 
-             store3 = Ext.create("Ext.data.Store", {
+            store3 = Ext.create("Ext.data.Store", {
                 fields: [
                      "CODE", "NAME", "BUSITYPE"
                 ]
@@ -192,10 +188,10 @@
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;编辑', width: 80, handler: function () { edit_config(); } }
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;复制新增', width: 80, handler: function () { } }
                     , { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { } }
-                    , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;启用', width: 80, handler: function () { } }
-                    , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;禁用', width: 80, handler: function () { } }
+                    , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;启用', width: 80, handler: function () { enable_config(); } }
+                    , { text: '<span class="icon iconfont">&#xe63c;</span>&nbsp;禁用', width: 80, handler: function () { disable_config(); } }
                     , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;导 出', handler: function () { } }
-                    , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;配置', handler: function () { } }
+                    , { text: '<span class="icon iconfont">&#xe6e4;</span>&nbsp;配置', handler: function () { set_config();} }
                     , '->'
                     , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar").moveFirst(); } }
                     , { text: '<span class="icon iconfont">&#xe633;</span>&nbsp;重 置', width: 80, handler: function () { reset(); } }
@@ -346,7 +342,7 @@
             //适用页面
             var store_page = Ext.create('Ext.data.JsonStore', {
                 fields: ['CODE', 'NAME'],
-                data: [{ "CODE": 0, "NAME": "关务维护页面" }, { "CODE": 1, "NAME": "关务管理页面" }]
+                data: [{ "CODE": "关务维护页面", "NAME": "关务维护页面" }, { "CODE": "关务管理页面", "NAME": "关务管理页面" }]
             });
 
             var field_configpage = Ext.create('Ext.form.field.ComboBox', {
@@ -547,6 +543,71 @@
                 function (field) {
                     field.reset();
                 });
+        }
+
+        //启用
+        function enable_config() {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要启用的记录！');
+                return;
+            }
+            var ids = '';
+            for (var i = 0; i < recs.length; i++) {
+                ids += recs[i].get("ID") + ';';
+            }
+            $.ajax({
+                url: "MainConfig.aspx/EnableConfig",
+                type: "POST",
+                data: "{\"id\":\"" + ids + "\"}",
+                contentType: "Application/json;charset=utf-8",
+                success: function (data, textStatus, jqXHR) {
+                    Ext.MessageBox.alert('启用结果', data.d, function (btn) {
+                        Ext.getCmp("pgbar").moveFirst();
+                    });
+                }
+            });
+        }
+
+        //禁用
+        function disable_config() {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要禁用的记录！');
+                return;
+            }
+            var ids = '';
+            for (var i = 0; i < recs.length; i++) {
+                ids += recs[i].get("ID") + ';';
+            }
+            $.ajax({
+                url: "MainConfig.aspx/DisableConfig",
+                type: "POST",
+                data: "{\"id\":\"" + ids + "\"}",
+                contentType: "Application/json;charset=utf-8",
+                success: function (data, textStatus, jqXHR) {
+                    Ext.MessageBox.alert('禁用结果', data.d, function (btn) {
+                        Ext.getCmp("pgbar").moveFirst();
+                    });
+                }
+            });
+        }
+
+        //配置
+        function set_config()
+        {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要配置的记录！');
+                return;
+            }
+            var id = recs[0].get("ID");
+            var enabled = recs[0].get("ENABLED");
+            if (enabled == '0') {
+                alert("该记录已被禁用，不能配置");
+                return;
+            }
+            window.open('ConfigDetail.aspx?parentid=' + id, '', '', '');
         }
     </script>
 </head>
