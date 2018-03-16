@@ -21,7 +21,8 @@ namespace Web_After.PageConfig.PageconfigEntity
         public DateTime? CREATETIME { get; set; }
         public Int32 USERID { get; set; }
         public string USERNAME { get; set; }
-        public Int32 ENABLED { get; set; }   
+        public Int32 ENABLED { get; set; }
+        public string REASON { get; set; }
 
     }
 }

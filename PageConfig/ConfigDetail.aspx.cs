@@ -36,10 +36,10 @@ namespace Web_After.PageConfig
                 switch (action)
                 {
                     case "loadData":
-                        //loadData();
+                        loadData();
                         break;
                     case "save":
-                        //save(Request["formdata"]);
+                        save(Request["formdata"]);
                         break;
                     case "export":
                         //export();
@@ -62,8 +62,82 @@ namespace Web_After.PageConfig
                     case "loadparentinfo":
                         GetParentInfoForSeach();
                         break;
+                    case "gettablename":
+                        GetTableName();
+                        break;
+                    case "getfieldname":
+                        GetFieldName();
+                        break;
+                    case "getorderno":
+                        GetOrderNo();
+                        break;
                 }
             }
+        }
+
+        /// <summary>
+        /// 保存更新数据
+        /// </summary>
+        /// <param name="formdata"></param>
+        public void save(string formdata)
+        {
+            string response = "";
+            string repeat = "";
+            JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
+            WEB_PAGECONFIG_DETAIL en = JsonToEntity(json);
+            if (en != null)
+            {
+                if (en.ID < 0)
+                {
+                    //新增
+
+                }
+                else
+                {
+                    //更新
+                }
+            }
+            else
+            {
+                repeat = "json转换出错";
+            }
+
+            response = "{\"success\":\"" + repeat + "\"}";
+            Response.Write(response);
+            Response.End();
+            
+        }
+
+
+
+        /// <summary>
+        /// 新增记录时，序号从数据库算出来
+        /// </summary>
+        public void GetOrderNo()
+        {
+            string orderno = "[]";
+            parentid = Request["parentid"];
+            string sqlStr = "select * from web_pageconfig_detail t1 where t1.parentid='{0}'";
+            sqlStr = string.Format(sqlStr, parentid);
+            DataTable dt = DBMgr.GetDataTable(sqlStr);
+            orderno = "[{\"orderno\":\"" + (dt.Rows.Count + 1) + "\"}]";
+            Response.Write("{" + "orderno:" + orderno + "}");
+            Response.End();
+        }
+
+        /// <summary>
+        /// 加载对应的细项配置
+        /// </summary>
+        public void loadData()
+        {
+            parentid = Request["parentid"];
+            string sqlStr = "select * from web_pageconfig_detail t1 where t1.parentid='{0}'";
+            sqlStr = string.Format(sqlStr, parentid);
+            sqlStr = Extension.GetPageSql(sqlStr, "t1.orderno", "", ref totalProperty, Convert.ToInt32(Request["start"]), Convert.ToInt32(Request["limit"]));
+            DataTable loDataSet = DBMgr.GetDataTable(sqlStr);
+            string json = JsonConvert.SerializeObject(loDataSet, iso);
+            Response.Write("{rows:" + json + ",total:" + totalProperty + "}");
+            Response.End();
         }
 
         public void GetParentInfoForSeach()
@@ -107,7 +181,27 @@ namespace Web_After.PageConfig
         }
 
         #region
-
+        public void GetFieldName()
+        {
+            string sql = "";
+            string fieldname = "[]";
+            sql = "select t1.code,t1.name||'('||t1.code||')' as name,t1.tablename from web_fieldconfig t1";
+            fieldname = JsonConvert.SerializeObject(DBMgr.GetDataTable(sql));
+            Response.Write("{" + "fieldname:" + fieldname + "}");
+            Response.End();
+        }
+        /// <summary>
+        /// 获取表名
+        /// </summary>
+        public void GetTableName()
+        {
+            string sql = "";
+            string tablename = "[]";
+            sql = "select t1.code,t1.name||'('||t1.code||')' as name from web_tableconfig t1";
+            tablename = JsonConvert.SerializeObject(DBMgr.GetDataTable(sql));
+            Response.Write("{" + "tablename:" + tablename + "}");
+            Response.End();
+        }
         /// <summary>
         /// 业务细项
         /// </summary>
@@ -144,5 +238,83 @@ namespace Web_After.PageConfig
             Response.End();
         }
         #endregion
+
+        public WEB_PAGECONFIG_DETAIL JsonToEntity(JObject json)
+        {
+            WEB_PAGECONFIG_DETAIL en = new WEB_PAGECONFIG_DETAIL();
+            try
+            {
+                if (!string.IsNullOrEmpty(json.Value<string>("ID")))
+                {
+                    en.ID = Convert.ToInt32(json.Value<string>("ID"));
+                }
+                else
+                {
+                    en.ID = -1;
+                }
+                if (!string.IsNullOrEmpty(json.Value<string>("ENABLED")))
+                {
+                    en.ENABLED = Convert.ToInt32(json.Value<string>("ENABLED"));
+                }
+                else
+                {
+                    en.ENABLED = 1;
+                }
+                FormsIdentity identity = HttpContext.Current.User.Identity as FormsIdentity;
+                string userName = identity.Name;
+                JObject json_user = Extension.Get_UserInfo(userName);
+                en.USERID = (Int32)json_user.GetValue("ID");
+                en.USERNAME = (string)json_user.GetValue("REALNAME");
+                en.REASON = json.Value<string>("REASON");
+                en.FIELDCODE = json.Value<string>("FIELDCODE");
+                en.TABLECODE = json.Value<string>("TABLECODE");
+                en.SELECTCONTENT = json.Value<string>("SELECTCONTENT");
+                if (!string.IsNullOrEmpty(json.Value<string>("ORDERNO")))
+                {
+                    en.ORDERNO = Convert.ToInt32(json.Value<string>("ORDERNO"));
+                }
+                en.CONTROLTYPE = json.Value<string>("CONTROLTYPE");
+                en.CONFIGTYPE = json.Value<string>("CONFIGTYPE");
+                if (en.CONTROLTYPE == "下拉框")
+                {
+                    en.SELECTCONTENT = en.SELECTCONTENT.Replace("；",";");
+                }
+                else
+                {
+                    en.SELECTCONTENT = "";
+                }
+                en.TABLENAME = GetTableNameWithCode(en.TABLECODE);
+                en.FIELDNAME = GetFieldNameWithCode(en.FIELDCODE, en.TABLECODE);
+            }
+            catch
+            {
+                return null;
+            }
+            return en;
+        }
+
+        public string GetTableNameWithCode(string tablecode)
+        {
+            string tableName = "";
+            string sqlStr = "select t1.name from web_tableconfig t1 where t1.code='" + tablecode + "'";
+            DataTable dt = DBMgr.GetDataTable(sqlStr);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                tableName = dt.Rows[0]["name"].ToString();
+            }
+            return tableName;
+        }
+
+        public string GetFieldNameWithCode(string fieldcode,string tablecode)
+        {
+            string tableName = "";
+            string sqlStr = "select t1.name from web_fieldconfig t1 where t1.code='" + fieldcode + "' and t1.tablename='" + tablecode + "'";
+            DataTable dt = DBMgr.GetDataTable(sqlStr);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                tableName = dt.Rows[0]["name"].ToString();
+            }
+            return tableName;
+        }
     }
 }

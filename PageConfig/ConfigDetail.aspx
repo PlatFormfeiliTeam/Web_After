@@ -14,10 +14,8 @@
     <script src="/js/pan.js" type="text/javascript"></script>
     <script type="text/javascript">
         var parentid = getQueryString("parentid");
-        if (parentid == undefined || parentid == "") {
-            parentid = -1;
-        }
         var store1, store2, store3;
+        var store_table ,store_field, store_field_filter;
         var store_customercode;
         var store_parentinfo;
         var commondata;
@@ -52,6 +50,47 @@
 
         //查询栏
         function init_search() {
+            Ext.define("comboboxtablename", {
+                extend: "Ext.data.Model",
+                fields: [
+                     "CODE", "NAME"
+                ]
+            });
+
+            store_table = Ext.create("Ext.data.Store", {
+                storeId: "store_table",
+                model: "comboboxtablename",
+                proxy: {
+                    type: "ajax",
+                    url: "ConfigDetail.aspx?action=gettablename",
+                    reader: {
+                        type: "json",
+                        root: "tablename"
+                    }
+                }
+            });
+
+            Ext.define("comboboxfieldname", {
+                extend: "Ext.data.Model",
+                fields: [
+                     "CODE", "NAME","TABLENAME"
+                ]
+            });
+
+            store_field = Ext.create("Ext.data.Store", {
+                storeId: "store_field",
+                model: "comboboxfieldname",
+                proxy: {
+                    type: "ajax",
+                    url: "ConfigDetail.aspx?action=getfieldname",
+                    reader: {
+                        type: "json",
+                        root: "fieldname"
+                    }
+                }
+            });
+
+
             Ext.define("comboboxcustomercode", {
                 extend: "Ext.data.Model",
                 fields: [
@@ -114,10 +153,17 @@
             store1.load();
             store2.load();
             store_customercode.load();
+            store_table.load();
+            store_field.load();
 
             store3 = Ext.create("Ext.data.Store", {
                 fields: [
                      "CODE", "NAME", "BUSITYPE"
+                ]
+            });
+            store_field_filter = Ext.create("Ext.data.Store", {
+                fields: [
+                     "CODE", "NAME", "TABLENAME"
                 ]
             });
             //适用页面
@@ -234,7 +280,7 @@
             var store_customer = Ext.create('Ext.data.JsonStore',
                 {
                     fields: ['ORDERNO', 'NAME', 'CONTROLTYPE', 'SELECTCONTENT', 'CONFIGTYPE', 'TABLECODE',
-                        'FIELDCODE', 'TABLENAME', 'FIELDNAME', 'CREATETIME', 'USERID', 'USERNAME', 'ENABLED', 'ID', 'PARENTID', ],
+                        'FIELDCODE', 'TABLENAME', 'FIELDNAME', 'CREATETIME', 'USERID', 'USERNAME', 'ENABLED', 'ID', 'PARENTID'],
                     pageSize: 20,
                     proxy: {
                         type: 'ajax',
@@ -307,6 +353,280 @@
             }
             return str;
         }
+
+        //新增
+        function add_config(ID,formdata)
+        {
+            form_ini_win();
+
+            if (ID != "") {
+                Ext.getCmp('REASON').hidden = false;
+                Ext.getCmp('REASON').allowBlank = false;
+                Ext.getCmp('REASON').blankText = '修改原因不可为空!';
+                //默认值的
+                Ext.getCmp('formpanel_Win').getForm().setValues(formdata);
+            }
+            else
+            {
+                Ext.Ajax.request({
+                    url: 'ConfigDetail.aspx?parentid=' + parentid,
+                    params: { action: 'getorderno' },
+                    type: 'Post',
+                    success: function (response, option) {
+                        var commondata = Ext.decode(response.responseText);
+                        var order = commondata.orderno;//
+                        Ext.getCmp('ORDERNO').setValue(order[0].orderno);
+                    }
+                });
+            }
+
+            var win = Ext.create("Ext.window.Window", {
+                id: "win_d",
+                title: '配置',
+                width: 1200,
+                height: 430,
+                modal: true,
+                items: [Ext.getCmp('formpanel_Win')]
+            });
+            win.show();
+        }
+
+
+        function form_ini_win() {
+            var field_id = Ext.create('Ext.form.field.Hidden', {
+                id: 'ID',
+                name: 'ID'
+            });
+
+            var field_parentid = Ext.create('Ext.form.field.Hidden', {
+                id: 'PARENTID',
+                name: 'PARENTID'
+            });
+
+            //序号
+            var field_orderno = Ext.create('Ext.form.field.Text', {
+                id: 'ORDERNO',
+                name: 'ORDERNO',
+                fieldLabel: '序号',
+                allowBlank: false,
+                blankText: '代码不可为空!',
+                readOnly: true
+            });
+            //显示名称
+            var field_name = Ext.create('Ext.form.field.Text', {
+                id: 'NAME',
+                name: 'NAME',
+                fieldLabel: '显示名称',
+                allowBlank: false,
+                blankText: '显示名称不可为空!',
+            });
+
+            //控件类型
+            var store_controltype = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: [{ "CODE": "文本", "NAME": "文本" }, { "CODE": "数字", "NAME": "数字" }, { "CODE": "下拉框", "NAME": "下拉框" }, { "CODE": "日期", "NAME": "日期" }]
+            });
+
+            var field_controltype = Ext.create('Ext.form.field.ComboBox', {
+                id: 'CONTROLTYPE',
+                name: 'CONTROLTYPE',
+                store: store_controltype,
+                minChars: 1,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '控件类型',
+                flex: .5,
+                allowBlank: false,
+                blankText: '控件类型不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    },
+                    change: function (f, n, o) {
+                        if (n == '下拉框') {
+                            Ext.getCmp('SELECTCONTENT').show();
+                            Ext.getCmp('SELECTCONTENT').allowBlank = false;
+                        } else {
+                            Ext.getCmp('SELECTCONTENT').hide();
+                            Ext.getCmp('SELECTCONTENT').allowBlank = true;
+                        }
+                    }
+                }
+            });
+
+            //下拉内容
+            var field_selectcontent = Ext.create('Ext.form.field.Text', {
+                id: 'SELECTCONTENT',
+                name: 'SELECTCONTENT',
+                fieldLabel: '下拉内容',
+                blankText: '下拉内容不可为空!',
+                hidden:true
+            });
+
+            //表名代码
+            var field_tablecode = Ext.create('Ext.form.field.ComboBox', {
+                id: 'TABLECODE',
+                name: 'TABLECODE',
+                store: store_table,
+                minChars: 1,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '表名',
+                flex: .5,
+                allowBlank: false,
+                blankText: '表名不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    },
+                    change: function (f, n, o) {
+                        store_field_filter.removeAll();
+                        combo_detail = Ext.getCmp("FIELDCODE");
+                        combo_detail.reset();
+                        store_field.each(function (record) {
+                            if (record.get('TABLENAME') == n) {
+                                store_field_filter.add(record);
+                            }
+                        });
+                    }
+                }
+            });
+
+
+            //字段名
+            var field_fieldcode = Ext.create('Ext.form.field.ComboBox', {
+                id: 'FIELDCODE',
+                name: 'FIELDCODE',
+                store: store_field_filter,
+                minChars: 1,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '字段名',
+                flex: .5,
+                allowBlank: false,
+                blankText: '字段名不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
+            var store_configtype = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: [{ "CODE": "界面维护", "NAME": "界面维护" }, { "CODE": "高级查询", "NAME": "高级查询" }, { "CODE": "列表显示", "NAME": "列表显示" }]
+            });
+            //配置类型
+            var field_configtype = Ext.create('Ext.form.field.ComboBox', {
+                id: 'CONFIGTYPE',
+                name: 'CONFIGTYPE',
+                store: store_configtype,
+                queryMode: 'local',
+                anyMatch: true,
+                fieldLabel: '配置类型',
+                displayField: 'NAME',
+                valueField: 'CODE'
+            });
+
+            var store_enabled_s = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: [{ "CODE": 0, "NAME": "否" }, { "CODE": 1, "NAME": "是" }]
+            });
+            //是否启用
+            var field_enabled = Ext.create('Ext.form.field.ComboBox', {
+                id: 'ENABLED',
+                name: 'ENABLED',
+                store: store_enabled_s,
+                queryMode: 'local',
+                anyMatch: true,
+                fieldLabel: '是否启用',
+                displayField: 'NAME',
+                valueField: 'CODE'
+            });
+
+            //修改原因输入框
+            var change_reason = Ext.create('Ext.form.field.Text', {
+                id: 'REASON',
+                name: 'REASON',
+                fieldLabel: '修改原因',
+                hidden: true
+            });
+
+            var formpanel_Win = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_Win',
+                minHeight: 170,
+                border: 0,
+                buttonAlign: 'center',
+                fieldDefaults: {
+                    margin: '0 5 10 0',
+                    labelWidth: 100,
+                    columnWidth: .5,
+                    labelAlign: 'right',
+                    labelSeparator: '',
+                    msgTarget: 'under'
+                },
+                items: [
+                    { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [field_orderno, field_name] },
+                    { layout: 'column', height: 42, border: 0, items: [field_controltype, field_selectcontent] },
+                    { layout: 'column', height: 42, border: 0, items: [field_tablecode, field_fieldcode] },
+                    { layout: 'column', height: 42, border: 0, items: [field_configtype] },
+                    { layout: 'column', height: 42, border: 0, items: [field_enabled, change_reason] },
+                    field_parentid,
+                    field_id
+                ],
+                buttons: [{
+
+                    text: '<span class="icon iconfont" style="font-size:12px;">&#xe60c;</span>&nbsp;保存', handler: function () {
+                        if (!Ext.getCmp('formpanel_Win').getForm().isValid()) {
+                            return;
+                        }
+
+                        var formdata = Ext.encode(Ext.getCmp('formpanel_Win').getForm().getValues());
+                        Ext.Ajax.request({
+                            url: 'ConfigDetail.aspx?parentid='+parentid,
+                            type: 'Post',
+                            params: { action: 'save', formdata: formdata },
+                            success: function (response, option) {
+                                var data = Ext.decode(response.responseText);
+                                if (data.success == "5") {
+                                    Ext.Msg.alert('提示',
+                                        "保存成功",
+                                        function () {
+                                            Ext.getCmp("pgbar").moveFirst();
+                                            Ext.getCmp("win_d").close();
+                                        });
+                                } else {
+                                    var errorMsg = data.success;
+                                    var reg = /,$/gi;
+                                    idStr = errorMsg.replace(reg, "!");
+                                    Ext.Msg.alert('提示', "保存失败:" + idStr, function () {
+                                        Ext.getCmp("pgbar").moveFirst(); Ext.getCmp("win_d").close();
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }]
+            });
+        }
+
+
+        //编辑
+        function edit_config() {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要查看详细的记录！');
+                return;
+            }
+            add_config(recs[0].get("ID"), recs[0].data);
+        }
+
     </script>
 </head>
 <body>

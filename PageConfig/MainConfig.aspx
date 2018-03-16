@@ -293,7 +293,7 @@
 
         //新增配置主表
         function add_config(ID, formdata) {
-            form_ini_win(formdata);
+            form_ini_win();
 
             if (ID != "") {
                 Ext.getCmp('REASON').hidden = false;
@@ -315,7 +315,7 @@
         }
 
         //初始化界面
-        function form_ini_win(formdata) {
+        function form_ini_win() {
             var field_id = Ext.create('Ext.form.field.Hidden', {
                 id: 'ID',
                 name: 'ID'
