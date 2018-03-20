@@ -15,7 +15,7 @@
     <script type="text/javascript">
         var parentid = getQueryString("parentid");
         var store1, store2, store3;
-        var store_table ,store_field, store_field_filter;
+        var store_table, store_field, store_field_filter;
         var store_customercode;
         var store_parentinfo;
         var commondata;
@@ -73,7 +73,7 @@
             Ext.define("comboboxfieldname", {
                 extend: "Ext.data.Model",
                 fields: [
-                     "CODE", "NAME","TABLENAME"
+                     "CODE", "NAME", "TABLENAME"
                 ]
             });
 
@@ -182,7 +182,7 @@
                 displayField: 'NAME',
                 valueField: 'CODE',
                 //hiddenTrriger: true,
-                readOnly:true
+                readOnly: true
             });
 
             //业务类型
@@ -195,7 +195,7 @@
                 fieldLabel: '业务类型',
                 displayField: 'NAME',
                 valueField: 'CODE',
-                readOnly:true,
+                readOnly: true,
                 listeners: {
                     change: function (f, n, o) {
                         //store3.removeAll();
@@ -243,8 +243,10 @@
             var toolbar = Ext.create('Ext.toolbar.Toolbar', {
                 items: [
                     { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { add_config("", ""); } }
-                    , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;编辑', width: 80, handler: function () { edit_config(); } }
-                    , { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { } }
+                    , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;编 辑', width: 80, handler: function () { edit_config(); } }
+                    , { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { delete_config(); } }
+                    , { text: '<span class="icon iconfont">&#xe604;</span>&nbsp;上 移', width: 80, handler: function () { moveup(); } }
+                    , { text: '<span class="icon iconfont">&#xe603;</span>&nbsp;下 移', width: 80, handler: function () { movedown();} }
                     , '->'
                     , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar").moveFirst(); } }
                 ]
@@ -265,7 +267,7 @@
                     { layout: 'column', border: 0, items: [txt_search_name, txt_search_code, txt_search_account] }
                 ]
             });
-  
+
             Ext.getCmp('SEARCH_PAGE').setValue(store_parentinfo.getAt(0).get('PAGENAME'));
             Ext.getCmp('SEARCH_CODE').setValue(store_parentinfo.getAt(0).get('CODE'));
             Ext.getCmp('SEARCH_NAME').setValue(store_parentinfo.getAt(0).get('NAME'));
@@ -304,7 +306,8 @@
                     id: 'pgbar',
                     displayMsg: '显示 {0} - {1} 条,共计 {2} 条',
                     store: store_customer,
-                    displayInfo: true
+                    displayInfo: true,
+                    pageSize:20
                 });
             var gridpanel = Ext.create('Ext.grid.Panel', {
                 id: 'gridpanel',
@@ -355,8 +358,7 @@
         }
 
         //新增
-        function add_config(ID,formdata)
-        {
+        function add_config(ID, formdata) {
             form_ini_win();
 
             if (ID != "") {
@@ -366,8 +368,7 @@
                 //默认值的
                 Ext.getCmp('formpanel_Win').getForm().setValues(formdata);
             }
-            else
-            {
+            else {
                 Ext.Ajax.request({
                     url: 'ConfigDetail.aspx?parentid=' + parentid,
                     params: { action: 'getorderno' },
@@ -462,7 +463,7 @@
                 name: 'SELECTCONTENT',
                 fieldLabel: '下拉内容',
                 blankText: '下拉内容不可为空!',
-                hidden:true
+                hidden: true
             });
 
             //表名代码
@@ -589,7 +590,7 @@
 
                         var formdata = Ext.encode(Ext.getCmp('formpanel_Win').getForm().getValues());
                         Ext.Ajax.request({
-                            url: 'ConfigDetail.aspx?parentid='+parentid,
+                            url: 'ConfigDetail.aspx?parentid=' + parentid,
                             type: 'Post',
                             params: { action: 'save', formdata: formdata },
                             success: function (response, option) {
@@ -627,6 +628,108 @@
             add_config(recs[0].get("ID"), recs[0].data);
         }
 
+        //删除配置
+        function delete_config() {
+
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要删除的记录！');
+                return;
+            }
+            Ext.MessageBox.confirm('提示', '确认删除该信息？', godelete);
+
+        }
+
+        function godelete(btn) {
+            if (btn == "yes") {
+                var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+
+                Ext.Ajax.request({
+                    url: 'ConfigDetail.aspx?parentid=' + parentid,
+                    params: { action: 'delete', deleterecord: recs[0].get("ID") },
+                    type: 'Post',
+                    success: function (response, options) {
+                        var data = Ext.decode(response.responseText);
+                        if (data.success == "5") {
+                            Ext.Msg.alert('提示',
+                                "删除成功",
+                                function () {
+                                    Ext.getCmp("pgbar").moveFirst();
+                                });
+                        } else {
+                            var errorMsg = data.success;
+                            var reg = /,$/gi;
+                            idStr = errorMsg.replace(reg, "!");
+                            Ext.Msg.alert('提示', "删除失败:" + idStr, function () {
+                                Ext.getCmp("pgbar").moveFirst();
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+        //上移
+        function moveup() {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要上移的详细记录！');
+                return;
+            }
+            var id = recs[0].get("ID");
+            var orderno = recs[0].get('ORDERNO');
+            if (orderno == '1') {
+                Ext.MessageBox.alert('提示', '第一条记录无法上移！');
+                return;
+            }
+            Ext.Ajax.request({
+                url: 'ConfigDetail.aspx?parentid=' + parentid,
+                params: { action: 'moveup', deleterecord: recs[0].get("ID") },
+                type: 'Post',
+                success: function (response, options) {
+                    var data = Ext.decode(response.responseText);
+                    if (data.success == "5") {
+                        Ext.getCmp("pgbar").moveFirst();
+                    } else {
+                        var errorMsg = data.success;
+                        var reg = /,$/gi;
+                        idStr = errorMsg.replace(reg, "!");
+                        Ext.Msg.alert('提示', "上移失败:" + idStr, function () {
+                            Ext.getCmp("pgbar").moveFirst();
+                        });
+                    }
+                }
+            });
+        }
+
+        function movedown()
+        {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要上移的详细记录！');
+                return;
+            }
+            var id = recs[0].get("ID");
+            var orderno = recs[0].get('ORDERNO');
+            Ext.Ajax.request({
+                url: 'ConfigDetail.aspx?parentid=' + parentid,
+                params: { action: 'movedown', deleterecord: recs[0].get("ID") },
+                type: 'Post',
+                success: function (response, options) {
+                    var data = Ext.decode(response.responseText);
+                    if (data.success == "5") {
+                        Ext.getCmp("pgbar").moveFirst();
+                    } else {
+                        var errorMsg = data.success;
+                        var reg = /,$/gi;
+                        idStr = errorMsg.replace(reg, "!");
+                        Ext.Msg.alert('提示', "下移失败:" + idStr, function () {
+                            Ext.getCmp("pgbar").moveFirst();
+                        });
+                    }
+                }
+            });
+        }
     </script>
 </head>
 <body>

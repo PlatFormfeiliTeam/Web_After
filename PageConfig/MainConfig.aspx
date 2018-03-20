@@ -187,7 +187,7 @@
                     { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { add_config("", ""); } }
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;编辑', width: 80, handler: function () { edit_config(); } }
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;复制新增', width: 80, handler: function () { } }
-                    , { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { } }
+                    , { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { delete_config();} }
                     , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;启用', width: 80, handler: function () { enable_config(); } }
                     , { text: '<span class="icon iconfont">&#xe63c;</span>&nbsp;禁用', width: 80, handler: function () { disable_config(); } }
                     , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;导 出', handler: function () { } }
@@ -608,6 +608,16 @@
                 return;
             }
             window.open('ConfigDetail.aspx?parentid=' + id, '', '', '');
+        }
+        
+        //删除
+        function delete_config()
+        {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要删除的记录！');
+                return;
+            }
         }
     </script>
 </head>

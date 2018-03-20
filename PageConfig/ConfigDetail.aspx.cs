@@ -71,8 +71,131 @@ namespace Web_After.PageConfig
                     case "getorderno":
                         GetOrderNo();
                         break;
+                    case "delete":
+                        Delete();
+                        break;
+                    case "moveup":
+                        MoveUp();
+                        break;
+                    case "movedown":
+                        MoveDown();
+                        break;
                 }
             }
+        }
+
+        public void MoveDown()
+        {
+            string repeat = "";
+            string response = "";
+            string id = Request["deleterecord"];
+            parentid = Request["parentid"];
+
+            string GetAllRecordStr = "select * from web_pageconfig_detail t1 where t1.parentid='{0}'";
+            GetAllRecordStr = string.Format(GetAllRecordStr, parentid);
+            DataTable dt = DBMgr.GetDataTable(GetAllRecordStr);
+            string GetCurrentRecord="select * from web_pageconfig_detail t1 where t1.parentid='{0}' and t1.id='{1}'";
+            GetCurrentRecord = string.Format(GetCurrentRecord, parentid, id);
+            DataTable dtCurrent = DBMgr.GetDataTable(GetCurrentRecord);
+            bool canMove = false;
+            if(dt!=null&&dt.Rows.Count>0&&dtCurrent!=null&&dtCurrent.Rows.Count>0)
+            {
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                  if(Convert.ToInt32( dt.Rows[i]["orderno"].ToString()) >Convert.ToInt32(dtCurrent.Rows[0]["orderno"].ToString()))
+                  {
+                      canMove = true;
+                      break;
+                  }
+                }
+            }
+            else
+            {
+                repeat = "下移失败";
+            }
+            if (canMove)
+            {
+                string orderNo = dtCurrent.Rows[0]["orderno"].ToString();
+                string updateMax = "update web_pageconfig_detail set orderno='" + orderNo + "' where orderno ='"+(Convert.ToInt32(orderNo)+1)+"'";
+                DBMgr.ExecuteNonQuery(updateMax);
+                string updateCurrent = "update web_pageconfig_detail set orderno='" + (Convert.ToInt32(orderNo) + 1) + "' where id='" + id + "'";
+                DBMgr.ExecuteNonQuery(updateCurrent);
+                repeat = "5";
+            }
+            else
+            {
+                repeat = "最后一条记录不能下移";
+            }
+
+            response = "{\"success\":\"" + repeat + "\"}";
+            Response.Write(response);
+            Response.End();
+        }
+
+        public void MoveUp()
+        {
+            string repeat = "";
+            string response = "";
+            string id = Request["deleterecord"];
+            parentid = Request["parentid"];
+            string sqlStr = "select * from web_pageconfig_detail t1 where t1.parentid='{0}' and t1.id='{1}'";
+            sqlStr = string.Format(sqlStr, parentid, id);
+            DataTable dt = DBMgr.GetDataTable(sqlStr);
+           
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                string orderNo = dt.Rows[0]["orderno"].ToString();
+                string updateMinStr = "update web_pageconfig_detail set orderno='"+orderNo+"' where parentid='"+parentid+"' and orderno='"+(Convert.ToInt32(orderNo)-1)+"'";
+                DBMgr.ExecuteNonQuery(updateMinStr);
+                string updateStr = "update web_pageconfig_detail set orderno='"+(Convert.ToInt32(orderNo)-1)+"' where id='"+id+"'";
+                DBMgr.ExecuteNonQuery(updateStr);
+                repeat = "5";
+            }
+            else
+            {
+                repeat = "异常，无法上移";
+            }
+            response = "{\"success\":\"" + repeat + "\"}";
+            Response.Write(response);
+            Response.End();
+        }
+
+        public void Delete()
+        {
+            string repeat = "";
+            string response = "";
+            string id = Request["deleterecord"];
+            parentid = Request["parentid"];
+            try
+            {
+                //获得小于它orderno的所有记录，然后要依次减去1;
+                string sqlStr = "select * from web_pageconfig_detail t1 where t1.parentid='{0}' and t1.id='{1}'";
+                sqlStr = string.Format(sqlStr, parentid, id);
+                DataTable dt = DBMgr.GetDataTable(sqlStr);
+                string orderno = dt.Rows[0]["orderno"].ToString();
+                sqlStr = "select * from web_pageconfig_detail t1 where t1.parentid='{0}' and t1.orderno>'{1}'";
+                sqlStr = string.Format(sqlStr, parentid, orderno);
+                DataTable dt1 = DBMgr.GetDataTable(sqlStr);
+                if (dt1 != null && dt1.Rows.Count > 0)
+                {
+                    for (int i = 0; i < dt1.Rows.Count; i++)
+                    {
+                        string updateStr = "update web_pageconfig_detail set orderno='" + (Convert.ToInt32(dt1.Rows[i]["orderno"].ToString()) - 1) + "' where id='" + dt1.Rows[i]["id"].ToString() + "'";
+                        DBMgr.ExecuteNonQuery(updateStr);
+                    }
+                }
+                sqlStr = "delete from web_pageconfig_detail t1 where t1.id='" + id + "'";
+                DBMgr.ExecuteNonQuery(sqlStr);
+                repeat = "5";
+            }
+            catch
+            {
+                repeat = "删除失败";
+            }
+            
+            response = "{\"success\":\"" + repeat + "\"}";
+            Response.Write(response);
+            Response.End();
         }
 
         /// <summary>
@@ -81,20 +204,51 @@ namespace Web_After.PageConfig
         /// <param name="formdata"></param>
         public void save(string formdata)
         {
+            parentid = Request["parentid"];
             string response = "";
             string repeat = "";
             JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
             WEB_PAGECONFIG_DETAIL en = JsonToEntity(json);
+            if(!string.IsNullOrEmpty(parentid)){
+                en.PARENTID = Convert.ToInt32(parentid);
+            }
+            
             if (en != null)
             {
                 if (en.ID < 0)
                 {
                     //新增
-
+                    string sqlStr = @"insert into web_pageconfig_detail (id,parentid,orderno,name,controltype,isselect,selectcontent,configtype,tablecode,fieldcode,tablename,fieldname,createtime,userid,username,enabled)
+                                                 values (web_pageconfig_detail_id.nextval,'{0}','{1}','{2}','{3}','0','{4}','{5}','{6}','{7}','{8}','{9}',
+                                                 sysdate,'{10}','{11}','{12}')";
+                    sqlStr = string.Format(sqlStr, en.PARENTID, en.ORDERNO, en.NAME, en.CONTROLTYPE, en.SELECTCONTENT,
+                       en.CONFIGTYPE, en.TABLECODE, en.FIELDCODE, en.TABLENAME, en.FIELDNAME, en.USERID, en.USERNAME, en.ENABLED);
+                    int i = DBMgr.ExecuteNonQuery(sqlStr);
+                    if (i > 0)
+                    {
+                        repeat = "5";
+                    }
+                    else
+                    {
+                        repeat = "新增配置失败";
+                    }
                 }
                 else
                 {
                     //更新
+                    string sqlStr = @"update web_pageconfig_detail set name='{0}',controltype='{1}',selectcontent='{2}',configtype='{3}',tablecode='{4}',fieldcode='{5}',tablename='{6}',fieldname='{7}',
+                                                 userid='{8}',username='{9}',enabled='{10}' where id='{11}'";
+                    sqlStr = string.Format(sqlStr, en.NAME,en.CONTROLTYPE,en.SELECTCONTENT,en.CONFIGTYPE,en.TABLECODE,en.FIELDCODE,
+                        en.TABLENAME,en.FIELDNAME,en.USERID,en.USERNAME,en.ENABLED,en.ID);
+                    int i = DBMgr.ExecuteNonQuery(sqlStr);
+                    if (i > 0)
+                    {
+                        repeat = "5";
+                    }
+                    else
+                    {
+                        repeat = "更新配置失败";
+                    }
                 }
             }
             else
@@ -266,6 +420,7 @@ namespace Web_After.PageConfig
                 en.USERID = (Int32)json_user.GetValue("ID");
                 en.USERNAME = (string)json_user.GetValue("REALNAME");
                 en.REASON = json.Value<string>("REASON");
+                en.NAME = json.Value<string>("NAME");
                 en.FIELDCODE = json.Value<string>("FIELDCODE");
                 en.TABLECODE = json.Value<string>("TABLECODE");
                 en.SELECTCONTENT = json.Value<string>("SELECTCONTENT");
