@@ -51,8 +51,90 @@ namespace Web_After.PageConfig
                     case "loadbasebusidetail":
                         GetBusiDetail();
                         break;
+                    case "delete":
+                        Delete();
+                        break;
+                    case "copy":
+                        Copy();
+                        break;
                 }
             }
+        }
+
+        /// <summary>
+        /// 复制新增
+        /// </summary>
+        public void Copy()
+        {
+            string repeat = "";
+            string response = "";
+            string parentid = Request["parentid"];
+            string formdata = Request["formdata"];
+            JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
+            WEB_PAGECONFIG en = JsonToEntity(json);
+            if (en == null)
+            {
+                repeat = "保存失败，JSON数据转换出现问题";
+            }
+            else
+            {
+                repeat = CanUpdateOrInsert(en);
+                if (string.IsNullOrEmpty(repeat))
+                {
+                    int i = AddConfig(en);
+                    if (i > 0)
+                    {
+                        string getParentid = "select * from web_pageconfig t1 where t1.customercode='"+en.CUSTOMERCODE+"' and t1.code='"+en.CODE+"'";
+                        DataTable dt = DBMgr.GetDataTable(getParentid);
+                        string newParentid = dt.Rows[0]["ID"].ToString();
+
+                        string getConfigDetail = "select * from web_pageconfig_detail t1 where t1.parentid='" + parentid + "'";
+                        DataTable dtDetail = DBMgr.GetDataTable(getConfigDetail);
+                        if (dtDetail != null && dtDetail.Rows.Count > 0)
+                        {
+                            for(int j=0; j<dtDetail.Rows.Count;j++){
+                                string insertDetail = @"insert into web_pageconfig_detail (id,parentid,orderno,name,controltype,isselect,selectcontent,configtype,tablecode,fieldcode,tablename,fieldname,createtime,userid,username,enabled)
+                                                                  select web_pageconfig_detail_id.nextval,'"+newParentid+@"',orderno,name,controltype,isselect,selectcontent,configtype,tablecode,fieldcode,tablename,fieldname,sysdate,userid,username,enabled
+                                                                  from web_pageconfig_detail where id='" + dtDetail.Rows[j]["id"].ToString()+ "'";
+                                DBMgr.ExecuteNonQuery(insertDetail);
+                            }
+                            repeat = "5";
+                        }
+                    }
+                    else
+                    {
+                        repeat = "复制新增失败";
+                    }
+                }
+            }
+            response = "{\"success\":\"" + repeat + "\"}";
+            Response.Write(response);
+            Response.End();
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        public void Delete()
+        {
+            string repeat = "";
+            string response = "";
+
+            string id = Request["deleterecord"];
+            try
+            {
+                string deleteDetail = "delete from web_pageconfig_detail where parentid ='" + id + "'";
+                DBMgr.ExecuteNonQuery(deleteDetail);
+                string deleteMain = "delete from web_pageconfig where id='" + id + "'";
+                DBMgr.ExecuteNonQuery(deleteMain);
+                repeat = "5";
+            }catch
+            {
+                repeat = "删除异常";
+            }
+            response = "{\"success\":\"" + repeat + "\"}";
+            Response.Write(response);
+            Response.End();
         }
 
         [WebMethod]
@@ -71,7 +153,7 @@ namespace Web_After.PageConfig
                     DBMgr.ExecuteNonQuery(sqlStr);
                 }
             }
-            return "success";
+            return "成功";
         }
 
         [WebMethod]
@@ -90,7 +172,7 @@ namespace Web_After.PageConfig
                     DBMgr.ExecuteNonQuery(sqlStr);
                 }
             }
-            return "success";
+            return "成功";
         }
 
         /// <summary>

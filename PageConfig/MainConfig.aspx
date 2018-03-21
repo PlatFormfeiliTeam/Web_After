@@ -186,7 +186,7 @@
                 items: [
                     { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { add_config("", ""); } }
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;编辑', width: 80, handler: function () { edit_config(); } }
-                    , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;复制新增', width: 80, handler: function () { } }
+                    , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;复制新增', width: 80, handler: function () { copy_config();} }
                     , { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { delete_config();} }
                     , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;启用', width: 80, handler: function () { enable_config(); } }
                     , { text: '<span class="icon iconfont">&#xe63c;</span>&nbsp;禁用', width: 80, handler: function () { disable_config(); } }
@@ -306,8 +306,8 @@
             var win = Ext.create("Ext.window.Window", {
                 id: "win_d",
                 title: '配置',
-                width: 1200,
-                height: 430,
+                width: 1000,
+                height: 300,
                 modal: true,
                 items: [Ext.getCmp('formpanel_Win')]
             });
@@ -473,7 +473,7 @@
 
             var formpanel_Win = Ext.create('Ext.form.Panel', {
                 id: 'formpanel_Win',
-                minHeight: 170,
+                minHeight: 120,
                 border: 0,
                 buttonAlign: 'center',
                 fieldDefaults: {
@@ -618,7 +618,277 @@
                 Ext.MessageBox.alert('提示', '请选择需要删除的记录！');
                 return;
             }
+            Ext.MessageBox.confirm('提示', '确认删除该信息？在此处删除，将会连同所有详细配置一起删除', godelete);
         }
+
+        function godelete(btn) {
+            if (btn == "yes") {
+                var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+
+                Ext.Ajax.request({
+                    url: 'MainConfig.aspx',
+                    params: { action: 'delete', deleterecord: recs[0].get("ID") },
+                    type: 'Post',
+                    success: function (response, options) {
+                        var data = Ext.decode(response.responseText);
+                        if (data.success == "5") {
+                            Ext.Msg.alert('提示',
+                                "删除成功",
+                                function () {
+                                    Ext.getCmp("pgbar").moveFirst();
+                                });
+                        } else {
+                            var errorMsg = data.success;
+                            var reg = /,$/gi;
+                            idStr = errorMsg.replace(reg, "!");
+                            Ext.Msg.alert('提示', "删除失败:" + idStr, function () {
+                                Ext.getCmp("pgbar").moveFirst();
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+        //复制新增
+        function copy_config()
+        {
+            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+            if (recs.length == 0) {
+                Ext.MessageBox.alert('提示', '请选择需要复制的记录！');
+                return;
+            }
+            add_copy_config("", "");
+        }
+
+        function add_copy_config(ID, formdata) {
+            form_ini_cpoy_win();
+
+            var win = Ext.create("Ext.window.Window", {
+                id: "win_d",
+                title: '复制新增',
+                width: 1000,
+                height: 300,
+                modal: true,
+                items: [Ext.getCmp('formpanel_WinCopy')]
+            });
+            win.show();
+        }
+
+        function form_ini_cpoy_win()
+        {
+            var field_id = Ext.create('Ext.form.field.Hidden', {
+                id: 'ID',
+                name: 'ID'
+            });
+
+            //代码
+            var field_code = Ext.create('Ext.form.field.Text', {
+                id: 'CODE',
+                name: 'CODE',
+                fieldLabel: '代码',
+                allowBlank: false,
+                blankText: '代码不可为空!',
+            });
+
+            //名称
+            var field_name = Ext.create('Ext.form.field.Text', {
+                id: 'NAME',
+                name: 'NAME',
+                fieldLabel: '名称',
+                allowBlank: false,
+                blankText: '名称不可为空!',
+            });
+            //适用页面
+            var store_page = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: [{ "CODE": "关务维护页面", "NAME": "关务维护页面" }, { "CODE": "关务管理页面", "NAME": "关务管理页面" }]
+            });
+
+            var field_configpage = Ext.create('Ext.form.field.ComboBox', {
+                id: 'PAGENAME',
+                name: 'PAGENAME',
+                store: store_page,
+                minChars: 1,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '适用页面',
+                flex: .5,
+                allowBlank: false,
+                blankText: '适用页面不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
+
+
+            //业务类型
+            var field_busitype = Ext.create('Ext.form.field.ComboBox', {
+                id: 'BUSITYPE',
+                name: 'BUSITYPE',
+                store: store1,
+                minChars: 1,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '业务类型',
+                flex: .5,
+                allowBlank: false,
+                blankText: '业务类型不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    },
+                    change: function (f, n, o) {
+                        store3.removeAll();
+                        combo_detail = Ext.getCmp("BUSIDETAIL");
+                        combo_detail.reset();
+                        store2.each(function (record) {
+                            if (record.get('BUSITYPE') == n) {
+                                store3.add(record);
+                            }
+                        });
+                    }
+                }
+            });
+
+
+            //业务细项
+
+            var field_busidetail = Ext.create('Ext.form.field.ComboBox', {
+                id: 'BUSIDETAIL',
+                name: 'BUSIDETAIL',
+                store: store3,
+                minChars: 1,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '业务细项',
+                flex: .5,
+                allowBlank: false,
+                blankText: '业务细项不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
+            //适用客商
+            var store_account = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: common_data_customercode
+            });
+
+            var field_account = Ext.create('Ext.form.field.ComboBox', {
+                id: 'CUSTOMERCODE',
+                name: 'CUSTOMERCODE',
+                store: store_account,
+                minChars: 1,
+                queryMode: 'local',
+                displayField: 'NAME',
+                valueField: 'CODE',
+                anyMatch: true,
+                fieldLabel: '适用客商',
+                flex: .5,
+                allowBlank: false,
+                blankText: '适用客商不可为空!',
+                listeners: {
+                    focus: function (cb) {
+                        cb.clearInvalid();
+                    }
+                }
+            });
+
+            var store_enabled_s = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: [{ "CODE": 0, "NAME": "否" }, { "CODE": 1, "NAME": "是" }]
+            });
+            //是否启用
+            var field_enabled = Ext.create('Ext.form.field.ComboBox', {
+                id: 'ENABLED',
+                name: 'ENABLED',
+                store: store_enabled_s,
+                queryMode: 'local',
+                anyMatch: true,
+                fieldLabel: '是否启用',
+                displayField: 'NAME',
+                valueField: 'CODE'
+            });
+
+            //修改原因输入框
+            var change_reason = Ext.create('Ext.form.field.Text', {
+                id: 'REASON',
+                name: 'REASON',
+                fieldLabel: '修改原因',
+                hidden: true
+            });
+
+            var formpanel_Win = Ext.create('Ext.form.Panel', {
+                id: 'formpanel_WinCopy',
+                minHeight: 120,
+                border: 0,
+                buttonAlign: 'center',
+                fieldDefaults: {
+                    margin: '0 5 10 0',
+                    labelWidth: 100,
+                    columnWidth: .5,
+                    labelAlign: 'right',
+                    labelSeparator: '',
+                    msgTarget: 'under'
+                },
+                items: [
+                    { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [field_code, field_name] },
+                    { layout: 'column', height: 42, border: 0, items: [field_configpage, field_busitype] },
+                    { layout: 'column', height: 42, border: 0, items: [field_busidetail, field_account] },
+                    { layout: 'column', height: 42, border: 0, items: [field_enabled, change_reason] },
+                    field_id
+                ],
+                buttons: [{
+
+                    text: '<span class="icon iconfont" style="font-size:12px;">&#xe60c;</span>&nbsp;保存', handler: function () {
+                        if (!Ext.getCmp('formpanel_WinCopy').getForm().isValid()) {
+                            return;
+                        }
+
+                        var formdata = Ext.encode(Ext.getCmp('formpanel_WinCopy').getForm().getValues());
+                        var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
+
+                        Ext.Ajax.request({
+                            url: 'MainConfig.aspx',
+                            type: 'Post',
+                            params: { action: 'copy', formdata: formdata, parentid: recs[0].get('ID') },
+                            success: function (response, option) {
+                                var data = Ext.decode(response.responseText);
+                                if (data.success == "5") {
+                                    Ext.Msg.alert('提示',
+                                        "保存成功",
+                                        function () {
+                                            Ext.getCmp("pgbar").moveFirst();
+                                            Ext.getCmp("win_d").close();
+                                        });
+                                } else {
+                                    var errorMsg = data.success;
+                                    var reg = /,$/gi;
+                                    idStr = errorMsg.replace(reg, "!");
+                                    Ext.Msg.alert('提示', "保存失败:" + idStr, function () {
+                                        Ext.getCmp("pgbar").moveFirst(); Ext.getCmp("win_d").close();
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }]
+            });
+        }
+
     </script>
 </head>
 <body>
