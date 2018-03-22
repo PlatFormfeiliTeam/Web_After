@@ -100,6 +100,38 @@ namespace Web_After.BasicManager.BasicManager
             return str;
         }
 
+
+        public string getChangeBase_year2(DataTable dt, JObject json)
+        {
+            string str = "";
+            if (dt.Rows[0]["NAME"] != json.Value<string>("NAME"))
+            {
+                str += "规则名称：" + dt.Rows[0]["NAME"] + "——>" + json.Value<string>("NAME") + "。";
+            }
+            if (dt.Rows[0]["CUSTOMAREA"].ToString() != json.Value<string>("CUSTOMAREA"))
+            {
+                str += "申报关区：" + dt.Rows[0]["CUSTOMAREA"] + "——>" + json.Value<string>("CUSTOMAREA") + "。";
+            }
+            if (dt.Rows[0]["ENABLED"] != json.Value<string>("ENABLED"))
+            {
+                str += "是否启用：" + dt.Rows[0]["ENABLED"] + "——>" + json.Value<string>("ENABLED") + "。";
+            }
+
+            if (dt.Rows[0]["StartDate"] != json.Value<string>("STARTDATE"))
+            {
+                str += "开始时间：" + dt.Rows[0]["StartDate"] + "——>" + json.Value<string>("STARTDATE") + "。";
+            }
+            if (dt.Rows[0]["EndDate"] != json.Value<string>("ENDDATE"))
+            {
+                str += "停用时间：" + dt.Rows[0]["EndDate"] + "——>" + json.Value<string>("ENDDATE") + "。";
+            }
+            if (dt.Rows[0]["remark"] != json.Value<string>("REMARK"))
+            {
+                str += "备注：" + dt.Rows[0]["remark"] + "——>" + json.Value<string>("REMARK") + "。";
+            }
+            return str;
+        }
+
         public string getChangeHsCode(DataTable dt,JObject json)
         {
             string str = "";
@@ -132,6 +164,104 @@ namespace Web_After.BasicManager.BasicManager
                 str += "检验检疫：" + dt.Rows[0]["INSPECTIONREGULATORY"] + "——>" + json.Value<string>("INSPECTIONREGULATORY") + "。";
             }
             
+            if (dt.Rows[0]["ENABLED"].ToString() != json.Value<string>("ENABLED").ToString())
+            {
+                str += "启用情况：" + dt.Rows[0]["ENABLED"] + "——>" + json.Value<string>("ENABLED") + "。";
+            }
+            if (dt.Rows[0]["StartDate"].ToString() != json.Value<string>("STARTDATE"))
+            {
+                str += "开始时间：" + dt.Rows[0]["StartDate"] + "——>" + json.Value<string>("STARTDATE") + "。";
+            }
+            if (dt.Rows[0]["EndDate"].ToString() != json.Value<string>("ENDDATE"))
+            {
+                str += "停用时间：" + dt.Rows[0]["EndDate"] + "——>" + json.Value<string>("ENDDATE") + "。";
+            }
+            if (dt.Rows[0]["remark"].ToString() != json.Value<string>("REMARK"))
+            {
+                str += "备注：" + dt.Rows[0]["remark"] + "——>" + json.Value<string>("REMARK") + "。";
+            }
+            return str;
+        }
+
+        public string getChangeHsCode2(DataTable dt, JObject json)
+        {
+            string str = "";
+            if (dt.Rows[0]["HSCODE"].ToString() != json.Value<string>("HSCODE").ToString())
+            {
+                str += "HS编码：" + dt.Rows[0]["HSCODE"] + "——>" + json.Value<string>("HSCODE") + "。";
+            }
+            if (dt.Rows[0]["NAME"].ToString() != json.Value<string>("NAME").ToString())
+            {
+                str += "名称：" + dt.Rows[0]["NAME"] + "——>" + json.Value<string>("NAME") + "。";
+            }
+            if (dt.Rows[0]["LEGALUNIT"].ToString() != json.Value<string>("LEGALUNIT").ToString())
+            {
+                str += "法定单位：" + dt.Rows[0]["LEGALUNIT"] + "——>" + json.Value<string>("LEGALUNIT") + "。";
+            }
+            if (dt.Rows[0]["SECONDUNIT"].ToString() != json.Value<string>("SECONDUNIT").ToString())
+            {
+                str += "第二单位单位：" + dt.Rows[0]["SECONDUNIT"] + "——>" + json.Value<string>("SECONDUNIT") + "。";
+            }
+            if (dt.Rows[0]["EXTRACODE"].ToString() != json.Value<string>("EXTRACODE").ToString())
+            {
+                str += "附加码：" + dt.Rows[0]["EXTRACODE"] + "——>" + json.Value<string>("EXTRACODE") + "。";
+            }
+            if (dt.Rows[0]["EXTRACODE"].ToString() != json.Value<string>("EXTRACODE").ToString())
+            {
+                str += "附加码：" + dt.Rows[0]["EXTRACODE"] + "——>" + json.Value<string>("EXTRACODE") + "。";
+            }
+            if (dt.Rows[0]["CUSTOMREGULATORY"].ToString() != json.Value<string>("CUSTOMREGULATORY").ToString())
+            {
+                str += "海关监管：" + dt.Rows[0]["CUSTOMREGULATORY"] + "——>" + json.Value<string>("CUSTOMREGULATORY") + "。";
+            }
+            if (dt.Rows[0]["INSPECTIONREGULATORY"].ToString() != json.Value<string>("INSPECTIONREGULATORY").ToString())
+            {
+                str += "国检监管：" + dt.Rows[0]["INSPECTIONREGULATORY"] + "——>" + json.Value<string>("INSPECTIONREGULATORY") + "。";
+            }
+            if (dt.Rows[0]["GENERALRATE"].ToString() != json.Value<string>("GENERALRATE").ToString())
+            {
+                str += "一般税率：" + dt.Rows[0]["GENERALRATE"] + "——>" + json.Value<string>("GENERALRATE") + "。";
+            }
+            if (dt.Rows[0]["FAVORABLERATE"].ToString() != json.Value<string>("FAVORABLERATE").ToString())
+            {
+                str += "最惠税率：" + dt.Rows[0]["FAVORABLERATE"] + "——>" + json.Value<string>("FAVORABLERATE") + "。";
+            }
+            if (dt.Rows[0]["VATRATE"].ToString() != json.Value<string>("VATRATE").ToString())
+            {
+                str += "增值税率：" + dt.Rows[0]["VATRATE"] + "——>" + json.Value<string>("VATRATE") + "。";
+            }
+            if (dt.Rows[0]["EXPORTREBATRATE"].ToString() != json.Value<string>("EXPORTREBATRATE").ToString())
+            {
+                str += "出口退税率：" + dt.Rows[0]["EXPORTREBATRATE"] + "——>" + json.Value<string>("EXPORTREBATRATE") + "。";
+            }
+            if (dt.Rows[0]["TEMPRATE"].ToString() != json.Value<string>("TEMPRATE").ToString())
+            {
+                str += "暂定税率：" + dt.Rows[0]["TEMPRATE"] + "——>" + json.Value<string>("TEMPRATE") + "。";
+            }
+            if (dt.Rows[0]["CONSUMERATE"].ToString() != json.Value<string>("CONSUMERATE").ToString())
+            {
+                str += "消费税率：" + dt.Rows[0]["CONSUMERATE"] + "——>" + json.Value<string>("CONSUMERATE") + "。";
+            }
+            if (dt.Rows[0]["EXPORTRATE"].ToString() != json.Value<string>("EXPORTRATE").ToString())
+            {
+                str += "出口税率：" + dt.Rows[0]["EXPORTRATE"] + "——>" + json.Value<string>("EXPORTRATE") + "。";
+            }
+            if (dt.Rows[0]["TOPPRICE"].ToString() != json.Value<string>("TOPPRICE").ToString())
+            {
+                str += "最高价格：" + dt.Rows[0]["TOPPRICE"] + "——>" + json.Value<string>("TOPPRICE") + "。";
+            }
+            if (dt.Rows[0]["LOWPRICE"].ToString() != json.Value<string>("LOWPRICE").ToString())
+            {
+                str += "最低价格：" + dt.Rows[0]["LOWPRICE"] + "——>" + json.Value<string>("LOWPRICE") + "。";
+            }
+            if (dt.Rows[0]["SPECIALMARK"].ToString() != json.Value<string>("SPECIALMARK").ToString())
+            {
+                str += "特殊标志：" + dt.Rows[0]["SPECIALMARK"] + "——>" + json.Value<string>("SPECIALMARK") + "。";
+            }
+            if (dt.Rows[0]["ELEMENTS"].ToString() != json.Value<string>("ELEMENTS").ToString())
+            {
+                str += "申报要素：" + dt.Rows[0]["ELEMENTS"] + "——>" + json.Value<string>("ELEMENTS") + "。";
+            }
             if (dt.Rows[0]["ENABLED"].ToString() != json.Value<string>("ENABLED").ToString())
             {
                 str += "启用情况：" + dt.Rows[0]["ENABLED"] + "——>" + json.Value<string>("ENABLED") + "。";

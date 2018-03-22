@@ -1,37 +1,37 @@
-﻿var data1 = [];
-function init_search() {
+﻿
+function init_search_smallclass() {
 
-        var txtCODE = Ext.create('Ext.form.field.Text', { id: 'CODE_S', name: 'CODE_S', fieldLabel: '所属章节代码' });
-        var txtCNNAME = Ext.create('Ext.form.field.Text', { id: 'CNNAME_S', name: 'CNNAME_S', fieldLabel: '所属章节名称' });
+    var txtCODE = Ext.create('Ext.form.field.Text', { id: 'CODE_S_smallclass', name: 'CODE_S_smallclass', fieldLabel: '所属小类代码' });
+    var txtCNNAME = Ext.create('Ext.form.field.Text', { id: 'CNNAME_S_smallclass', name: 'CNNAME_S_smallclass', fieldLabel: '所属小类名称' });
 
-        var toolbar = Ext.create('Ext.toolbar.Toolbar', {
-            items: [
-                { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { addCustomer_Win1(""); } }
-                , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { importfile1('add_chapter'); } }
-                , '->'
-                , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar").moveFirst(); } }
-                , { text: '<span class="icon iconfont">&#xe633;</span>&nbsp;重 置', width: 80, handler: function () { reset2(); } }
-            ]
-        });
+    var toolbar = Ext.create('Ext.toolbar.Toolbar', {
+        items: [
+            { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { addCustomer_Win2(""); } }
+            , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { importfile2('add_smallclass'); } }
+            , '->'
+            , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar_smallclass").moveFirst(); } }
+            , { text: '<span class="icon iconfont">&#xe633;</span>&nbsp;重 置', width: 80, handler: function () { reset2(); } }
+        ]
+    });
 
-        formpanel_search = Ext.create('Ext.form.Panel', {
-            id: 'formpanel_search',
-            region: 'north',
-            border: 0,
-            bbar: toolbar,
-            fieldDefaults: {
-                margin: '5',
-                columnWidth: 0.25,
-                labelWidth: 95
-            },
-            items: [
-                { layout: 'column', border: 0, items: [txtCODE, txtCNNAME] }
+    formpanel_search_smallclass = Ext.create('Ext.form.Panel', {
+        id: 'formpanel_search_smallclass',
+        region: 'north',
+        border: 0,
+        bbar: toolbar,
+        fieldDefaults: {
+            margin: '5',
+            columnWidth: 0.25,
+            labelWidth: 95
+        },
+        items: [
+            { layout: 'column', border: 0, items: [txtCODE, txtCNNAME] }
 
-            ]
-        });
+        ]
+    });
 }
 
-function gridbind() {
+function gridbind_smallclass() {
     var store_customer = Ext.create('Ext.data.JsonStore',
         {
             fields: [
@@ -40,13 +40,14 @@ function gridbind() {
                 'CREATEMANNAME',
                 'CREATETIME',
                 'ID',
-                'TYPENAME',
-                'TYPECODE'
+                'CHAPTERCODE',
+                'CHAPTERNAME',
+                'TYPENAME'
             ],
             pageSize: 20,
             proxy: {
                 type: 'ajax',
-                url: 'Decl_HSClass.aspx?action=loaddatachapter',
+                url: 'Decl_HSClass.aspx?action=loaddatasmallclass',
                 reader: {
                     root: 'rows',
                     type: 'json',
@@ -57,29 +58,30 @@ function gridbind() {
             listeners: {
                 beforeload: function (store, options) {
                     store_customer.getProxy().extraParams =
-                        Ext.getCmp('formpanel_search').getForm().getValues();
+                        Ext.getCmp('formpanel_search_smallclass').getForm().getValues();
                 }
             }
         });
-    var pgbar = Ext.create('Ext.toolbar.Paging',
+    var pgbar_smallclass = Ext.create('Ext.toolbar.Paging',
         {
-            id: 'pgbar',
+            id: 'pgbar_smallclass',
             displayMsg: '显示 {0} - {1} 条,共计 {2} 条',
             store: store_customer,
             displayInfo: true
         });
-    gridpanel = Ext.create('Ext.grid.Panel', {
-        id: 'gridpanel',
+    gridpanel_smallclass = Ext.create('Ext.grid.Panel', {
+        id: 'gridpanel_smallclass',
         height: 750,
         region: 'center',
         store: store_customer,
         selModel: { selType: 'checkboxmodel' },
-        bbar: pgbar,
+        bbar: pgbar_smallclass,
         columns: [
             { xtype: 'rownumberer', width: 35 },
-            { header: '所属章节代码', dataIndex: 'CODE', width: 100},
-            { header: '所属章节名称', dataIndex: 'NAME', width: 600 },
-            {header: '所属类别名称', dataIndex: 'TYPENAME', width: 400},
+            { header: '所属小类编码', dataIndex: 'CODE', width: 100 },
+            { header: '所属小类名称', dataIndex: 'NAME', width: 600 },
+            { header: '所属章节名称', dataIndex: 'CHAPTERNAME', width: 300 },
+            { header: '所属类别名称', dataIndex: 'TYPENAME', width: 300 },
             { header: '维护人', dataIndex: 'CREATEMANNAME', width: 200 },
             { header: '维护时间', dataIndex: 'CREATETIME', width: 200 }
         ],
@@ -96,21 +98,44 @@ function gridbind() {
 }
 
 function reset2() {
-    Ext.each(Ext.getCmp('formpanel_search').getForm().getFields().items,
+    Ext.each(Ext.getCmp('formpanel_search_smallclass').getForm().getFields().items,
         function (field) {
             field.reset();
         });
 }
 
 
-function form_ini_win1() {
+function form_ini_win2() {
     var field_code = Ext.create('Ext.form.field.Text', {
         id: 'CODE',
         name: 'CODE',
-        fieldLabel: '所属章节代码',
+        fieldLabel: '所属分类代码',
         flex: .5,
         allowBlank: false,
-        blankText: '所属章节代码不可为空!'
+        blankText: '所属分类代码不可为空!',
+        listeners: {
+            blur: function () {
+                
+                Ext.Ajax.request({
+                    url: 'Decl_HSClass.aspx?table=smallclass',
+                    params: { action: 'hsclass',code:Ext.getCmp('CODE').getValue().substr(0,2) },
+                    type: 'Post',
+                    success: function (response, option) {
+
+                        var commondata = Ext.decode(response.responseText);
+                        if (commondata.length > 0) {
+                            console.log(commondata[0]["CODEADDNAME"]);
+                            Ext.getCmp('CHAPTERCODE').setValue(commondata[0]["CODEADDNAME"]);
+                            Ext.getCmp('TYPECODE').setValue(commondata[0]["TYPECODEADDNAME"]);
+                        } else {
+                            Ext.MessageBox.alert("提示框","无法找到正确的章节");
+                        }
+
+
+                    }
+                });
+            }
+        }
     });
     var createtime = Ext.create('Ext.form.field.Date',
         {
@@ -131,27 +156,25 @@ function form_ini_win1() {
     var field_name = Ext.create('Ext.form.field.Text', {
         id: 'NAME',
         name: 'NAME',
-        fieldLabel: '所属章节名称',
+        fieldLabel: '所属分类名称',
         flex: .5,
-    });
-
-
-    var TradeName_ENABLED_s = Ext.create('Ext.data.JsonStore', {
-        fields: ['CODE', 'NAME'],
-        data: data1
-    });
-
-    var field_TradeName = Ext.create('Ext.form.field.ComboBox', {
-        id: 'TradeName_ENABLED',
-        name: 'TYPECODE',
-        store: TradeName_ENABLED_s,
-        queryMode: 'local',
-        anyMatch: true,
-        fieldLabel: '所属类别', flex: .5,
-        displayField: 'NAME',
-        valueField: 'CODE',
         allowBlank: false,
-        blankText: '所属类别不能为空!'
+        blankText: '所属分类名称不可为空!',
+    });
+
+
+    var chapter = Ext.create('Ext.form.field.Text', {
+        id: 'CHAPTERCODE',
+        name: 'CHAPTERCODE',
+        fieldLabel: '所属章节名称',
+        flex: .5
+    });
+
+    var type = Ext.create('Ext.form.field.Text', {
+        id: 'TYPECODE',
+        name: 'TYPECODE',
+        fieldLabel: '所属类别名称',
+        flex: .5
     });
 
 
@@ -171,7 +194,7 @@ function form_ini_win1() {
         items: [
             { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [field_code, field_name] },
             { layout: 'column', height: 42, border: 0, items: [createtime, CreatemanName] },
-            { layout: 'column', height: 42, border: 0, items: [field_TradeName] }
+            { layout: 'column', height: 42, border: 0, items: [chapter,type] }
         ],
         buttons: [{
 
@@ -185,7 +208,7 @@ function form_ini_win1() {
                 Ext.Ajax.request({
                     url: 'Decl_HSClass.aspx',
                     type: 'Post',
-                    params: { action: 'save_chapter', formdata: formdata },
+                    params: { action: 'save_smallclass', formdata: formdata },
                     success: function (response, option) {
 
                         var data = Ext.decode(response.responseText);
@@ -212,27 +235,11 @@ function form_ini_win1() {
 
 }
 
-function runajax() {
-    Ext.Ajax.request({
-        url: 'Decl_HSClass.aspx?table=chapter',
-        params: { action: 'hsclass' },
-        type: 'Post',
-        success: function (response, option) {
 
-            var commondata = Ext.decode(response.responseText);
-            data1 = commondata;
-            console.log(data1);
+function addCustomer_Win2(ID, formdata) {
 
 
-
-        }
-    });
-}
-
-function addCustomer_Win1(ID, formdata) {
-
-   
-    form_ini_win1();
+    form_ini_win2();
     var win = Ext.create("Ext.window.Window", {
         id: "win_d",
         title: '商品HS类型',
@@ -245,20 +252,18 @@ function addCustomer_Win1(ID, formdata) {
 }
 
 
-
-//导入
-function importfile1(action, param) {
-    if (action == "add_chapter") {
-        importexcel1(action, "base_declhschapter");
+function importfile2(action, param) {
+    if (action == "add_smallclass") {
+        importexcel2(action, "base_declhsclass");
     }
 
 }
-function importexcel1(action, param) {
+function importexcel2(action, param) {
 
     var radio_module = Ext.create('Ext.form.RadioGroup', {
         name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
         items: [
-            { boxLabel: "<a href='/FileUpload/base_declhschapter.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
+            { boxLabel: "<a href='/FileUpload/base_declhsclass.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
         ]
     });
 
@@ -328,7 +333,7 @@ function importexcel1(action, param) {
         }]
     });
 
-    var win_upload1 = Ext.create("Ext.window.Window", {
+    var win_upload2 = Ext.create("Ext.window.Window", {
         id: "win_upload1",
         title: '导入',
         width: 600,
@@ -337,6 +342,6 @@ function importexcel1(action, param) {
         items: [Ext.getCmp('formpanel_upload1')]
     });
     Ext.getCmp('CREATEMANNAME').setValue(username);
-    win_upload1.show();
+    win_upload2.show();
 }
 

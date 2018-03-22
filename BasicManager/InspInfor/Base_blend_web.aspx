@@ -34,7 +34,7 @@
                 success: function (response, option) {
                     var commondata = Ext.decode(response.responseText);                                      
                     data1 = commondata;
-                    console.log(data1);
+                    //console.log(data1);
                     init_search(param);
                     gridbind(param);
 

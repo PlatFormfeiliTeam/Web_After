@@ -248,6 +248,27 @@ namespace Web_After.BasicManager.BasicManager
                                   left join sys_user t3
                                     on t1.stopman = t3.id where 1 = 1 ";
                             break;
+
+                        case "category":
+                            sql = @"select t1.*,t2.name as createmanname from base_declhstype t1 left join sys_user t2 on t1.createman=t2.id where 1 = 1 ";
+                            break;
+                        case "chapter":
+                            sql = @"select t1.*,t2.name as typename,t3.name as createmanname from base_declhschapter t1 left join base_declhstype t2 on t1.typecode=t2.code 
+                                left join sys_user t3 on t1.createman=t3.id where 1 = 1 ";
+                            break;                  
+                        case "smallclass":
+                            sql = @"select t1.*,
+                                   T2.NAME as chaptername,
+                                   t3.NAME as TYPEname,
+                                   t4.name as createmanname       
+                              from BASE_DECLHSCLASS t1
+                              LEFT JOIN BASE_DECLHSCHAPTER t2
+                                on T1.CHAPTERCODE = T2.CODE
+                              LEFT JOIN BASE_DECLHSTYPE t3
+                                on t2.typecode = t3.code
+                              left join sys_user t4
+                                on t1.createman = t4.id where 1 = 1 ";
+                            break;
                     }
                 
                 break;
@@ -332,6 +353,19 @@ namespace Web_After.BasicManager.BasicManager
                             break;
                         case "sys_reportlibrary":
                             sql = @"select * from sys_reportlibrary where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "category"://base_declhstype
+                            sql = @"select * from base_declhstype where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "base_declhschapter":
+                            sql = @"select * from base_declhschapter where code = '{0}'";
+                            sql = String.Format(sql, json.Value<string>("CODE"));
+                            break;
+                        case "base_declhsclass":
+                            sql = @"select * from base_declhsclass where code = '{0}'";
+                            sql = String.Format(sql,json.Value<string>("CODE"));
                             break;
                     }
                 break;
@@ -471,8 +505,20 @@ namespace Web_After.BasicManager.BasicManager
                             to_date('{7}','yyyy/mm/dd hh24:mi:ss'),'{8}','{9}')";
                             sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), json.Value<string>("REMARK"), json.Value<string>("ENABLED"), createman, stopman, startdate, enddate, json.Value<string>("DECLNAME"), json.Value<string>("INTERNALTYPE"));
                             break;
-
-
+                        case "category":
+                            sql = @"insert into base_declhstype(id,code,name,createman,createtime) values(base_declhstype_id.nextval,'{0}','{1}','{2}',sysdate)";
+                            sql = String.Format(sql,json.Value<string>("CODE"), json.Value<string>("NAME"),createman);
+                            break;
+                        case "base_declhschapter":
+                            sql = @"insert into base_declhschapter(id,code,name,typecode,createman,createtime) values(base_declhschapter_id.nextval,'{0}','{1}','{2}','{3}',
+                            sysdate)";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), json.Value<string>("TYPECODE"),createman);
+                            break;
+                        case "base_declhsclass":
+                            sql = @"insert into base_declhsclass(id,code,name,chaptercode,createman,createtime) values(base_declhsclass_id.nextval,'{0}','{1}','{2}','{3}',
+                            sysdate)";
+                            sql = String.Format(sql, json.Value<string>("CODE"), json.Value<string>("NAME"), json.Value<string>("CHAPTERCODE").Substring(0,2),createman);
+                            break;
                     }
                 break;
 
@@ -1180,6 +1226,32 @@ namespace Web_After.BasicManager.BasicManager
                     enabled = stringList[3] == "是" ? "1" : "0";
                     remark = stringList[4];
                     getValue = "{\"CODE\":\"" + code + "\",\"NAME\":\"" + name + "\",\"ENABLED\":\"" + enabled + "\",\"REMARK\":\"" + remark + "\",\"STARTDATE\":\"" + startdate + "\",\"ENDDATE\":\"" + enddate + "\",\"DECLNAME\":\"" + declname + "\",\"INTERNALTYPE\":\"" + internaltype + "\"}";
+                    break;
+                case "category":
+                    code = stringList[0];name = stringList[1];
+                    getValue = "{\"CODE\":\"" + code + "\",\"NAME\":\"" + name + "\"}";
+                    break;
+                case "base_declhschapter":
+                    code = stringList[0];name = stringList[1];
+                    string typecode = stringList[2];
+                    getValue = "{\"CODE\":\"" + code + "\",\"NAME\":\"" + name + "\",\"TYPECODE\":\"" + typecode + "\"}";
+                    break;
+                case "base_declhsclass":
+                    string chaptercode = "";
+                    code = stringList[0];name = stringList[1];
+                    sql = @"select t1.*, t2.code as typecode, t2.name as typename,t1.code || '('|| t1.name ||')' as codeaddname,t2.code || '|' || t2.name  as typecodeaddname
+                          from base_declhschapter t1
+                          left join base_declhstype t2
+                          on t1.typecode = t2.code where t1.code ='" + code.Substring(0,2) + "'";
+                    DataTable dt1 = DBMgrBase.GetDataTable(sql);
+                    if (dt1.Rows.Count > 0)
+                    {
+                        chaptercode = dt1.Rows[0]["CODEADDNAME"].ToString();
+                    }
+                    
+
+
+                    getValue = "{\"CODE\":\"" + code + "\",\"NAME\":\"" + name + "\",\"CHAPTERCODE\":\"" + chaptercode + "\"}";
                     break;
             }
             return getValue;
