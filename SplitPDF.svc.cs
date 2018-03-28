@@ -549,7 +549,7 @@ namespace Web_After
             sql = "select * from list_attachment where ID='" + fileid + "'";
             dt = DBMgr.GetDataTable(sql);
             //2016-6-16压缩改用pdfshrink在后台执行                   
-            string compressname = "";
+            string compressname = ""; bool bf_iscodecompress = false;
             //如果pdfshrink压缩文件存在               
             if (File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"] + "").Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf"))
             {
@@ -563,16 +563,30 @@ namespace Web_After
                 }
                 else
                 {
-                    fi = new FileInfo(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
+                    /*fi = new FileInfo(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
                     CompressPdf(fileid, fi);//不存在则生成压缩文件再进行拆分  
+                    compressname = @"d:\Compress\" + fileid + ".pdf";*/
+
+                    fi = new FileInfo(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
+                    PdfReader reader_file = new PdfReader(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
+                    if (fi.Length / 1024 > reader_file.NumberOfPages * 200)//---文件实际大小 > 计算页数*200K，需要压缩
+                    {
+                        bf_iscodecompress = true;
+                        CompressPdf(fileid, fi);//不存在则生成压缩文件再进行拆分  
+                    }
+                    else
+                    {
+                        fi.CopyTo(@"d:\Compress\" + fileid + ".pdf");
+                    }                   
                     compressname = @"d:\Compress\" + fileid + ".pdf";
+
                 }
             }
             if (File.Exists(compressname))//如果压缩文件存在
             {
                 try
                 {
-                    if ((new FileInfo(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"])).Length / 1024 == (new FileInfo(compressname)).Length / 1024)//压缩文件根源文件大小一样
+                    if (bf_iscodecompress == true && (new FileInfo(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"])).Length / 1024 == (new FileInfo(compressname)).Length / 1024)//压缩文件根源文件大小一样
                     {
                         //没压缩成功  新增压缩任务
                         DataTable dt_shrink = new DataTable();
