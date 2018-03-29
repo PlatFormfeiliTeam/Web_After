@@ -606,9 +606,12 @@ namespace Web_After
                         pdfReader = new PdfReader(compressname); filepages = pdfReader.NumberOfPages;
                         if (filepages != reader_file.NumberOfPages)
                         {
-                            File.Delete(compressname);
                             reader_file.Close(); reader_file.Dispose();
                             pdfReader.Close(); pdfReader.Dispose();
+                           FileInfo di= new FileInfo(compressname);
+                           di.Delete();
+                            //File.Delete(compressname);
+                            
 
                             sql = "insert into pdfshrinklog (id,attachmentid) values (pdfshrinklog_id.nextval,'" + fileid + "')";
                             DBMgr.ExecuteNonQuery(sql);
