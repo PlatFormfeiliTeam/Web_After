@@ -548,6 +548,11 @@ namespace Web_After
             db.StringSet(ordercode + ":" + fileid + ":splitdetail", data);
             sql = "select * from list_attachment where ID='" + fileid + "'";
             dt = DBMgr.GetDataTable(sql);
+
+            fi = new FileInfo(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
+            PdfReader reader_file = new PdfReader(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
+
+
             //2016-6-16压缩改用pdfshrink在后台执行                   
             string compressname = ""; bool bf_iscodecompress = false;
             //如果pdfshrink压缩文件存在               
@@ -567,8 +572,6 @@ namespace Web_After
                     CompressPdf(fileid, fi);//不存在则生成压缩文件再进行拆分  
                     compressname = @"d:\Compress\" + fileid + ".pdf";*/
 
-                    fi = new FileInfo(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
-                    PdfReader reader_file = new PdfReader(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
                     if (fi.Length / 1024 > reader_file.NumberOfPages * 200)//---文件实际大小 > 计算页数*200K，需要压缩
                     {
                         bf_iscodecompress = true;
@@ -601,6 +604,16 @@ namespace Web_After
                     else
                     {
                         pdfReader = new PdfReader(compressname); filepages = pdfReader.NumberOfPages;
+                        if (filepages != reader_file.NumberOfPages)
+                        {
+                            File.Delete(compressname);
+                            reader_file.Close(); reader_file.Dispose();
+                            pdfReader.Close(); pdfReader.Dispose();
+                            return "{success:false}";//没压缩成功
+                        }
+                        reader_file.Close(); reader_file.Dispose();
+
+
                         sql = "select * from sys_filetype where parentfiletypeid=" + filetype;//取该文件类型下面所有的子类型
                         dt = DBMgr.GetDataTable(sql);
                         IList<Int32> pagelist;
@@ -646,7 +659,7 @@ namespace Web_After
                                     }
                                 }
                                 fs.Flush();
-                                newDocument.Close();
+                                newDocument.Close(); newDocument.Dispose();
                                 sql = "insert into LIST_ATTACHMENTDETAIL (id,sourcefilename,filename,attachmentid,filetypeid,splitetime,ordercode,pages) values (list_attachmentdetail_id.nextval,'{0}','{1}','{2}','{3}',sysdate,'{4}','{5}')";
                                 sql = String.Format(sql, dt.Rows[i]["FILETYPEID"] + @"/" + ordercode + @"/" + ordercode + "_" + new_name + ".pdf", ordercode + "_" + new_name + ".pdf", fileid, dt.Rows[i]["FILETYPEID"], ordercode, string.Join(",", pagelist.ToArray()));
                                 DBMgr.ExecuteNonQuery(sql);
