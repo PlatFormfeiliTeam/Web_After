@@ -609,6 +609,10 @@ namespace Web_After
                             File.Delete(compressname);
                             reader_file.Close(); reader_file.Dispose();
                             pdfReader.Close(); pdfReader.Dispose();
+
+                            sql = "insert into pdfshrinklog (id,attachmentid) values (pdfshrinklog_id.nextval,'" + fileid + "')";
+                            DBMgr.ExecuteNonQuery(sql);
+
                             return "{success:false}";//没压缩成功
                         }
                         reader_file.Close(); reader_file.Dispose();
