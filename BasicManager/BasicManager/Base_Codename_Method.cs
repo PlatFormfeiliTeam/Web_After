@@ -606,5 +606,161 @@ namespace Web_After.BasicManager.BasicManager
             return str;
         }
 
+        //获取busi_recordinfor修改记录
+        public string getrecordinfor(DataTable dt,JObject json)
+        {
+            string str = "";
+            if (dt.Rows[0]["CODE"].ToString()==json.Value<string>("CODE"))
+            {
+                str += "备案号:" + dt.Rows[0]["CODE"].ToString() + "——>" + json.Value<string>("CODE") + "。"; 
+            }
+
+            if (dt.Rows[0]["BOOKATTRIBUTE"].ToString() == json.Value<string>("BOOKATTRIBUTE"))
+            {
+                str += "账册属性:" + dt.Rows[0]["BOOKATTRIBUTE"].ToString() + "——>" + json.Value<string>("BOOKATTRIBUTE") + "。";
+            }
+
+            if (dt.Rows[0]["BUSIUNIT"].ToString() == json.Value<string>("BUSIUNIT"))
+            {
+                str += "经营单位代码:" + dt.Rows[0]["BUSIUNIT"].ToString() + "——>" + json.Value<string>("BUSIUNIT") + "。";
+            }
+
+            if (dt.Rows[0]["RECEIVEUNIT"].ToString() == json.Value<string>("RECEIVEUNIT"))
+            {
+                str += "收发货单位代码:" + dt.Rows[0]["RECEIVEUNIT"].ToString() + "——>" + json.Value<string>("RECEIVEUNIT") + "。";
+            }
+
+            if (dt.Rows[0]["TRADE"].ToString() == json.Value<string>("TRADE"))
+            {
+                str += "贸易方式:" + dt.Rows[0]["TRADE"].ToString() + "——>" + json.Value<string>("TRADE") + "。";
+            }
+
+            if (dt.Rows[0]["EXEMPTING"].ToString() == json.Value<string>("EXEMPTING"))
+            {
+                str += "征免性质:" + dt.Rows[0]["EXEMPTING"].ToString() + "——>" + json.Value<string>("EXEMPTING") + "。";
+            }
+
+            if (dt.Rows[0]["ISMODEL"].ToString() == json.Value<string>("ISMODEL"))
+            {
+                str += "规格启用/禁用:" + dt.Rows[0]["ISMODEL"].ToString() + "——>" + json.Value<string>("ISMODEL") + "。";
+            }
+
+            if (dt.Rows[0]["ENABLED"].ToString() == json.Value<string>("ENABLED"))
+            {
+                str += "启用禁用:" + dt.Rows[0]["ENABLED"].ToString() + "——>" + json.Value<string>("ENABLED") + "。";
+            }
+
+            return str;
+        }
+
+
+        //获取sys_recordinfo_detail修改记录
+        public string getrecordinfodetails(DataTable dt,JObject json)
+        {
+            string str = "";
+            if (dt.Rows[0]["ITEMNO"].ToString() == json.Value<string>("ITEMNO"))
+            {
+                str += "项号:" + dt.Rows[0]["ITEMNO"].ToString() + "——>" + json.Value<string>("ITEMNO") + "。";
+            }
+            if (dt.Rows[0]["HSCODE"].ToString() == json.Value<string>("HSCODE"))
+            {
+                str += "HS编码:" + dt.Rows[0]["HSCODE"].ToString() + "——>" + json.Value<string>("HSCODE") + "。";
+            }
+            if (dt.Rows[0]["ADDITIONALNO"].ToString() == json.Value<string>("ADDITIONALNO"))
+            {
+                str += "HS附加码:" + dt.Rows[0]["ADDITIONALNO"].ToString() + "——>" + json.Value<string>("ADDITIONALNO") + "。";
+            }
+            if (dt.Rows[0]["ITEMNOATTRIBUTE"].ToString() == json.Value<string>("ITEMNOATTRIBUTE"))
+            {
+                str += "项号属性:" + dt.Rows[0]["ITEMNOATTRIBUTE"].ToString() + "——>" + json.Value<string>("ITEMNOATTRIBUTE") + "。";
+            }
+            if (dt.Rows[0]["COMMODITYNAME"].ToString() == json.Value<string>("COMMODITYNAME"))
+            {
+                str += "商品名称:" + dt.Rows[0]["COMMODITYNAME"].ToString() + "——>" + json.Value<string>("COMMODITYNAME") + "。";
+            }
+            if (dt.Rows[0]["SPECIFICATIONSMODEL"].ToString() == json.Value<string>("SPECIFICATIONSMODEL"))
+            {
+                str += "规格型号:" + dt.Rows[0]["SPECIFICATIONSMODEL"].ToString() + "——>" + json.Value<string>("SPECIFICATIONSMODEL") + "。";
+            }
+            if (dt.Rows[0]["UNIT"].ToString() == json.Value<string>("UNIT"))
+            {
+                str += "成交单位:" + dt.Rows[0]["UNIT"].ToString() + "——>" + json.Value<string>("UNIT") + "。";
+            }
+            if (dt.Rows[0]["VERSION"].ToString() == json.Value<string>("VERSION"))
+            {
+                str += "版本号:" + dt.Rows[0]["VERSION"].ToString() + "——>" + json.Value<string>("VERSION") + "。";
+            }
+            if (dt.Rows[0]["ENABLED"].ToString() == json.Value<string>("ENABLED"))
+            {
+                str += "是否启用:" + dt.Rows[0]["ENABLED"].ToString() + "——>" + json.Value<string>("ENABLED") + "。";
+            }
+            if (dt.Rows[0]["REMARK"].ToString() == json.Value<string>("REMARK"))
+            {
+                str += "备注:" + dt.Rows[0]["REMARK"].ToString() + "——>" + json.Value<string>("REMARK") + "。";
+            }
+            return str;
+        }
+
+        //获取base_specialhsconvert修改记录
+        public string getbasespecialhsconvert(DataTable dt,JObject json,string country)
+        {
+            string str = "";
+            if (dt.Rows[0]["CODE"].ToString() == json.Value<string>("CODE"))
+            {
+                str += "商品HS编码:" + dt.Rows[0]["CODE"].ToString() + "——>" + json.Value<string>("CODE") + "。";
+            }
+            if (dt.Rows[0]["EXTRACODE"].ToString() == json.Value<string>("EXTRACODE"))
+            {
+                str += "附加码:" + dt.Rows[0]["EXTRACODE"].ToString() + "——>" + json.Value<string>("EXTRACODE") + "。";
+            }
+            if (dt.Rows[0]["NAME"].ToString() == json.Value<string>("NAME"))
+            {
+                str += "商品名称:" + dt.Rows[0]["NAME"].ToString() + "——>" + json.Value<string>("NAME") + "。";
+            }
+            if (dt.Rows[0]["COUNTRY"].ToString() == country)
+            {
+                str += "国家:" + dt.Rows[0]["COUNTRY"].ToString() + "——>" + country + "。";
+            }
+            if (dt.Rows[0]["TYPE"].ToString() == json.Value<string>("TYPE"))
+            {
+                str += "类型:" + dt.Rows[0]["TYPE"].ToString() + "——>" + json.Value<string>("TYPE") + "。";
+            }
+            if (dt.Rows[0]["ENABLED"].ToString() == json.Value<string>("ENABLED"))
+            {
+                str += "是否启用:" + dt.Rows[0]["ENABLED"].ToString() + "——>" + json.Value<string>("ENABLED") + "。";
+            }
+            if (dt.Rows[0]["REMARK"].ToString() == json.Value<string>("REMARK"))
+            {
+                str += "备注:" + dt.Rows[0]["REMARK"].ToString() + "——>" + json.Value<string>("REMARK") + "。";
+            }
+            return str;
+        }
+
+        //获取sys_unitconvert修改记录
+        public string getunitconvert(DataTable dt,JObject json)
+        {
+            string str = "";
+            if (dt.Rows[0]["UNITCODE1"].ToString() == json.Value<string>("UNITCODE1"))
+            {
+                str += "计量单位代码1:" + dt.Rows[0]["UNITCODE1"].ToString() + "——>" + json.Value<string>("UNITCODE1") + "。";
+            }
+            if (dt.Rows[0]["UNITCODE2"].ToString() == json.Value<string>("UNITCODE2"))
+            {
+                str += "计量单位代码2:" + dt.Rows[0]["UNITCODE2"].ToString() + "——>" + json.Value<string>("UNITCODE2") + "。";
+            }
+            if (dt.Rows[0]["CONVERTRATE"].ToString() == json.Value<string>("CONVERTRATE"))
+            {
+                str += "转换率:" + dt.Rows[0]["CONVERTRATE"].ToString() + "——>" + json.Value<string>("CONVERTRATE") + "。";
+            }
+            if (dt.Rows[0]["ENABLED"].ToString() == json.Value<string>("ENABLED"))
+            {
+                str += "是否启用:" + dt.Rows[0]["ENABLED"].ToString() + "——>" + json.Value<string>("ENABLED") + "。";
+            }
+            if (dt.Rows[0]["REMARK"].ToString() == json.Value<string>("REMARK"))
+            {
+                str += "备注:" + dt.Rows[0]["REMARK"].ToString() + "——>" + json.Value<string>("REMARK") + "。";
+            }
+            return str;
+        }
     }
 }

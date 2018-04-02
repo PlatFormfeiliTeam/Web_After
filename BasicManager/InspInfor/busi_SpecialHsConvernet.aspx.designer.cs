@@ -10,6 +10,6 @@
 namespace Web_After.BasicManager.InspInfor {
     
     
-    public partial class busi_RecordInfor {
+    public partial class busi_SpecialHsConvernet {
     }
 }

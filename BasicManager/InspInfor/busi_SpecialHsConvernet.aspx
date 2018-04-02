@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="busi_RecordInfor.aspx.cs" Inherits="Web_After.BasicManager.InspInfor.busi_RecordInfor" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="busi_SpecialHsConvernet.aspx.cs" Inherits="Web_After.BasicManager.InspInfor.busi_SpecialHsConvernet" %>
 
 <!DOCTYPE html>
 
@@ -11,50 +11,40 @@
     <script src="/js/jquery-1.8.2.min.js"></script>
     <link href="/css/iconfont/iconfont.css" rel="stylesheet" />    
     <script src="/js/import/importExcel.js" type="text/javascript"></script>
-    <script src="/BasicManager/js/busi_RecordInfor.js" type="text/javascript"></script>
     <script type="text/javascript">
-        var EXEMPTING = [];
-        var tradeway = [];
-        var company = [];
+        var country = [];
         var username = '<%=Username()%>';
-        Ext.onReady(function() {
+        Ext.onReady(function () {
             Ext.Ajax.request({
-                url: 'busi_RecordInfor.aspx',
+                url: 'busi_SpecialHsConvernet.aspx',
                 params: { action: 'getCheckBoxData' },
                 type: 'Post',
-                success: function (response, option) {
+                success: function(response, option) {
                     var commondata = Ext.decode(response.responseText);
-                    
-                    //征免方式
-                    EXEMPTING = commondata.EXEMPTING;
-                    //贸易方式
-                    tradeway = commondata.TRADEWAY;
-                    //经营单位，收发货单位
-                    company = commondata.COMPANY;
-                    console.log(company);
-                    init_search();
-                    grindbind();
-                    var panel = Ext.create('Ext.form.Panel', {
-                        title: '备案信息',
-                        region: 'center',
-                        layout: 'border',
-                        items: [Ext.getCmp('formpanel_search'), Ext.getCmp('gridpanel')]
-                    });
+                    country = commondata.COUNTRY;
 
-                    var viewport = Ext.create('Ext.container.Viewport',
-                        {
-                            layout: 'border',
-                            items: [panel]
-                        });
 
                 }
             });
+            init_search();
+            grindbind();
+            var panel = Ext.create('Ext.form.Panel', {
+                title: '特殊商品单位换算',
+                region: 'center',
+                layout: 'border',
+                items: [Ext.getCmp('formpanel_search'), Ext.getCmp('gridpanel')]
+            });
 
-            
+            var viewport = Ext.create('Ext.container.Viewport',
+                {
+                    layout: 'border',
+                    items: [panel]
+                });
         });
+
         function init_search() {
-            var CodeBase = Ext.create('Ext.form.field.Text', { id: 'CodeBase', name: 'CodeBase', fieldLabel: '经营单位代码' });
-            var RecordBase = Ext.create('Ext.form.field.Text', { id: 'RecordBase', name: 'RecordBase', fieldLabel: '备案号' });
+            var CodeBase = Ext.create('Ext.form.field.Text', { id: 'CodeBase', name: 'CodeBase', fieldLabel: '商品HS编码' });
+            var RecordBase = Ext.create('Ext.form.field.Text', { id: 'RecordBase', name: 'RecordBase', fieldLabel: '商品名称' });
             var store_ENABLED_S = Ext.create('Ext.data.JsonStore', {
                 fields: ['CODE', 'NAME'],
                 data: [{ "CODE": 0, "NAME": "否" }, { "CODE": 1, "NAME": "是" }]
@@ -74,10 +64,8 @@
                 items: [
                     { text: '<span class="icon iconfont">&#xe622;</span>&nbsp;新 增', handler: function () { addCustomer_Win("", ""); } }
                     , { text: '<span class="icon iconfont">&#xe632;</span>&nbsp;修 改', width: 80, handler: function () { editCustomer(); } }
-                    //, { text: '<span class="icon iconfont">&#xe6d3;</span>&nbsp;删 除', width: 80, handler: function () { del(); } }
                     , { text: '<span class="icon iconfont">&#xe670;</span>&nbsp;导 入', width: 80, handler: function () { importfile('add'); } }
                     , { text: '<span class="icon iconfont">&#xe625;</span>&nbsp;导 出', handler: function () { exportdata(); } }
-                    , { text: '<span class="icon iconfont">&#xe617;</span>&nbsp;维 护', width: 80, handler: function () { Maintain(); } }
                     , '->'
                     , { text: '<span class="icon iconfont">&#xe60b;</span>&nbsp;查 询', width: 80, handler: function () { Ext.getCmp("pgbar").moveFirst(); } }
                     , { text: '<span class="icon iconfont">&#xe633;</span>&nbsp;重 置', width: 80, handler: function () { reset(); } }
@@ -101,15 +89,16 @@
             });
         }
 
+
         //页面数据加载
         function grindbind() {
             var CiqDataBase = Ext.create('Ext.data.JsonStore',
                 {
-                    fields: ['CODE', 'BOOKATTRIBUTE', 'BUSIUNIT', 'BUSIUNITNAME', 'RECEIVEUNIT', 'RECEIVEUNITNAME', 'TRADENAME', 'EXEMPTINGNAME', 'ISMODEL', 'ENABLED', 'CREATEMANNAME', 'STOPMANNAME', 'STARTDATE', 'ENDDATE', 'CREATEDATE', 'REMARK','TRADE','EXEMPTING','ID'],
+                    fields: ['CODE', 'EXTRACODE', 'NAME', 'TYPE', 'COUNTRY', 'ENABLED', 'STARTDATE', 'CREATEMANNAME', 'CREATEDATE','STOPMANNAME', 'ENDDATE', 'REMARK', 'ID'],
                     pageSize: 20,
                     proxy: {
                         type: 'ajax',
-                        url: 'busi_RecordInfor.aspx?action=loadData',
+                        url: 'busi_SpecialHsConvernet.aspx?action=loadData',
                         reader: {
                             root: 'rows',
                             type: 'json',
@@ -142,16 +131,12 @@
                     bbar: pgbar,
                     columns: [
                         { xtype: 'rownumberer', width: 35 },
-                        { header: '备案号', dataIndex: 'CODE', width: 200 },
-                        { header: '账册属性', dataIndex: 'BOOKATTRIBUTE', width: 150 },
-                        { header: '经营单位代码', dataIndex: 'BUSIUNIT', width: 150 },
-                        { header: '经营单位名称', dataIndex: 'BUSIUNITNAME', width: 150 },
-                        { header: '收发货单位代码', dataIndex: 'RECEIVEUNIT', width: 150 },
-                        { header: '收发货单位名称', dataIndex: 'RECEIVEUNITNAME', width: 150 },
-                        { header: '贸易方式', dataIndex: 'TRADENAME', width: 150 },
-                        { header: '征免性质', dataIndex: 'EXEMPTINGNAME', width: 150 },
-                        { header: '规格启用/禁用', dataIndex: 'ISMODEL', width: 150, renderer: gridrender },
-                        { header: '启用/禁用', dataIndex: 'ENABLED', width: 150, renderer: gridrender },
+                        { header: '商品HS编码', dataIndex: 'CODE', width: 200 },
+                        { header: '附加码', dataIndex: 'EXTRACODE', width: 150 },
+                        { header: '商品名称', dataIndex: 'NAME', width: 150 },
+                        { header: '类型', dataIndex: 'TYPE', width: 150 },
+                        { header: '国家', dataIndex: 'COUNTRY', width: 150 },
+                        { header: '是否启用', dataIndex: 'ENABLED', width: 150, renderer: gridrender },
                         { header: '维护人', dataIndex: 'CREATEMANNAME', width: 150 },
                         { header: '停用人', dataIndex: 'STOPMANNAME', width: 150 },
                         { header: '启用时间', dataIndex: 'STARTDATE', width: 250 },
@@ -171,6 +156,7 @@
                     }
                 });
         }
+
 
         function gridrender(value, cellmeta, record, rowIndex, columnIndex, stroe) {
             var dataindex = cellmeta.column.dataIndex;
@@ -195,147 +181,78 @@
                 id: 'ID',
                 name: 'ID'
             });
-
             var field_code = Ext.create('Ext.form.field.Text', {
                 id: 'CODE',
                 name: 'CODE',
-                fieldLabel: '备案号',
+                fieldLabel: '商品HS编码',
                 flex: .5,
                 allowBlank: false,
-                blankText: '备案号不可为空!'
+                blankText: '商品HS编码不可为空!'
             });
-
-
-            //账册属性
-            var store_BOOKATTRIBUTE = Ext.create('Ext.data.JsonStore', {
-                fields: ['CODE', 'NAME'],
-                data: [{ "CODE": "料件账册", "NAME": "料件账册" }, { "CODE": "设备账册", "NAME": "设备账册" }]
-            });
-            var combo_BOOKATTRIBUTE = Ext.create('Ext.form.field.ComboBox', {
-                id: 'combo_BOOKATTRIBUTE',
-                name: 'BOOKATTRIBUTE',
-                store: store_BOOKATTRIBUTE,
-                queryMode: 'local',
-                anyMatch: true,
-                fieldLabel: '账册属性', flex: .5,
-                displayField: 'NAME',
-                valueField: 'CODE',
+            var field_extracode = Ext.create('Ext.form.field.Text', {
+                id: 'EXTRACODE',
+                name: 'EXTRACODE',
+                fieldLabel: '附加码',
+                flex: .5,
                 allowBlank: false,
-                blankText: '账册属性不能为空!'
+                blankText: '附加码不可为空!'
             });
-
-            //规格型号是否启用
-            var store_ISMODEL = Ext.create('Ext.data.JsonStore', {
+            var field_name = Ext.create('Ext.form.field.Text', {
+                id: 'NAME',
+                name: 'NAME',
+                fieldLabel: '商品名称',
+                flex: .5
+            });
+            //国家，下拉框的显示
+            var store_country = Ext.create('Ext.data.JsonStore', {
                 fields: ['CODE', 'NAME'],
-                data: [{ "CODE": 0, "NAME": "否" }, { "CODE": 1, "NAME": "是" }]
+                data: country
             });
-            var combo_ISMODEL = Ext.create('Ext.form.field.ComboBox', {
-                id: 'combo_ISMODEL',
-                name: 'ISMODEL',
-                store: store_ISMODEL,
+
+            var storesdf = Ext.create('Ext.form.field.ComboBox', {
+                id:'COUNTRY',
+                name: 'COUNTRY',
+                fieldLabel: '国家',
+                multiSelect: true,
+                store: store_country,
+                listConfig: {
+                    itemTpl: Ext.create('Ext.XTemplate', '<input type=checkbox>{[values.NAME]}'),
+                    onItemSelect: function (record) {
+                        var node = this.getNode(record);
+                        if (node) {
+                            Ext.fly(node).addCls(this.selectedItemCls);
+                            var checkboxs = node.getElementsByTagName("input");
+                            if (checkboxs != null)
+                                var checkbox = checkboxs[0];
+                            checkbox.checked = true;
+                        }
+                    },
+                    listeners: {
+                        itemclick: function (view, record, item, index, e, eOpts) {
+                            var isSelected = view.isSelected(item);
+                            var checkboxs = item.getElementsByTagName("input");
+                            if (checkboxs != null) {
+                                var checkbox = checkboxs[0];
+                                if (!isSelected) {
+                                    checkbox.checked = true;
+                                } else {
+                                    checkbox.checked = false;
+                                }
+                            }
+                        }
+                    }
+                },
                 queryMode: 'local',
-                anyMatch: true,
-                fieldLabel: '规格型号启用', flex: .5,
                 displayField: 'NAME',
-                valueField: 'CODE',
-                value: 1,
-                allowBlank: false,
-                blankText: '规格型号启用不能为空!'
+                valueField: 'CODE'
             });
-            //备案信息是否启用
-            var store_ENABLED = Ext.create('Ext.data.JsonStore', {
-                fields: ['CODE', 'NAME'],
-                data: [{ "CODE": 0, "NAME": "否" }, { "CODE": 1, "NAME": "是" }]
+            //***********************
+            var field_type = Ext.create('Ext.form.field.Text', {
+                id: 'TYPE',
+                name: 'TYPE',
+                fieldLabel: '类型',
+                flex: .5
             });
-            var combo_ENABLED = Ext.create('Ext.form.field.ComboBox', {
-                id: 'combo_ENABLED',
-                name: 'ENABLED',
-                store: store_ENABLED,
-                queryMode: 'local',
-                anyMatch: true,
-                fieldLabel: '是否启用', flex: .5,
-                displayField: 'NAME',
-                valueField: 'CODE',
-                value: 1,
-                allowBlank: false,
-                blankText: '是否启用不能为空!'
-            });
-            //经营单位
-
-            var store_BUSIUNIT = Ext.create('Ext.data.JsonStore', {
-                fields: ['CODE', 'NAME'],
-                data:company
-            });
-
-            var combo_BUSIUNIT = Ext.create('Ext.form.field.ComboBox', {
-                id: 'combo_BUSIUNIT',
-                name: 'BUSIUNIT',
-                store: store_BUSIUNIT,
-                queryMode: 'local',
-                anyMatch: true,
-                fieldLabel: '经营单位', flex: .5,
-                displayField: 'NAME',
-                valueField: 'CODE',
-                allowBlank: false,
-                blankText: '经营单位不能为空!'
-            });
-            //收发货单位
-            var store_RECEIVEUNIT = Ext.create('Ext.data.JsonStore', {
-                fields: ['CODE', 'NAME'],
-                data: company
-            });
-
-            var combo_RECEIVEUNIT = Ext.create('Ext.form.field.ComboBox', {
-                id: 'combo_RECEIVEUNIT',
-                name: 'RECEIVEUNIT',
-                store: store_RECEIVEUNIT,
-                queryMode: 'local',
-                anyMatch: true,
-                fieldLabel: '收发货单位', flex: .5,
-                displayField: 'NAME',
-                valueField: 'CODE',
-                allowBlank: false,
-                blankText: '收发货单位不能为空!'
-            });
-
-            //贸易方式
-            var store_TRADE = Ext.create('Ext.data.JsonStore', {
-                fields: ['CODE', 'NAME'],
-                data: tradeway
-            });
-
-            var combo_TRADE = Ext.create('Ext.form.field.ComboBox', {
-                id: 'combo_TRADE',
-                name: 'TRADE',
-                store: store_TRADE,
-                queryMode: 'local',
-                anyMatch: true,
-                fieldLabel: '贸易方式', flex: .5,
-                displayField: 'NAME',
-                valueField: 'CODE',
-                allowBlank: false,
-                blankText: '贸易方式不能为空!'
-            });
-            //征免性质
-            var store_EXEMPTING = Ext.create('Ext.data.JsonStore', {
-                fields: ['CODE', 'NAME'],
-                data: EXEMPTING
-            });
-
-            var combo_EXEMPTING = Ext.create('Ext.form.field.ComboBox', {
-                id: 'combo_EXEMPTING',
-                name: 'EXEMPTING',
-                store: store_EXEMPTING,
-                queryMode: 'local',
-                anyMatch: true,
-                fieldLabel: '征免性质', flex: .5,
-                displayField: 'NAME',
-                valueField: 'CODE',
-                allowBlank: false,
-                blankText: '征免性质不能为空!'
-            });
-
-                      
             var start_date = Ext.create('Ext.form.field.Date',
                 {
                     id: 'STARTDATE',
@@ -360,21 +277,35 @@
                 fieldLabel: '维护人',
                 readOnly: true
             });
-
             var field_REMARK = Ext.create('Ext.form.field.Text', {
                 id: 'REMARK',
                 name: 'REMARK',
                 fieldLabel: '备注'
             });
 
+            var store_ENABLED = Ext.create('Ext.data.JsonStore', {
+                fields: ['CODE', 'NAME'],
+                data: [{ "CODE": 0, "NAME": "否" }, { "CODE": 1, "NAME": "是" }]
+            });
+            var combo_ENABLED = Ext.create('Ext.form.field.ComboBox', {
+                id: 'combo_ENABLED',
+                name: 'ENABLED',
+                store: store_ENABLED,
+                queryMode: 'local',
+                anyMatch: true,
+                fieldLabel: '是否启用', flex: .5,
+                displayField: 'NAME',
+                valueField: 'CODE',
+                value: 1,
+                allowBlank: false,
+                blankText: '是否启用不能为空!'
+            });
             //修改原因输入框
             var change_reason = Ext.create('Ext.form.field.Text', {
                 id: 'REASON',
                 name: 'REASON',
                 fieldLabel: '修改原因',
                 hidden: true
-
-
             });
 
             var formpanel_Win = Ext.create('Ext.form.Panel', {
@@ -391,15 +322,12 @@
                     msgTarget: 'under'
                 },
                 items: [
-                    { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [field_code, combo_BOOKATTRIBUTE] },
-                    { layout: 'column', height: 42, border: 0, items: [combo_ISMODEL, combo_ENABLED] },
-                    { layout: 'column', height: 42, border: 0, items: [combo_BUSIUNIT, combo_RECEIVEUNIT] },
-                    { layout: 'column', height: 42, border: 0, items: [combo_TRADE, combo_EXEMPTING] },
-                    { layout: 'column', height: 42, border: 0, items: [start_date, end_date] },
+                    { layout: 'column', height: 42, margin: '5 0 0 0', border: 0, items: [field_code, field_extracode] },
+                    { layout: 'column', height: 42, border: 0, items: [field_name, storesdf] },
+                    { layout: 'column', height: 42, border: 0, items: [field_type, start_date] },
+                    { layout: 'column', height: 42, border: 0, items: [combo_ENABLED, end_date] },
                     { layout: 'column', height: 42, border: 0, items: [CreatemanName, field_REMARK] },
                     { layout: 'column', height: 42, border: 0, items: [change_reason] },
-
-
                     field_ID
                 ],
                 buttons: [{
@@ -410,10 +338,11 @@
                         }
 
                         var formdata = Ext.encode(Ext.getCmp('formpanel_Win').getForm().getValues());
+                        var country = Ext.getCmp('COUNTRY').getValue();
                         Ext.Ajax.request({
-                            url: 'busi_RecordInfor.aspx',
+                            url: 'busi_SpecialHsConvernet.aspx',
                             type: 'Post',
-                            params: { action: 'save', formdata: formdata },
+                            params: { action: 'save', formdata: formdata ,country:country},
                             success: function (response, option) {
 
                                 var data = Ext.decode(response.responseText);
@@ -461,7 +390,7 @@
                 id: "win_d",
                 title: '备案信息',
                 width: 1200,
-                height: 430,
+                height: 350,
                 modal: true,
                 items: [Ext.getCmp('formpanel_Win')]
             });
@@ -479,14 +408,16 @@
 
         }
 
+        //导出
         function exportdata() {
             var CodeBase = Ext.getCmp('CodeBase').getValue();
             var RecordBase = Ext.getCmp('RecordBase').getValue();
             var combo_ENABLED_S = Ext.getCmp('combo_ENABLED_S').getValue();
-            var path = 'busi_RecordInfor.aspx?action=export&CodeBase=' + CodeBase + '&RecordBase=' + RecordBase + '&combo_ENABLED_S=' + combo_ENABLED_S;
+            var path = 'busi_SpecialHsConvernet.aspx?action=export&CodeBase=' + CodeBase + '&RecordBase=' + RecordBase + '&combo_ENABLED_S=' + combo_ENABLED_S;
             $('#exportform').attr("action", path).submit();
         }
 
+        //导入
         function importfile(action) {
             if (action == "add") {
                 importexcel(action);
@@ -494,13 +425,12 @@
 
         }
 
-
         function importexcel(action) {
 
             var radio_module = Ext.create('Ext.form.RadioGroup', {
                 name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
                 items: [
-                    { boxLabel: "<a href='/FileUpload/busi_RecordInfo.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
+                    { boxLabel: "<a href='/FileUpload/busi_SpecialHsConvernet.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
                 ]
             });
 
@@ -566,7 +496,7 @@
 
                             Ext.getCmp('formpanel_upload').getForm().submit({
                                 type: 'Post',
-                                url: 'busi_RecordInfor.aspx',
+                                url: 'busi_SpecialHsConvernet.aspx',
                                 params: { formdata: formdata, action: action },
                                 waitMsg: '数据导入中...',
                                 success: function (form, action) {
@@ -591,7 +521,7 @@
 
             var win_upload = Ext.create("Ext.window.Window", {
                 id: "win_upload",
-                title: '国家代码对应关系',
+                title: '特殊商品单位换算导入',
                 width: 600,
                 height: 240,
                 modal: true,
@@ -600,18 +530,6 @@
             Ext.getCmp('CREATEMANNAME').setValue(username);
             win_upload.show();
         }
-
-
-        function Maintain() {
-            var recs = Ext.getCmp('gridpanel').getSelectionModel().getSelection();
-            if (recs.length == 0) {
-                Ext.MessageBox.alert('提示', '请选择需要查看详细的记录！');
-                return;
-            }
-
-            util.addMaintain_Win(recs[0].get("ID"), recs[0].data);
-        }
-
     </script>
 </head>
 <body>

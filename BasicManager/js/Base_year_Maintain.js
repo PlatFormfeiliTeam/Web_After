@@ -438,8 +438,6 @@
                 format: 'Y-m-d',
                 fieldLabel: '停用日期',
                 flex: .5
-
-
             });
 
         var CreatemanName = Ext.create('Ext.form.field.Text', {
