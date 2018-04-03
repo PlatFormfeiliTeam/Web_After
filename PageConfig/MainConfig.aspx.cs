@@ -188,8 +188,7 @@ namespace Web_After.PageConfig
             if (en == null)
             {
                 repeat = "保存失败，JSON数据转换出现问题";
-            }
-            if (en.ID<0)
+            }else if (en.ID<0)
             {
                 //新增
                 repeat =CanUpdateOrInsert(en);
