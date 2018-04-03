@@ -74,11 +74,11 @@ namespace Web_After.BasicManager.InspInfor
             string strWhere = string.Empty;
             if (!string.IsNullOrEmpty(Request["CodeBase"]))
             {
-                strWhere = strWhere + " and t1.code like '%" + Request["CodeBase"] + "%'";
+                strWhere = strWhere + " and t1.busiunit like '%" + Request["CodeBase"] + "%'";
             }
             if (!string.IsNullOrEmpty(Request["RecordBase"]))
             {
-                strWhere = strWhere + " and t1.busiunit like '%" + Request["RecordBase"] + "%'";
+                strWhere = strWhere + " and t1.code like '%" + Request["RecordBase"] + "%'";
             }
 
             if (!string.IsNullOrEmpty(Request["ENABLED_S"]))
