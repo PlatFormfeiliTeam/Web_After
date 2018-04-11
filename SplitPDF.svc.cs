@@ -941,23 +941,20 @@ namespace Web_After
                 DataTable dt = DBMgr.GetDataTable(sql);
                 if (dt.Rows.Count > 0)
                 {
-                    string filename = dt.Rows[0]["FILENAME"] + "";
+                    string filename = dt.Rows[0]["FILENAME"] + ""; string pressfilename = filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
                     FileInfo fi = new FileInfo(@"D:\ftpserver\" + filename);
-                    
-                    string pressfilename = filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
-                    long presssizes = 0;
+
+
+                    string pressfile = ""; long presssizes = 0;
                     if (File.Exists(@"D:\ftpserver\" + pressfilename))
                     {
                         FileInfo pressfi = new FileInfo(@"D:\ftpserver\" + pressfilename);
+                        pressfile = "/file/" + pressfilename;
                         presssizes = pressfi.Length / 1024;
                     }
-                    else
-                    {
-                        pressfilename = "";
-                    }
 
 
-                    return @"{success:true,file:'/file/" + filename + "',sizes:" + fi.Length / 1024 + ",pressfile:'/file/" + pressfilename + "',presssizes:" + presssizes + "}";
+                    return @"{success:true,file:'/file/" + filename + "',sizes:" + fi.Length / 1024 + ",pressfile:'" + pressfile + "',presssizes:" + presssizes + "}";
 
                 }
             }
