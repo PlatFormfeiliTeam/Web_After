@@ -34,6 +34,10 @@ namespace Web_After
         string delete(string del_fileids, string ordercode);
         [OperationContract]
         Byte[] ReadPdf(string path);
+        [OperationContract]
+        string ForcedCompress(string fileid);
+        [OperationContract]
+        string loadpressfile(string fileid);
        
     }
 }
