@@ -944,17 +944,14 @@ namespace Web_After
                     string filename = dt.Rows[0]["FILENAME"] + ""; string pressfilename = filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
                     FileInfo fi = new FileInfo(@"D:\ftpserver\" + filename);
 
-
-                    string pressfile = ""; long presssizes = 0;
+                    long presssizes = 0;
                     if (File.Exists(@"D:\ftpserver\" + pressfilename))
                     {
                         FileInfo pressfi = new FileInfo(@"D:\ftpserver\" + pressfilename);
-                        pressfile = "/file/" + pressfilename;
                         presssizes = pressfi.Length / 1024;
                     }
 
-
-                    return @"{success:true,file:'/file/" + filename + "',sizes:" + fi.Length / 1024 + ",pressfile:'" + pressfile + "',presssizes:" + presssizes + "}";
+                    return @"{success:true,file:'/file/" + filename + "',sizes:" + fi.Length / 1024 + ",pressfile:'/file/" + pressfilename + "',presssizes:" + presssizes + "}";
 
                 }
             }
