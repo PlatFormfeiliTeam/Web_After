@@ -549,9 +549,18 @@ namespace Web_After
             sql = "select * from list_attachment where ID='" + fileid + "'";
             dt = DBMgr.GetDataTable(sql);
 
+            //add 强制压缩20180411
+            if (File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"]+"").Replace(".pdf", "").Replace(".PDF", "") + "-web.txt"))
+            {
+                if (!File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"] + "").Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf"))
+                {
+                    return "{success:false}";//没压缩成功
+                }
+            }
+
+
             fi = new FileInfo(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
             PdfReader reader_file = new PdfReader(@"D:\ftpserver\" + dt.Rows[0]["FILENAME"]);
-
 
             //2016-6-16压缩改用pdfshrink在后台执行                   
             string compressname = ""; bool bf_iscodecompress = false;
@@ -883,6 +892,72 @@ namespace Web_After
         }
 
 
+        //强制压缩
+        public string ForcedCompress(string fileid)
+        {
+            string msg = "{success:false}";//失败
+            string sql = "";
+            try
+            {
+                sql = "select * from list_attachment where id='" + fileid + "'";
+                DataTable dt = DBMgr.GetDataTable(sql);
+                if (dt.Rows.Count > 0)
+                {
+                    string filename = dt.Rows[0]["FILENAME"] + "";
+                    string pressfilename_pdf = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
+                    string filename_txt = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.txt";
+
+                    if (File.Exists(pressfilename_pdf))//删除压缩文件
+                    {
+                        FileInfo di = new FileInfo(pressfilename_pdf);
+                        di.Delete();
+                    }
+
+                    if (!File.Exists(filename_txt))//保留TXT标记文件
+                    {
+                        File.Create(filename_txt);
+                    }
+
+                    sql = "insert into pdfshrinklog (id,attachmentid) values (pdfshrinklog_id.nextval,'" + fileid + "')";
+                    DBMgr.ExecuteNonQuery(sql);
+
+                    msg = "{success:true}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return msg;
+            }
+
+            return msg;
+        }
+
+        public string loadpressfile(string fileid)
+        {
+            string msg = "{success:false}";
+            try
+            {
+                string sql = "select * from list_attachment where id='" + fileid + "'";
+                DataTable dt = DBMgr.GetDataTable(sql);
+                if (dt.Rows.Count > 0)
+                {
+                    string filename = dt.Rows[0]["FILENAME"] + "";
+                    string pressfilename =filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";//@"d:\ftpserver\" + 
+
+                    FileInfo fi = new FileInfo(@"D:\ftpserver\" + filename);
+                    FileInfo pressfi = new FileInfo(@"D:\ftpserver\" + pressfilename);
+
+                    return @"{success:true,file:'/file/" + filename + "',sizes:" + fi.Length / 1024 + ",pressfile:'/file/" + pressfilename + "',presssizes:" + pressfi.Length / 1024 + "}";
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return msg;
+            }
+
+            return msg;
+        }
 
     }
 }
