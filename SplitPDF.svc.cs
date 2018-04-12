@@ -550,7 +550,7 @@ namespace Web_After
             dt = DBMgr.GetDataTable(sql);
 
             //add 强制压缩20180411
-            if (File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"]+"").Replace(".pdf", "").Replace(".PDF", "") + "-web.txt"))
+            if (File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"]+"").Replace(".pdf", "").Replace(".PDF", "") + ".txt"))
             {
                 if (!File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"] + "").Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf"))
                 {
@@ -905,7 +905,7 @@ namespace Web_After
                 {
                     string filename = dt.Rows[0]["FILENAME"] + "";
                     string pressfilename_pdf = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
-                    string filename_txt = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.txt";
+                    string filename_txt = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + ".txt";
 
                     if (File.Exists(pressfilename_pdf))//删除压缩文件
                     {
