@@ -550,9 +550,16 @@ namespace Web_After
             dt = DBMgr.GetDataTable(sql);
 
             //add 强制压缩20180411
-            if (File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"]+"").Replace(".pdf", "").Replace(".PDF", "") + ".txt"))
+            string filename = (dt.Rows[0]["FILENAME"] + "").Replace("/", @"\");
+            string filename_txt = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + ".txt";
+
+            string dir = @"d:\ftpserver\" + filename.Substring(0, filename.LastIndexOf(@"\"));
+            string SearchPattern = filename.Substring(filename.LastIndexOf(@"\") + 1).Replace(".pdf", "").Replace(".PDF", "") + "-web*";
+            var files = Directory.GetFiles(dir, SearchPattern);
+
+            if (File.Exists(filename_txt))
             {
-                if (!File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"] + "").Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf"))
+                if (files.Length <= 0)
                 {
                     return "{success:false}";//没压缩成功
                 }
@@ -565,9 +572,13 @@ namespace Web_After
             //2016-6-16压缩改用pdfshrink在后台执行                   
             string compressname = ""; bool bf_iscodecompress = false;
             //如果pdfshrink压缩文件存在               
-            if (File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"] + "").Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf"))
+            //if (File.Exists(@"d:\ftpserver\" + (dt.Rows[0]["FILENAME"] + "").Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf"))
+            //{
+            //    compressname = @"d:\ftpserver\" + (dt.Rows[0]["FILENAME"] + "").Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
+            //}
+            if (files.Length > 0)
             {
-                compressname = @"d:\ftpserver\" + (dt.Rows[0]["FILENAME"] + "").Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
+                compressname = files[0];
             }
             else
             {
@@ -903,15 +914,32 @@ namespace Web_After
                 DataTable dt = DBMgr.GetDataTable(sql);
                 if (dt.Rows.Count > 0)
                 {
-                    string filename = dt.Rows[0]["FILENAME"] + "";
-                    string pressfilename_pdf = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
+                    string filename = (dt.Rows[0]["FILENAME"] + "").Replace("/", @"\");
                     string filename_txt = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + ".txt";
 
-                    if (File.Exists(pressfilename_pdf))//删除压缩文件
+                    string dir = @"d:\ftpserver\" + filename.Substring(0, filename.LastIndexOf(@"\"));
+                    string SearchPattern = filename.Substring(filename.LastIndexOf(@"\") + 1).Replace(".pdf", "").Replace(".PDF", "") + "-web*";
+
+                    var files = Directory.GetFiles(dir, SearchPattern);
+                    for (int i = 0; i < files.Length; i++)
                     {
-                        FileInfo di = new FileInfo(pressfilename_pdf);
-                        di.Delete();
+                        File.Delete(files[i]);
                     }
+
+                    //DirectoryInfo dif = new DirectoryInfo(dir);
+                    //FileInfo[] files2 = dif.GetFiles(SearchPattern);
+
+                    //foreach (FileInfo fi in dif.GetFiles(SearchPattern))
+                    //{
+                    //    File.Delete(fi.FullName);
+                    //}
+
+
+                    //string pressfilename_pdf = @"d:\ftpserver\" + filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
+                    //if (File.Exists(pressfilename_pdf))//删除压缩文件
+                    //{
+                    //    File.Delete(pressfilename_pdf);
+                    //}
 
                     if (!File.Exists(filename_txt))//保留TXT标记文件
                     {
