@@ -969,15 +969,27 @@ namespace Web_After
                 DataTable dt = DBMgr.GetDataTable(sql);
                 if (dt.Rows.Count > 0)
                 {
-                    string filename = dt.Rows[0]["FILENAME"] + ""; string pressfilename = filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";
+                    string filename = dt.Rows[0]["FILENAME"] + ""; //string pressfilename = filename.Replace(".pdf", "").Replace(".PDF", "") + "-web.pdf";                    
                     FileInfo fi = new FileInfo(@"D:\ftpserver\" + filename);
 
-                    long presssizes = 0;
-                    if (File.Exists(@"D:\ftpserver\" + pressfilename))
+                    string filename_2 = (dt.Rows[0]["FILENAME"] + "").Replace("/", @"\");
+                    string dir = @"d:\ftpserver\" + filename_2.Substring(0, filename_2.LastIndexOf(@"\"));
+                    string SearchPattern = filename_2.Substring(filename_2.LastIndexOf(@"\") + 1).Replace(".pdf", "").Replace(".PDF", "") + "-web*";
+                    var files = Directory.GetFiles(dir, SearchPattern);
+
+                    long presssizes = 0;string pressfilename="";
+                    if (files.Length > 0)
                     {
-                        FileInfo pressfi = new FileInfo(@"D:\ftpserver\" + pressfilename);
+                        FileInfo pressfi = new FileInfo(files[0]);
                         presssizes = pressfi.Length / 1024;
+                        pressfilename = filename.Substring(0, filename.LastIndexOf(@"/") + 1) + pressfi.Name;
                     }
+
+                    //if (File.Exists(@"D:\ftpserver\" + pressfilename))
+                    //{
+                    //    FileInfo pressfi = new FileInfo(@"D:\ftpserver\" + pressfilename);
+                    //    presssizes = pressfi.Length / 1024;
+                    //}
 
                     return @"{success:true,file:'/file/" + filename + "',sizes:" + fi.Length / 1024 + ",pressfile:'/file/" + pressfilename + "',presssizes:" + presssizes + "}";
 
