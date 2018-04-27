@@ -170,7 +170,7 @@ namespace Web_After.CustomerMaintain
                                     ,'{11}','{12}','{13}','{14}','{15}'
                                     ,'{16}','{17}')";
                 sql = string.Format(sql
-                        , json.Value<string>("CODE"), json.Value<string>("NAME"), json.Value<string>("CHINESEABBREVIATION"), json.Value<string>("CHINESEADDRESS"), json.Value<string>("HSCODE"), json.Value<string>("CIQCODE")
+                        , json.Value<string>("CODE").ToUpper(), json.Value<string>("NAME"), json.Value<string>("CHINESEABBREVIATION"), json.Value<string>("CHINESEADDRESS"), json.Value<string>("HSCODE"), json.Value<string>("CIQCODE")
                         , json.Value<string>("ENGLISHNAME"), json.Value<string>("ENGLISHADDRESS"), GetChk(json.Value<string>("ISCUSTOMER")), GetChk(json.Value<string>("ISSHIPPER")), GetChk(json.Value<string>("ISCOMPANY"))
                         , GetChk(json.Value<string>("LOGICAUDITFLAG")), GetChk(json.Value<string>("DOCSERVICECOMPANY")), json.Value<string>("ENABLED"), json.Value<string>("REMARK"), json.Value<string>("SOCIALCREDITNO")
                         , json.Value<string>("TOOLVERSION"),GetChk(json.Value<string>("ISRECEIVER"))
@@ -186,7 +186,7 @@ namespace Web_After.CustomerMaintain
                                     ,TOOLVERSION='{16}',isreceiver='{17}' 
                                 where id={18}";
                 sql = string.Format(sql
-                        , json.Value<string>("CODE"), json.Value<string>("NAME"), json.Value<string>("CHINESEABBREVIATION"), json.Value<string>("CHINESEADDRESS"), json.Value<string>("HSCODE"), json.Value<string>("CIQCODE")
+                        , json.Value<string>("CODE").ToUpper(), json.Value<string>("NAME"), json.Value<string>("CHINESEABBREVIATION"), json.Value<string>("CHINESEADDRESS"), json.Value<string>("HSCODE"), json.Value<string>("CIQCODE")
                         , json.Value<string>("ENGLISHNAME"), json.Value<string>("ENGLISHADDRESS"), GetChk(json.Value<string>("ISCUSTOMER")), GetChk(json.Value<string>("ISSHIPPER")), GetChk(json.Value<string>("ISCOMPANY"))
                         , GetChk(json.Value<string>("LOGICAUDITFLAG")), GetChk(json.Value<string>("DOCSERVICECOMPANY")), json.Value<int>("ENABLED"), json.Value<string>("REMARK"), json.Value<string>("SOCIALCREDITNO")
                         , json.Value<string>("TOOLVERSION"),GetChk(json.Value<string>("ISRECEIVER")), json.Value<string>("ID")
