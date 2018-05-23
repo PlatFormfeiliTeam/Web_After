@@ -561,7 +561,7 @@ namespace Web_After
             {
                 if (files.Length <= 0)
                 {
-                    return "{success:false}";//没压缩成功
+                    return "{success:false,result:[文件大小为0]}";//没压缩成功
                 }
             }
 
@@ -619,7 +619,7 @@ namespace Web_After
                             sql = "insert into pdfshrinklog (id,attachmentid) values (pdfshrinklog_id.nextval,'" + fileid + "')";
                             DBMgr.ExecuteNonQuery(sql);
                         }
-                        return "{success:false}";//没压缩成功
+                        return "{success:false,result:[压缩文件与源文件大小相同]}";//没压缩成功
                     }
                     else
                     {
@@ -636,7 +636,7 @@ namespace Web_After
                             sql = "insert into pdfshrinklog (id,attachmentid) values (pdfshrinklog_id.nextval,'" + fileid + "')";
                             DBMgr.ExecuteNonQuery(sql);
 
-                            return "{success:false}";//没压缩成功
+                            return "{success:false,result:[正在生成源文件正在压缩]}";//没压缩成功
                         }
                         reader_file.Close(); reader_file.Dispose();
 
@@ -722,7 +722,7 @@ namespace Web_After
                         }
                         else
                         {
-                            return "{success:false}";//拆分明细不存在 
+                            return "{success:false,result:[文件记录不存在]}";//拆分明细不存在 
                         }
 
                     }
@@ -737,7 +737,7 @@ namespace Web_After
             }
             else
             {
-                return "{success:false}";//压缩文件不存在 
+                return "{success:false,result:[压缩文件不存在]}";//压缩文件不存在 
             }
         
         }
