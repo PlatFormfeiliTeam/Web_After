@@ -29,7 +29,7 @@ namespace Web_After
     {
 
         [WebMethod]
-        public string getZipFile(string filedata, string customer)
+        public string getZipFile(string filedata, string customer, string judge)
         {
             string dir = @"d:/ftpserver/";
             string tmp_dir = @"d:/ftpserver/declare_tmp_zip/";
@@ -82,7 +82,13 @@ namespace Web_After
                         busitype = jo["BUSITYPE"].ToString();
                         sourcefile = drs[0]["FILENAME"].ToString();
                         filepath = dir + sourcefile;
-                        filepath_mask = AddBackground(filepath, "企业留存联", busitype, "", customer);
+
+                        
+                        
+                        filepath_mask = AddBackground(filepath, "企业留存联", busitype, "", customer,judge);
+                        
+                        
+                        
                         newfilename = jo["DECLARATIONCODE"].ToString() + sourcefile.Substring(sourcefile.LastIndexOf("."));
                         buffer = new byte[4096];
                         entry = zipEntryFactory.MakeFileEntry(newfilename);
@@ -114,10 +120,17 @@ namespace Web_After
         }
 
 
-        public string AddBackground(string filename, string printtmp, string busitype, string decltype,string customer)
+        public string AddBackground(string filename, string printtmp, string busitype, string decltype,string customer,string judge)
         {
             string tmp_dir = @"d:/ftpserver/declare_tmp_zip/";
             string outname = Guid.NewGuid() + "";
+            string destFile = tmp_dir+outname + ".pdf";
+            if (judge == "1")
+            {
+                File.Copy(filename, destFile);
+                return destFile;
+            }
+            
             DataTable dt_mask = new DataTable(); int top_int = 0, right_int = 0, buttom_int = 0, left_int = 0;
 
             string sql = "select POSITIONWEBTOP,POSITIONWEBRIGHT,POSITIONWEBBUTTOM,POSITIONWEBLEFT from config_watermark where CUSTOMER='" + customer + "'";         
@@ -161,7 +174,7 @@ namespace Web_After
                     img = Image.GetInstance(Server.MapPath("/FileUpload/出口-海关核销联.png"));
                 }
             }
-            string destFile = tmp_dir+outname + ".pdf";
+            
             FileStream stream = new FileStream(destFile, FileMode.Create, FileAccess.ReadWrite);
             byte[] pwd = System.Text.Encoding.Default.GetBytes(ConfigurationManager.AppSettings["PdfPwd"]);//密码 
             PdfReader reader = new PdfReader(filename, pwd);
