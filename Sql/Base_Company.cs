@@ -149,7 +149,7 @@ namespace Web_After.Sql
         }
 
         //导入sql语句
-        public int export_insert_base_company(string incode, string CODE, string INSPCODE, string NAME, string ENGLSHNAME, string GOODSLOCAL, string RECEIVERTYPE, string ENABLED, string REMARK, string STARTDATE, string ENDDATE, string DeclNature, string InspNature,string stopman)
+        public int export_insert_base_company(string incode, string CODE, string INSPCODE, string NAME, string ENGLSHNAME, string GOODSLOCAL, string RECEIVERTYPE, string ENABLED, string REMARK, string STARTDATE, string ENDDATE, string DeclNature, string InspNature, string stopman, string SOCIALCREDITNO)
         {
             FormsIdentity identity = HttpContext.Current.User.Identity as FormsIdentity;
             string userName = identity.Name;
@@ -157,16 +157,16 @@ namespace Web_After.Sql
             string sql = @"insert into base_company(id,
                                                     code,name,remark,enabled,createman,stopman,createdate,
                                                     startdate,enddate,englishname,declnature,incode,
-                                                    inspcode,inspnature,goodslocal,receivertype
+                                                    inspcode,inspnature,goodslocal,receivertype,SOCIALCREDITNO
                                                     ) values(base_company_id.nextval,
                                                     '{0}','{1}','{2}','{3}','{4}','{5}',sysdate,
                                                     to_date('{6}','yyyy/mm/dd hh24:mi:ss'),to_date('{7}','yyyy/mm/dd hh24:mi:ss'),'{8}','{9}','{10}'
-                                                    ,'{11}','{12}','{13}','{14}'
+                                                    ,'{11}','{12}','{13}','{14}','{15}'
                                                     )";
             sql = String.Format(sql, 
                 CODE, NAME, REMARK, ENABLED, json_user.GetValue("ID"), stopman, 
                 STARTDATE, ENDDATE,ENGLSHNAME,DeclNature,incode
-                ,INSPCODE,InspNature,GOODSLOCAL,RECEIVERTYPE);
+                , INSPCODE, InspNature, GOODSLOCAL, RECEIVERTYPE, SOCIALCREDITNO);
             int i = DBMgrBase.ExecuteNonQuery(sql);
             return i;
         }

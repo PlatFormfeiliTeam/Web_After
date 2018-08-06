@@ -390,7 +390,8 @@ namespace Web_After.BasicManager.DeclInfor
                 string ENDDATE = json_formdata.Value<string>("ENDDATE") == ""
                     ? DateTime.MaxValue.ToShortDateString()
                     : json_formdata.Value<string>("ENDDATE");
-
+                //社会信用代码
+                string SOCIALCREDITNO = stringList[9];
                 if (CODE.Length > 6)
                 {
                     DeclNature = CODE.Substring(5, 1);
@@ -415,7 +416,7 @@ namespace Web_After.BasicManager.DeclInfor
                 if (check_repeat == "")
                 {
                     bc.export_insert_base_company(incode, CODE, INSPCODE, NAME, ENGLSHNAME, GOODSLOCAL, RECEIVERTYPE,
-                        ENABLED, REMARK, STARTDATE, ENDDATE, DeclNature, InspNature, stopman);
+                        ENABLED, REMARK, STARTDATE, ENDDATE, DeclNature, InspNature, stopman, SOCIALCREDITNO);
                     count = count + 1;
                     
                     

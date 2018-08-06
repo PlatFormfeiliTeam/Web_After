@@ -233,8 +233,8 @@
                 name: 'CODE',
                 fieldLabel: '海关编码',
                 flex: .5,
-                allowBlank: false,
-                blankText: '海关编码不可为空!',
+                //allowBlank: false,
+                //blankText: '海关编码不可为空!',
                 maxLength: 10
 
             });
