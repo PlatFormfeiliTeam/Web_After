@@ -424,7 +424,7 @@ namespace Web_After.BasicManager.DeclInfor
                 }
                 else
                 {
-                    repeatListerror.Add(i+2);                    
+                    repeatListerror.Add(i + 2);
                 }
 
                 //清除

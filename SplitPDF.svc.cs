@@ -204,7 +204,7 @@ namespace Web_After
                     document.SetPageSize(reader.GetPageSizeWithRotation(j));
                     document.NewPage();
                     newPage = writer.GetImportedPage(reader, j);
-                    cb.AddTemplate(newPage, 0, 0);
+                    //cb.AddTemplate(newPage, 0, 0);
                     rotation = reader.GetPageRotation(j);
                     switch (rotation)
                     {
@@ -686,9 +686,16 @@ namespace Web_After
                                     }
                                 }
                                 fs.Flush();
+                                
+                                
                                 newDocument.Close(); newDocument.Dispose();
-                                sql = "insert into LIST_ATTACHMENTDETAIL (id,sourcefilename,filename,attachmentid,filetypeid,splitetime,ordercode,pages) values (list_attachmentdetail_id.nextval,'{0}','{1}','{2}','{3}',sysdate,'{4}','{5}')";
-                                sql = String.Format(sql, dt.Rows[i]["FILETYPEID"] + @"/" + ordercode + @"/" + ordercode + "_" + new_name + ".pdf", ordercode + "_" + new_name + ".pdf", fileid, dt.Rows[i]["FILETYPEID"], ordercode, string.Join(",", pagelist.ToArray()));
+                                //获取拆分文件的大小
+                                FileInfo info = new FileInfo(newfilename);
+                                long infolength = info.Length;
+                                decimal filelength = ((decimal)infolength) / 1024 / 1024;
+                                string result = filelength.ToString("#0.00");
+                                sql = "insert into LIST_ATTACHMENTDETAIL (id,sourcefilename,filename,attachmentid,filetypeid,splitetime,ordercode,pages,filesize) values (list_attachmentdetail_id.nextval,'{0}','{1}','{2}','{3}',sysdate,'{4}','{5}',{6})";
+                                sql = String.Format(sql, dt.Rows[i]["FILETYPEID"] + @"/" + ordercode + @"/" + ordercode + "_" + new_name + ".pdf", ordercode + "_" + new_name + ".pdf", fileid, dt.Rows[i]["FILETYPEID"], ordercode, string.Join(",", pagelist.ToArray()),result);
                                 DBMgr.ExecuteNonQuery(sql);
                             }
                         }

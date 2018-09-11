@@ -170,7 +170,7 @@ namespace Web_After.Sql
             int i = DBMgrBase.ExecuteNonQuery(sql);
             return i;
         }
-
+        //更新
 
         //查询修改记录之前的字段(根据id)
         public DataTable LoadDataById(string id)
