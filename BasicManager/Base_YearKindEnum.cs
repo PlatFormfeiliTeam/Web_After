@@ -368,5 +368,9 @@
         /// </summary>
         Finance_ReceivableRulesCusDetail,
         //================================================================================
+        /// <summary>
+        /// 对应关系——hs和ciq对应
+        /// </summary>
+        BASE_NEW_HSCIQ,
     }
 }
