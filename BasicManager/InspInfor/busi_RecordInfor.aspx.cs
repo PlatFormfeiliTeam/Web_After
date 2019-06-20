@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using Web_After.BasicManager.BasicManager;
 using Web_After.BasicManager.DeclInfor;
 using Web_After.Common;
+using Web_After.model;
 
 namespace Web_After.BasicManager.InspInfor
 {
@@ -620,16 +621,17 @@ namespace Web_After.BasicManager.InspInfor
             row1.CreateCell(2).SetCellValue("附加码");
             row1.CreateCell(3).SetCellValue("项号属性");
             row1.CreateCell(4).SetCellValue("商品名称");
-            row1.CreateCell(5).SetCellValue("规格型号");
-            row1.CreateCell(6).SetCellValue("成交单位");
-            row1.CreateCell(7).SetCellValue("版本号");
-            row1.CreateCell(8).SetCellValue("启用/禁用");
-            row1.CreateCell(9).SetCellValue("启用时间");
-            row1.CreateCell(10).SetCellValue("维护人");
-            row1.CreateCell(11).SetCellValue("维护时间");
-            row1.CreateCell(12).SetCellValue("停用人");
-            row1.CreateCell(13).SetCellValue("停用时间");
-            row1.CreateCell(14).SetCellValue("备注");
+            row1.CreateCell(5).SetCellValue("料号");
+            row1.CreateCell(6).SetCellValue("规格型号");
+            row1.CreateCell(7).SetCellValue("成交单位");
+            row1.CreateCell(8).SetCellValue("版本号");
+            row1.CreateCell(9).SetCellValue("启用/禁用");
+            row1.CreateCell(10).SetCellValue("启用时间");
+            row1.CreateCell(11).SetCellValue("维护人");
+            row1.CreateCell(12).SetCellValue("维护时间");
+            row1.CreateCell(13).SetCellValue("停用人");
+            row1.CreateCell(14).SetCellValue("停用时间");
+            row1.CreateCell(15).SetCellValue("备注");
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 NPOI.SS.UserModel.IRow rowtemp = sheet_S.CreateRow(i + 1);
@@ -638,16 +640,17 @@ namespace Web_After.BasicManager.InspInfor
                 rowtemp.CreateCell(2).SetCellValue(dt.Rows[i]["ADDITIONALNO"].ToString());
                 rowtemp.CreateCell(3).SetCellValue(dt.Rows[i]["ITEMNOATTRIBUTE"].ToString());
                 rowtemp.CreateCell(4).SetCellValue(dt.Rows[i]["COMMODITYNAME"].ToString());
-                rowtemp.CreateCell(5).SetCellValue(dt.Rows[i]["SPECIFICATIONSMODEL"].ToString());
-                rowtemp.CreateCell(6).SetCellValue(dt.Rows[i]["UNIT"].ToString());
-                rowtemp.CreateCell(7).SetCellValue(dt.Rows[i]["VERSION"].ToString());
-                rowtemp.CreateCell(8).SetCellValue(dt.Rows[i]["ENABLED"].ToString() == "1" ? "是" : "否");
-                rowtemp.CreateCell(9).SetCellValue(dt.Rows[i]["STARTDATE"].ToString());
-                rowtemp.CreateCell(10).SetCellValue(dt.Rows[i]["CREATEMANNAME"].ToString());
-                rowtemp.CreateCell(11).SetCellValue(dt.Rows[i]["CREATEDATE"].ToString());
-                rowtemp.CreateCell(12).SetCellValue(dt.Rows[i]["STOPMANNAME"].ToString());
-                rowtemp.CreateCell(13).SetCellValue(dt.Rows[i]["ENDDATE"].ToString());
-                rowtemp.CreateCell(14).SetCellValue(dt.Rows[i]["REMARK"].ToString());
+                rowtemp.CreateCell(5).SetCellValue(dt.Rows[i]["PARTNO"].ToString());
+                rowtemp.CreateCell(6).SetCellValue(dt.Rows[i]["SPECIFICATIONSMODEL"].ToString());
+                rowtemp.CreateCell(7).SetCellValue(dt.Rows[i]["UNIT"].ToString());
+                rowtemp.CreateCell(8).SetCellValue(dt.Rows[i]["VERSION"].ToString());
+                rowtemp.CreateCell(9).SetCellValue(dt.Rows[i]["ENABLED"].ToString() == "1" ? "是" : "否");
+                rowtemp.CreateCell(10).SetCellValue(dt.Rows[i]["STARTDATE"].ToString());
+                rowtemp.CreateCell(11).SetCellValue(dt.Rows[i]["CREATEMANNAME"].ToString());
+                rowtemp.CreateCell(12).SetCellValue(dt.Rows[i]["CREATEDATE"].ToString());
+                rowtemp.CreateCell(13).SetCellValue(dt.Rows[i]["STOPMANNAME"].ToString());
+                rowtemp.CreateCell(14).SetCellValue(dt.Rows[i]["ENDDATE"].ToString());
+                rowtemp.CreateCell(15).SetCellValue(dt.Rows[i]["REMARK"].ToString());
             }
             try
             {
@@ -722,75 +725,66 @@ namespace Web_After.BasicManager.InspInfor
         public Dictionary<int, List<int>> upload_base_recorddetails(string newfile, string fileName, string action,
             JObject json_formdata, string recordinfoid)
         {
-            Base_Company_Method bcm = new Base_Company_Method();
-            Switch_helper_Base_blend_web sw = new Switch_helper_Base_blend_web();
-            DataTable dtExcel = bcm.GetExcelData_Table(Server.MapPath(newfile), 0);
-            List<string> stringList = new List<string>();
+            
+                Base_Company_Method bcm = new Base_Company_Method();
+                Switch_helper_Base_blend_web sw = new Switch_helper_Base_blend_web();
+                DataTable dtExcel = bcm.GetExcelData_Table(Server.MapPath(newfile), 0);
+                List<string> stringList = new List<string>();
 
-            //记住发生错误的行数
-            List<int> errorlines = new List<int>();
+                //记住发生错误的行数
+                List<int> errorlines = new List<int>();
 
-            //记住插入成功的个数
-            int count = 0;
+                //记住插入成功的个数
+                int count = 0;
 
-            Sql.busi_RecordInfor bc = new Sql.busi_RecordInfor();
-            //插入成功的个数(返回放入dictionary)
-            List<int> successinsert = new List<int>();
-            //返回值
-            Dictionary<int, List<int>> returndic = new Dictionary<int, List<int>>();
-            for (int i = 0; i < dtExcel.Rows.Count; i++)
-            {
-
-                for (int j = 0; j < dtExcel.Columns.Count; j++)
+                Sql.busi_RecordInfor bc = new Sql.busi_RecordInfor();
+                //插入成功的个数(返回放入dictionary)
+                List<int> successinsert = new List<int>();
+                //返回值
+                Dictionary<int, List<int>> returndic = new Dictionary<int, List<int>>();
+                try
                 {
-                    stringList.Add(dtExcel.Rows[i][j].ToString());
-                }
-                 //项号
-                string ITEMNO = stringList[0];                
-                //HS编号                                        
-                string HSCODE = stringList[1];
-                //HS附加码
-                string ADDITIONALNO = stringList[2];
-                //项号属性
-                string ITEMNOATTRIBUTE = stringList[3];
-                //商品名称
-                string COMMODITYNAME = stringList[4];
-                //规格型号
-                string SPECIFICATIONSMODEL = stringList[5];
-                //成交单位名称
-                string UNIT = stringList[6];
-                //版本号
-                string VERSION = stringList[7];
-                //是否启用
-                string ENABLED = stringList[8] == "是" ? "1" : "0";
-                //备注
-                string REMARK = stringList[9];
+                    for (int i = 0; i < dtExcel.Rows.Count; i++)
+                    {
 
-                //启用日期
-                string startdate = json_formdata.Value<string>("STARTDATE");
-                //停用日期
-                string enddate = json_formdata.Value<string>("ENDDATE");
+                        for (int j = 0; j < dtExcel.Columns.Count; j++)
+                        {
+                            stringList.Add(dtExcel.Rows[i][j].ToString());
+                        }
 
-                string formdata = "{\"ITEMNO\":\"" + ITEMNO + "\",\"HSCODE\":\"" + HSCODE + "\",\"ADDITIONALNO\":\"" + ADDITIONALNO + "\",\"STARTDATE\":\"" + startdate + "\",\"ENDDATE\":\"" + enddate + "\",\"ITEMNOATTRIBUTE\":\"" + ITEMNOATTRIBUTE + "\"," +
-                                  "\"COMMODITYNAME\":\"" + COMMODITYNAME + "\",\"SPECIFICATIONSMODEL\":\"" + SPECIFICATIONSMODEL + "\",\"UNIT\":\"" + UNIT + "\",\"VERSION\":\"" + VERSION + "\",\"REMARK\":\"" + REMARK + "\",\"ENABLED\":\"" + ENABLED + "\"}";
-                JObject json = (JObject)JsonConvert.DeserializeObject(formdata);
-                if (bc.check_repeat_record_details(json,recordinfoid).Rows.Count > 0)
-                {
-                    errorlines.Add(i + 2);
+                        //项号
+                        if (i == 8)
+                        {
+
+                        }
+                        RecordDetailEn detail = new RecordDetailEn(stringList, json_formdata);
+                        string jsonStr = JsonConvert.SerializeObject(detail);
+                        JObject json = (JObject)JsonConvert.DeserializeObject(jsonStr);
+                        
+                        if (bc.check_repeat_record_details(json, recordinfoid).Rows.Count > 0)
+                        {
+                            errorlines.Add(i + 2);
+                        }
+                        else
+                        {
+                            int f = bc.insert_record_details(recordinfoid, json);
+                            if (f > 0) count = count + 1;
+                            else errorlines.Add(i + 2);
+                        }
+                        stringList.Clear();
+                    }
+                    successinsert.Add(count);
+                    returndic.Add(1, successinsert);
+                    returndic.Add(2, errorlines);
                 }
-                else
+                catch (Exception ex)
                 {
-                    bc.insert_record_details(recordinfoid,json);
-                    count = count + 1;
+
                 }
-                stringList.Clear();
-            }
-            successinsert.Add(count);
-            returndic.Add(1, successinsert);
-            returndic.Add(2, errorlines);
-            return returndic;
+                return returndic;
+
         }
 
-
+        
     }
 }

@@ -34,7 +34,7 @@
       <publishTime>03/26/2019 14:32:18</publishTime>
     </File>
     <File Include="BasicManager/DataRela/RelaHSCIQ_New.aspx">
-      <publishTime>03/28/2019 16:23:23</publishTime>
+      <publishTime>04/02/2019 15:56:00</publishTime>
     </File>
     <File Include="BasicManager/DataRela/RelaPackage.aspx">
       <publishTime>03/26/2019 14:32:18</publishTime>
@@ -79,7 +79,7 @@
       <publishTime>03/26/2019 14:32:18</publishTime>
     </File>
     <File Include="BasicManager/InspInfor/busi_RecordInfor.aspx">
-      <publishTime>03/26/2019 14:32:18</publishTime>
+      <publishTime>06/05/2019 14:06:17</publishTime>
     </File>
     <File Include="BasicManager/InspInfor/busi_SpecialHsConvernet.aspx">
       <publishTime>03/26/2019 14:32:18</publishTime>
@@ -94,7 +94,7 @@
       <publishTime>03/26/2019 14:32:18</publishTime>
     </File>
     <File Include="BasicManager/js/busi_RecordInfor.js">
-      <publishTime>03/26/2019 14:32:18</publishTime>
+      <publishTime>06/13/2019 09:55:04</publishTime>
     </File>
     <File Include="BasicManager/js/Category.js">
       <publishTime>03/26/2019 14:32:18</publishTime>
@@ -169,7 +169,7 @@
       <publishTime>09/07/2017 10:44:16</publishTime>
     </File>
     <File Include="bin/Web_After.dll">
-      <publishTime>03/28/2019 16:47:01</publishTime>
+      <publishTime>06/17/2019 15:24:09</publishTime>
     </File>
     <File Include="css/bootstrap32/css/bootstrap-theme.css">
       <publishTime>09/07/2017 10:44:16</publishTime>
@@ -10834,7 +10834,7 @@
       <publishTime>03/26/2019 14:32:18</publishTime>
     </File>
     <File Include="FileUpload/record_details.xlsx">
-      <publishTime>03/26/2019 14:32:18</publishTime>
+      <publishTime>06/13/2019 11:34:41</publishTime>
     </File>
     <File Include="FileUpload/rela_companynature.xls">
       <publishTime>03/26/2019 14:32:18</publishTime>
@@ -14743,7 +14743,7 @@
       <publishTime>03/26/2019 15:14:53</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>04/02/2019 13:49:08</publishTime>
+      <publishTime>06/17/2019 15:24:29</publishTime>
     </File>
     <File Include="RedisManager/EXT_Declareall.aspx">
       <publishTime>09/07/2017 10:44:16</publishTime>
@@ -14788,7 +14788,7 @@
       <publishTime>09/07/2017 10:44:17</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>04/02/2019 13:47:50</publishTime>
+      <publishTime>06/13/2019 10:13:48</publishTime>
     </File>
     <File Include="WsZip.asmx">
       <publishTime>09/07/2017 10:44:16</publishTime>

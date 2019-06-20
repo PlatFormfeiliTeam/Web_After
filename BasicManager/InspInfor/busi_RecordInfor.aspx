@@ -209,7 +209,7 @@
             //账册属性
             var store_BOOKATTRIBUTE = Ext.create('Ext.data.JsonStore', {
                 fields: ['CODE', 'NAME'],
-                data: [{ "CODE": "料件账册", "NAME": "料件账册" }, { "CODE": "设备账册", "NAME": "设备账册" }]
+                data: [{ "CODE": "料件账册", "NAME": "料件账册" }, { "CODE": "设备账册", "NAME": "设备账册" }, { "CODE": "金二物流账册", "NAME": "金二物流账册" }, { "CODE": "金二加工贸易账册", "NAME": "金二加工贸易账册" }]
             });
             var combo_BOOKATTRIBUTE = Ext.create('Ext.form.field.ComboBox', {
                 id: 'combo_BOOKATTRIBUTE',

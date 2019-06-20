@@ -106,11 +106,11 @@ namespace Web_After.Sql
             JObject json_user = Extension.Get_UserInfo(userName);
             string sql = @"update base_new_hsciq set hscode='{0}',hsname='{1}',ciqcode='{2}',ciqname='{3}',remark='{4}',enabled='{5}',stopman='{6}',
                             startdate= to_date('{7}','yyyy-mm-dd hh24:mi:ss'),enddate= to_date('{8}','yyyy-mm-dd hh24:mi:ss'),type='{9}' where id='{10}'";
-            sql = string.Format(sql, json.Value<string>("HSCODE"), HSNAME, json.Value<string>("CIQCODE"), json.Value<string>("CIQNAME"),
-                            json.Value<string>("REMARK"), json.Value<string>("ENABLED"), stopman,
+            sql = string.Format(sql, json.Value<string>("HSCODE"), HSNAME.Replace("'", "'||chr(39)||'"), json.Value<string>("CIQCODE"), json.Value<string>("CIQNAME").Replace("'", "'||chr(39)||'"),
+                            json.Value<string>("REMARK").Replace("'", "'||chr(39)||'"), json.Value<string>("ENABLED"), stopman,
                             json.Value<string>("STARTDATE") == "" ? DateTime.MinValue.ToShortDateString() : json.Value<string>("STARTDATE"),
                             json.Value<string>("ENDDATE") == "" ? DateTime.MaxValue.ToShortDateString() : json.Value<string>("ENDDATE"),
-                            json.Value<string>("TYPE"), json.Value<string>("ID"));
+                            json.Value<string>("TYPE").Replace("'", "'||chr(39)||'"), json.Value<string>("ID"));
             i = DBMgrBase.ExecuteNonQuery(sql);
             return i;
         }

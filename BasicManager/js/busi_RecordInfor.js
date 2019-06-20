@@ -123,6 +123,7 @@ var util = {
                     'ADDITIONALNO',
                     'ITEMNOATTRIBUTE',
                     'COMMODITYNAME',
+                    'PARTNO',
                     'SPECIFICATIONSMODEL',
                     'UNITNAME',
                     'UNIT',
@@ -177,6 +178,7 @@ var util = {
                 { header: '附加码', dataIndex: 'ADDITIONALNO', width: 100 },
                 { header: '项号属性', dataIndex: 'ITEMNOATTRIBUTE', width: 100 },
                 { header: '商品名称', dataIndex: 'COMMODITYNAME', width: 100 },
+                { header: '料号', dataIndex: 'PARTNO', width: 100 },
                 { header: '规格型号', dataIndex: 'SPECIFICATIONSMODEL', width: 100 },
                 { header: '成交单位', dataIndex: 'UNIT', width: 100 },
                 { header: '版本号', dataIndex: 'VERSION', width: 100 },
@@ -336,6 +338,7 @@ var util = {
                             if (hscode.length == 0) {
                                 Ext.getCmp('COMMODITYNAME').setDisabled(true);
                                 Ext.getCmp('SPECIFICATIONSMODEL').setDisabled(true);
+                                Ext.Msg.alert("提示","HS编码不存在，非法");
                             }
                         }
 
@@ -469,6 +472,12 @@ var util = {
             name: 'REMARK',
             fieldLabel: '备注'
         });
+        //料号
+        var field_partno = Ext.create('Ext.form.field.Text', {
+            id: 'PARTNO',
+            name: 'PARTNO',
+            fieldLabel: '料号'
+        });
         //修改原因输入框
         var change_reason_recorddetail = Ext.create('Ext.form.field.Text', {
             id: 'REASON',
@@ -495,9 +504,10 @@ var util = {
                 { layout: 'column', height: 42, border: 0, items: [field_additionalno, combo_itemnoattribute] },
                 { layout: 'column', height: 42, border: 0, items: [field_commodityname, field_specificationsmodel] },
                 { layout: 'column', height: 42, border: 0, items: [combo_unit, field_version] },
-                { layout: 'column', height: 42, border: 0, items: [combo_recorddetail, start_date_recorddetail] },
-                { layout: 'column', height: 42, border: 0, items: [end_date_recorddetail, CreatemanName_recorddetail] },
-                { layout: 'column', height: 42, border: 0, items: [field_remark, change_reason_recorddetail] },
+                { layout: 'column', height: 42, border: 0, items: [field_partno, combo_recorddetail] },
+                { layout: 'column', height: 42, border: 0, items: [start_date_recorddetail, end_date_recorddetail ] },
+                { layout: 'column', height: 42, border: 0, items: [CreatemanName_recorddetail,field_remark] },
+                { layout: 'column', height: 42, border: 0, items: [change_reason_recorddetail] },
                 field_ID
             ],
             buttons: [{
@@ -611,7 +621,7 @@ var util = {
         var radio_module = Ext.create('Ext.form.RadioGroup', {
             name: "RADIO_MODULE", id: "RADIO_MODULE", fieldLabel: '模板类型',
             items: [
-                { boxLabel: "<a href='/FileUpload/record_details.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
+                { boxLabel: "<a href='../FileUpload/record_details.xls'><b>模板</b></a>", name: 'RADIO_MODULE', inputValue: '1', checked: true }
             ]
         });
 

@@ -176,14 +176,21 @@ enddate=to_date('{8}','yyyy/mm/dd hh24:mi:ss'),ismodel='{9}',stopman='{10}',enab
 
         public int insert_record_details(string recordinfoid ,JObject json)
         {
-            bcm.getCommonInformation(out stopman, out createman, out startdate, out enddate, json);
-            string sql = @"insert into sys_recordinfo_detail(id,recordinfoid,itemno,hscode,additionalno,itemnoattribute,commodityname,specificationsmodel,unit,version,enabled,remark,createman,stopman,createdate,startdate,enddate,abnormal)
+            try
+            {
+                bcm.getCommonInformation(out stopman, out createman, out startdate, out enddate, json);
+                string sql = @"insert into sys_recordinfo_detail(id,recordinfoid,itemno,hscode,additionalno,itemnoattribute,commodityname,specificationsmodel,unit,version,enabled,remark,createman,stopman,createdate,startdate,enddate,abnormal,partno)
             values(sys_recordinfo_detail_id.nextval,'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}',sysdate,to_date('{13}','yyyy/mm/dd hh24:mi:ss'),
-            to_date('{14}','yyyy/mm/dd hh24:mi:ss'),'{15}')";
-            sql = String.Format(sql, recordinfoid,json.Value<string>("ITEMNO"),json.Value<string>("HSCODE"),json.Value<string>("ADDITIONALNO"),json.Value<string>("ITEMNOATTRIBUTE"),json.Value<string>("COMMODITYNAME"),
-                json.Value<string>("SPECIFICATIONSMODEL"),json.Value<string>("UNIT"),json.Value<string>("VERSION"),json.Value<string>("ENABLED"),json.Value<string>("REMARK"),createman,stopman,startdate,enddate,0);
-            int i = DBMgrBase.ExecuteNonQuery(sql);
-            return i;
+            to_date('{14}','yyyy/mm/dd hh24:mi:ss'),'{15}','{16}')";
+                sql = String.Format(sql, recordinfoid, json.Value<string>("ITEMNO"), json.Value<string>("HSCODE"), json.Value<string>("ADDITIONALNO"), json.Value<string>("ITEMNOATTRIBUTE"), json.Value<string>("COMMODITYNAME").Replace("'", "'||chr(39)||'"),
+                    json.Value<string>("SPECIFICATIONSMODEL").Replace("'", "'||chr(39)||'"), json.Value<string>("UNIT"), json.Value<string>("VERSION"), json.Value<string>("ENABLED"), json.Value<string>("REMARK"), createman, stopman, startdate, enddate, 0, json.Value<string>("PARTNO"));
+                int i = DBMgrBase.ExecuteNonQuery(sql);
+                return i;
+            }
+            catch (Exception ex)
+            {
+                return -1;
+            }
         }
 
         //判断备案详情是否存在
@@ -234,10 +241,10 @@ enddate=to_date('{8}','yyyy/mm/dd hh24:mi:ss'),ismodel='{9}',stopman='{10}',enab
         {
             bcm.getCommonInformation(out stopman, out createman, out startdate, out enddate, json);
             string sql = @"update sys_recordinfo_detail set recordinfoid='{0}',itemno='{1}',hscode='{2}',additionalno='{3}',itemnoattribute='{4}',commodityname='{5}',specificationsmodel='{6}',unit='{7}',version='{8}',enabled='{9}',remark='{10}', stopman='{11}',
-            startdate=to_date('{12}','yyyy/mm/dd hh24:mi:ss'), enddate=to_date('{13}','yyyy/mm/dd hh24:mi:ss'),abnormal='{14}' where id='{15}'";
-            sql = String.Format(sql, recordinfoid, json.Value<string>("ITEMNO"), json.Value<string>("HSCODE"), json.Value<string>("ADDITIONALNO"), json.Value<string>("ITEMNOATTRIBUTE"),json.Value<string>("COMMODITYNAME"),
-                json.Value<string>("SPECIFICATIONSMODEL"), json.Value<string>("UNIT"), json.Value<string>("VERSION"), json.Value<string>("ENABLED"), json.Value<string>("REMARK"),stopman,
-                startdate,enddate,0,json.Value<string>("ID"));
+            startdate=to_date('{12}','yyyy/mm/dd hh24:mi:ss'), enddate=to_date('{13}','yyyy/mm/dd hh24:mi:ss'),abnormal='{14}',partno='{15}' where id='{16}'";
+            sql = String.Format(sql, recordinfoid, json.Value<string>("ITEMNO"), json.Value<string>("HSCODE"), json.Value<string>("ADDITIONALNO"), json.Value<string>("ITEMNOATTRIBUTE"), json.Value<string>("COMMODITYNAME").Replace("'", "'||chr(39)||'"),
+                json.Value<string>("SPECIFICATIONSMODEL").Replace("'", "'||chr(39)||'"), json.Value<string>("UNIT"), json.Value<string>("VERSION"), json.Value<string>("ENABLED"), json.Value<string>("REMARK"), stopman,
+                startdate,enddate,0,json.Value<string>("PARTNO"),json.Value<string>("ID"));
             int i = DBMgrBase.ExecuteNonQuery(sql);
             return i;
         }
